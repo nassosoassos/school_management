@@ -1,0 +1,25 @@
+development:
+      host: localhost
+      adapter: mysql
+      database: sandb
+      port: 3306
+      username: root    
+      password: san
+
+test: &test
+      host: localhost
+      adapter: mysql
+      database: testdb
+      port: 3306
+      username: root
+      password: san
+
+production:
+      host: localhost
+      adapter: mysql
+      database: sandb
+      port: 3306
+      username: root
+      password: san
+cucumber:
+  <<: *test
