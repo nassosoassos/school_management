@@ -1,0 +1,21 @@
+<div id="page-yield">
+<h1>New san_subject</h1>
+
+<% form_for(@san_subject) do |f| %>
+  <%= f.error_messages %>
+
+  <p>
+    <%= f.label :title %><br />
+    <%= f.text_field :title %>
+  </p>
+  <p>
+    <%= f.label :kind %><br />
+    <%= f.text_field :kind %>
+  </p>
+  <p>
+    <%= f.submit 'Create' %>
+  </p>
+<% end %>
+
+<%= link_to 'Back', san_subjects_path %>
+</div>

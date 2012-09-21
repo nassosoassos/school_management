@@ -1,0 +1,28 @@
+<h1>Editing san_semester</h1>
+
+<% form_for(@san_semester) do |f| %>
+  <%= f.error_messages %>
+
+  <p>
+    <%= f.label :number %><br />
+    <%= f.text_field :number %>
+  </p>
+  <p>
+    <%= f.label :group %><br />
+    <%= f.text_field :group %>
+  </p>
+  <p>
+    <%= f.label :uni_weight %><br />
+    <%= f.text_field :uni_weight %>
+  </p>
+  <p>
+    <%= f.label :mil_weight %><br />
+    <%= f.text_field :mil_weight %>
+  </p>
+  <p>
+    <%= f.submit 'Update' %>
+  </p>
+<% end %>
+
+<%= link_to 'Show', @san_semester %> |
+<%= link_to 'Back', san_semesters_path %>

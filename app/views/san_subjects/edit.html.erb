@@ -1,0 +1,20 @@
+<h1>Editing san_subject</h1>
+
+<% form_for(@san_subject) do |f| %>
+  <%= f.error_messages %>
+
+  <p>
+    <%= f.label :title %><br />
+    <%= f.text_field :title %>
+  </p>
+  <p>
+    <%= f.label :kind %><br />
+    <%= f.text_field :kind %>
+  </p>
+  <p>
+    <%= f.submit 'Update' %>
+  </p>
+<% end %>
+
+<%= link_to 'Show', @san_subject %> |
+<%= link_to 'Back', san_subjects_path %>

@@ -1,0 +1,26 @@
+<h1>Listing san_semesters</h1>
+
+<table>
+  <tr>
+    <th>Number</th>
+    <th>Group</th>
+    <th>Uni weight</th>
+    <th>Mil weight</th>
+  </tr>
+
+<% @san_semesters.each do |san_semester| %>
+  <tr>
+    <td><%=h san_semester.number %></td>
+    <td><%=h san_semester.group %></td>
+    <td><%=h san_semester.uni_weight %></td>
+    <td><%=h san_semester.mil_weight %></td>
+    <td><%= link_to 'Show', san_semester %></td>
+    <td><%= link_to 'Edit', edit_san_semester_path(san_semester) %></td>
+    <td><%= link_to 'Destroy', san_semester, :confirm => 'Are you sure?', :method => :delete %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New san_semester', new_san_semester_path %>

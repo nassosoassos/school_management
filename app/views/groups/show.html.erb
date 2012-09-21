@@ -1,0 +1,18 @@
+<p>
+  <b>Name:</b>
+  <%=h @group.name %>
+</p>
+
+<p>
+  <b>First year:</b>
+  <%=h @group.first_year %>
+</p>
+
+<p>
+  <b>Graduation year:</b>
+  <%=h @group.graduation_year %>
+</p>
+
+
+<%= link_to 'Edit', edit_group_path(@group) %> |
+<%= link_to 'Back', groups_path %>

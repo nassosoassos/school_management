@@ -1,0 +1,18 @@
+<p>
+  <b>Id:</b>
+  <%=h @san_subject.id %>
+</p>
+
+<p>
+  <b>Title:</b>
+  <%=h @san_subject.title %>
+</p>
+
+<p>
+  <b>Type:</b>
+  <%=h @san_subject.type %>
+</p>
+
+
+<%= link_to 'Edit', edit_san_subject_path(@san_subject) %> |
+<%= link_to 'Back', san_subjects_path %>

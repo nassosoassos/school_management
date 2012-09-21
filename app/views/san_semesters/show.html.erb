@@ -1,0 +1,23 @@
+<p>
+  <b>Number:</b>
+  <%=h @san_semester.number %>
+</p>
+
+<p>
+  <b>Group:</b>
+  <%=h @san_semester.group %>
+</p>
+
+<p>
+  <b>Uni weight:</b>
+  <%=h @san_semester.uni_weight %>
+</p>
+
+<p>
+  <b>Mil weight:</b>
+  <%=h @san_semester.mil_weight %>
+</p>
+
+
+<%= link_to 'Edit', edit_san_semester_path(@san_semester) %> |
+<%= link_to 'Back', san_semesters_path %>
