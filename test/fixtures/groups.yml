@@ -1,0 +1,11 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  name: MyString
+  first_year: 2012-09-19
+  graduation_year: 2012-09-19
+
+two:
+  name: MyString
+  first_year: 2012-09-19
+  graduation_year: 2012-09-19

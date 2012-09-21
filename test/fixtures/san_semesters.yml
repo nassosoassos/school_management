@@ -1,0 +1,13 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  number: 1
+  group: 
+  uni_weight: 1
+  mil_weight: 1
+
+two:
+  number: 1
+  group: 
+  uni_weight: 1
+  mil_weight: 1
