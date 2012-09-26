@@ -1,4 +1,10 @@
+# -*- coding: iso-8859-7 -*-
 class SanSemestersController < ApplicationController
+  
+  def add_subjects
+    
+  end
+
   # GET /san_semesters
   # GET /san_semesters.xml
   def index
@@ -26,6 +32,9 @@ class SanSemestersController < ApplicationController
   def new
     @san_semester = SanSemester.new
 
+    @uni_subjects = SanSubject.find_all_by_kind("University")
+    @mil_subjects = SanSubject.find_all_by_kind("Military")
+
     respond_to do |format|
       format.html # new.html.erb
       format.xml  { render :xml => @san_semester }
@@ -41,9 +50,19 @@ class SanSemestersController < ApplicationController
   # POST /san_semesters.xml
   def create
     @san_semester = SanSemester.new(params[:san_semester])
+    created = @san_semester.save
+
+    # Add subjects
+    params[:compulsory_subjects].each do |c|
+      SemesterSubjects.create({ :semester_id => @san_semester.id, :subject_id => c, :optional => false})
+    end
+
+    params[:optional_subjects].each do |o|
+      SemesterSubjects.create({ :semester_id => @san_semester.id, :subject_id => o, :optional => true})
+   end
 
     respond_to do |format|
-      if @san_semester.save
+      if created
         flash[:notice] = 'SanSemester was successfully created.'
         format.html { redirect_to(@san_semester) }
         format.xml  { render :xml => @san_semester, :status => :created, :location => @san_semester }
