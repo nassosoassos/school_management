@@ -1,3 +1,12 @@
+<div id="inner-tab-menu">
+  <ul>
+    <li><%= link_to "#{t('view_all')}", :action => "index" %></li>
+    <li><%= link_to "#{t('add_new')}", :action => "new" %></li>
+  </ul>
+</div>
+
+
+
 <p>
   <b>Id:</b>
   <%=h @san_subject.id %>

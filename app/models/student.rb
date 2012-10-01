@@ -22,6 +22,7 @@ class Student < ActiveRecord::Base
     
   belongs_to :country
   belongs_to :batch
+  belongs_to :group
   belongs_to :student_category
   belongs_to :nationality, :class_name => 'Country'
   belongs_to :user,:dependent=>:destroy
@@ -52,7 +53,7 @@ class Student < ActiveRecord::Base
 
   named_scope :by_first_name, :order=>'first_name',:conditions => { :is_active => true }
 
-  validates_presence_of :admission_no, :admission_date, :first_name, :batch_id, :date_of_birth
+  validates_presence_of :admission_no, :admission_date, :first_name, :batch_id, :date_of_birth, :group_id
   validates_uniqueness_of :admission_no
   validates_presence_of :gender
   validates_format_of     :email, :with => /^[A-Z0-9._%-]+@([A-Z0-9-]+\.)+[A-Z]{2,4}$/i,   :allow_blank=>true,

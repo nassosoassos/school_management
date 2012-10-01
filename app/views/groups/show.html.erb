@@ -1,3 +1,33 @@
+<div id="content-header">
+     <%= image_tag("/images/show_settings.png") %>
+  <h1><%= t('subject') %></h1>
+  <h3><%= t('home') %></h3>
+  <div id="app-back-button">
+    <%= link_to_function image_tag("/images/buttons/back.png",:border => 0), "history.back()" %>
+  </div>
+</div>
+
+<div id="inner-tab-menu">
+  <ul>
+    <li><%= link_to "#{t('semester_subscription')}", :action => "semester_subscription" %></li>
+    <li><%= link_to "#{t('grades')}", :action => "show_grades %></li>
+    <li><%= link_to "#{t('add_new')}", :action => "new" %></li>
+  </ul>
+</div>
+
+
+<div id="page-yield">
+  <div id="flash-box">
+  <% unless flash[:notice].nil? %>
+    <p class="flash-msg"> <%= flash[:notice] %> </p>
+  <% end %>
+  </div>
+<div class="box">
+
+	<div id="subjects">
+
+
+
 <p>
   <b>Name:</b>
   <%=h @group.name %>
@@ -11,8 +41,50 @@
 <p>
   <b>Graduation year:</b>
   <%=h @group.graduation_year %>
-</p>
+  </p>
+
+  <%= link_to 'Edit', edit_group_path(@group) %> |
+  <%= link_to 'Back', groups_path %>
+
+ <div class="students-table">
+  <table align="center" width="100%" cellpadding="1" cellspacing="1">
+    <tr class="tr-head">
+      <td><%= t('sl_no') %></td>
+      <td><%= t('name') %></td>
+      <td><%= t('adm_no') %></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+
+    <% Student.find_all_by_group_id(@group.id).each_with_index do |r, i| %>
+      <tr class="tr-<%= cycle('odd', 'even') %>">
+        <td class="col-1">
+          <%= i+1 %>
+        </td>
+
+        <td class="col-2">
+          <%= link_to r.full_name,:controller => "student", :action => "profile", :id => r.id %>
+        </td>
+
+        <td class="col-1">
+          <%= r.admission_no %>
+        </td>
+
+        <td class="col-7">
+          <%=  link_to  "#{t('view_profile')}", :controller => "student", :action => "profile", :id => r.id %>
+        </td>
+      </tr>
+    <% end %>
+  </table>
+</div> 
 
 
-<%= link_to 'Edit', edit_group_path(@group) %> |
-<%= link_to 'Back', groups_path %>
+<div id="modal-box" style="display:none;"></div>
+
+<div class="extender"></div>
+ </div></div>

@@ -29,7 +29,6 @@ class ApplicationController < ActionController::Base
   before_filter :dev_mode
   include CustomInPlaceEditing
 
-
   def dev_mode
     if Rails.env == "development"
 

@@ -1,3 +1,32 @@
+<div id="content-header">
+     <%= image_tag("/images/show_settings.png") %>
+  <h1><%= t('subject') %></h1>
+  <h3><%= t('home') %></h3>
+  <div id="app-back-button">
+    <%= link_to_function image_tag("/images/buttons/back.png",:border => 0), "history.back()" %>
+  </div>
+</div>
+
+<div id="inner-tab-menu">
+  <ul>
+    <li><%= link_to "#{t('view_all')}", :action => "index" %></li>
+    <li><%= link_to "#{t('add_new')}", :action => "new" %></li>
+  </ul>
+</div>
+
+
+<div id="page-yield">
+  <div id="flash-box">
+  <% unless flash[:notice].nil? %>
+    <p class="flash-msg"> <%= flash[:notice] %> </p>
+  <% end %>
+  </div>
+<div class="box">
+
+	<div id="subjects">
+
+
+
 <h1>Listing groups</h1>
 
 <table>
@@ -22,3 +51,9 @@
 <br />
 
 <%= link_to 'New group', new_group_path %>
+
+	</div>
+<div id="modal-box" style="display:none;"></div>
+
+<div class="extender"></div>
+ </div></div>

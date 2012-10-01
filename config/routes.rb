@@ -1,5 +1,10 @@
 ActionController::Routing::Routes.draw do |map|
 
+  map.resources :san_semesters
+  map.resources :san_subjects
+  map.resources :semester_subjects
+
+  map.resources :groups, :member => { :subscribe_to_semester=>:post, :semester_subscription=>:get, :show_group_semester=>:post, :debug=>:get} 
   map.resources :grading_levels
   map.resources :ranking_levels, :collection => {:create_ranking_level=>[:get,:post], :edit_ranking_level=>[:get,:post], :update_ranking_level=>[:get,:post], :delete_ranking_level=>[:get,:post], :ranking_level_cancel=>[:get,:post], :change_priority=>[:get,:post]}
   map.resources :class_designations
@@ -48,7 +53,6 @@ ActionController::Routing::Routes.draw do |map|
 #  map.resources :additional_exam_groups do |additional_exam_group|
 #    additional_exam_group.resources :additional_exams , :member => { :save_additional_scores => :post }
 #  end
-
   map.resources :timetables do |timetable|
     timetable.resources :timetable_entries
   end
@@ -59,8 +63,6 @@ ActionController::Routing::Routes.draw do |map|
   map.scheduled_task 'scheduled_jobs/:job_object/:job_type',:controller => "scheduled_jobs",:action => "index"
   map.scheduled_task_object 'scheduled_jobs/:job_object',:controller => "scheduled_jobs",:action => "index"
 
-
-  #map.connect 'parts/:number', :controller => 'inventory', :action => 'sho
   map.connect ':controller/:action/:id'
   map.connect ':controller/:action' 
   map.connect ':controller/:action/:id/:id2'

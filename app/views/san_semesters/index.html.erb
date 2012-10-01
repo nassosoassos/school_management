@@ -3,7 +3,7 @@
 <table>
   <tr>
     <th>Number</th>
-    <th>Group</th>
+    <th>Ακαδημαϊκό Έτος</th>
     <th>Uni weight</th>
     <th>Mil weight</th>
   </tr>
@@ -11,7 +11,7 @@
 <% @san_semesters.each do |san_semester| %>
   <tr>
     <td><%=h san_semester.number %></td>
-    <td><%=h san_semester.group %></td>
+    <td><%=h san_semester.year %></td>
     <td><%=h san_semester.uni_weight %></td>
     <td><%=h san_semester.mil_weight %></td>
     <td><%= link_to 'Show', san_semester %></td>
@@ -24,3 +24,5 @@
 <br />
 
 <%= link_to 'New san_semester', new_san_semester_path %>
+
+
