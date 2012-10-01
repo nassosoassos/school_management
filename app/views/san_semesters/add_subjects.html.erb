@@ -1,0 +1,569 @@
+<%-# Fedena
+#Copyright 2010 Foradian Technologies Private Limited
+#
+#This product includes software developed at
+#Project Fedena - http://www.projectfedena.org/
+#
+#Licensed under the Apache License, Version 2.0 (the "License");
+#you may not use this file except in compliance with the License.
+#You may obtain a copy of the License at
+#
+#  http://www.apache.org/licenses/LICENSE-2.0
+#
+#Unless required by applicable law or agreed to in writing,
+#software distributed under the License is distributed on an
+#"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+#KIND, either express or implied.  See the License for the
+#specific language governing permissions and limitations
+#under the License. -%>
+
+
+<div id="content-header">
+  <%= image_tag("/images/admission/admission_page_logo.jpg") %>
+  <h1><%= t('admission') %></h1>
+  <h3><%=  t('student_detail_step1') %></h3>
+  <div id="app-back-button">
+    <%= link_to_function image_tag("/images/buttons/back.png",:border => 0), "history.back()" %>
+  </div>
+</div>
+
+<div id="page-yield">
+
+		<table cellpadding="0" cellspacing="0" width="100%" height="100%" border="0">
+			<tr>
+				<td valign="top" style="padding: 10px">
+					
+<table cellpadding="0" cellspacing="0" border="0" width="100%" height="100%">
+	<tr>
+		<td valign="top" style="PADDING:5px;">
+			<table cellpadding="0" cellspacing="0" border="0" width="100%" height="100%">
+				<tr>
+					<td height="1" class="pagetitle" valign="top">
+						
+<span id="c0_TitleLabel">Εξάμηνο</span>
+					</td>
+				</tr>
+				<tr>
+					<td valign="top" style="PADDING-TOP:5px">
+						
+
+<DIV style="HEIGHT: 1%">
+
+<TABLE class=inputTable cellSpacing=1 cellPadding=0 border=0>
+  <TR>
+    <TD class=label width=120>
+<label for="c0_HeaderDescriptionTextBox" id="c0_HeaderDescriptionLabel">Περιγραφή:</label></TD>
+    <TD width=320>
+<input name="c0:HeaderDescriptionTextBox" type="text" readonly="readonly" id="c0_HeaderDescriptionTextBox" class="inputText" style="width:300px;" /></TD>
+    <TD class=label width=120>
+<label for="c0_HeaderYearDropDown" id="c0_HeaderSemesterYearLabel" class="req">Έτος:</label></TD>
+    <TD width=300>
+<select name="c0:HeaderYearDropDown" onchange="__doPostBack('c0$HeaderYearDropDown','')" language="javascript" id="c0_HeaderYearDropDown" class="dropdownlist" Required="True">
+	<option selected="selected" value=""></option>
+	<option value="2002">2002</option>
+	<option value="2003">2003</option>
+	<option value="2004">2004</option>
+	<option value="2005">2005</option>
+	<option value="2006">2006</option>
+	<option value="2007">2007</option>
+	<option value="2008">2008</option>
+	<option value="2009">2009</option>
+	<option value="2010">2010</option>
+	<option value="2011">2011</option>
+	<option value="2012">2012</option>
+	<option value="2013">2013</option>
+	<option value="2014">2014</option>
+	<option value="2015">2015</option>
+	<option value="2016">2016</option>
+	<option value="2017">2017</option>
+	<option value="2018">2018</option>
+	<option value="2019">2019</option>
+	<option value="2020">2020</option>
+	<option value="2021">2021</option>
+	<option value="2022">2022</option>
+
+</select></TD>
+    <TD width="100%"></TD></TR>
+  <TR>
+    <TD class=label>
+<label for="c0_HeaderSemesterDropDown" id="c0_HeaderSemesterLabel" class="req">Εξάμηνο:</label></TD>
+    <TD>
+<select name="c0:HeaderSemesterDropDown" onchange="__doPostBack('c0$HeaderSemesterDropDown','')" language="javascript" id="c0_HeaderSemesterDropDown" class="dropdownlist" Required="true" style="width:300px;">
+	<option selected="selected" value=""></option>
+	<option value="1">1ο</option>
+	<option value="2">2ο</option>
+	<option value="3">3ο</option>
+	<option value="4">4ο</option>
+	<option value="5">5ο</option>
+	<option value="6">6ο</option>
+	<option value="7">7ο</option>
+	<option value="8">8ο</option>
+	<option value="9">9ο</option>
+	<option value="10">10ο</option>
+	<option value="11">11ο</option>
+	<option value="12">12ο</option>
+
+</select></TD>
+    <TD class=label>
+<label for="c0_HeaderDisplayOrderTextBox" id="c0_HeaderDisplayOrderLabel">Σειρά Εμφάνισης:</label></TD>
+    <TD>
+<input name="c0:HeaderDisplayOrderTextBox" type="text" id="c0_HeaderDisplayOrderTextBox" class="inputText" /></TD>
+    <TD width="100%"></TD></TR>
+  <TR>
+    <TD class=label>
+<label for="c0_HeaderUniFactorTextBox" id="c0_HeaderUniFactorLabel">Συντελεστής Παν.:</label></TD>
+    <TD>
+<input name="c0:HeaderUniFactorTextBox" type="text" value="12" id="c0_HeaderUniFactorTextBox" class="inputText" style="width:300px;" /></TD>
+    <TD class=label>
+<label for="c0_HeaderArmyFactorTextBox" id="c0_HeaderArmyFactorLabel">Συντελεστής Στρατ.:</label></TD>
+    <TD>
+<input name="c0:HeaderArmyFactorTextBox" type="text" value="5" id="c0_HeaderArmyFactorTextBox" class="inputText" /></TD>
+    <TD width="100%"></TD></TR>
+  <TR>
+    <TD class=label>
+<label for="c0_IsLastOfYearCheckbox" id="c0_IsLastOfYearLabel">Τελευταίο εξάμηνο<br>του έτους:</label></TD>
+    <TD>
+<input id="c0_IsLastOfYearCheckbox" type="checkbox" name="c0:IsLastOfYearCheckbox" /></TD>
+    <TD class=label></TD>
+    <TD></TD>
+    <TD width="100%"></TD></TR></TABLE></DIV>
+<DIV class=fmContent style="HEIGHT: 96%">
+<TABLE class=dialogTabContent height="90%" cellSpacing=0 cellPadding=0 
+width="110%" border=0>
+  <TR>
+    <TD 
+    style="PADDING-RIGHT: 10px; PADDING-LEFT: 10px; PADDING-BOTTOM: 0px; PADDING-TOP: 10px" 
+    vAlign=top noWrap height=1>
+<?XML:NAMESPACE PREFIX="TSNS" /><?IMPORT NAMESPACE="TSNS" IMPLEMENTATION="/webctrl_client/1_0/tabstrip.htc" />
+<TSNS:TabStrip id="c0_MainTabStrip" selectedIndex="0" targetID="c0_MainTabStripPage" tabDefaultStyle="padding:3px;padding-left:5px;padding-right:5px;border:solid 1px #94a6b5;white-space:nowrap;" tabSelectedStyle="border-top-color:#de8e29;border-bottom-color:#fffbff;" sepDefaultStyle="width:1px;border-bottom:solid 1px #949e9c;font-size:1px;" onSelectedIndexChange="JScript:document.frmMain.__c0_MainTabStrip_State__.value=event.index" onwcready="JScript:try{document.frmMain.__c0_MainTabStrip_State__.value=selectedIndex}catch(e){}">
+
+	<TSNS:Tab ID="MandatoryTab" defaultStyle="background:url(/SAN/images/tabstrip/tab_bg_off.jpg) repeat-x 0px 0px;border-left:solid 1px #94a6b5;" selectedStyle="background:#fffbff url(/SAN/images/tabstrip/tab_bg_on.jpg) repeat-x 0px 0px;">Υποχρεωτικά</TSNS:Tab>
+	<TSNS:TabSeparator />
+	<TSNS:Tab ID="OptionalTab" defaultStyle="background:url(/SAN/images/tabstrip/tab_bg_off.jpg) repeat-x 0px 0px;border-left:solid 1px #94a6b5;" selectedStyle="background:#fffbff url(/SAN/images/tabstrip/tab_bg_on.jpg) repeat-x 0px 0px;">Επιλογής</TSNS:Tab>
+	<TSNS:TabSeparator />
+	<TSNS:TabSeparator defaultStyle="width:100%;" />
+
+</TSNS:TabStrip></TD></TR>
+  <TR>
+    <TD 
+    style="PADDING-RIGHT: 10px; PADDING-LEFT: 10px; PADDING-BOTTOM: 10px; PADDING-TOP: 0px" 
+    vAlign=top noWrap>
+<?XML:NAMESPACE PREFIX="MPNS" /><?IMPORT NAMESPACE="MPNS" IMPLEMENTATION="/webctrl_client/1_0/multipage.htc" />
+<MPNS:MultiPage id="c0_MainTabStripPage" selectedIndex="0" onSelectedIndexChange="JScript:document.frmMain.__c0_MainTabStripPage_State__.value=event.selectedIndex" style="background-color:#FFFBFF;height:100%;width:100%;border:solid 1px #94a6b5;border-top:none;padding:13px;;">
+	<MPNS:PageView>
+		<!-- Mandatory-->
+								
+								  <table id="inputTable" cellpadding="2" cellspacing="0" border="0" width="100%" height="100%" >
+									<tr>
+											<td>
+												<table cellpadding="0" cellspacing="0" border="0" width="100%" height="100%">
+													<tr>
+														<td height="25" nowrap >Πανεπιστημιακά Μαθήματα:</td>
+													</tr>
+													<tr>
+														<td>
+															<select name="c0:UniCourcesMandatory" size="4" multiple="multiple" id="c0_UniCourcesMandatory" style="height:100%;width:100%;">
+			<option value="1f55570b-342c-4d19-8f5c-7a7a26955b68">Αιματολογία - Αιμοδοσία</option>
+			<option value="cff36a2f-c000-46b4-9896-a57e65ad2367">Ακτινολογία - Απεικονιστικές μέθοδοι</option>
+			<option value="fedfc40d-31d0-4f52-8edf-be99758a5fa9">Ανακουφιστική φροντίδα</option>
+			<option value="7f4128dd-ce79-4c71-9e56-08e4431e7805">Ανατομική - Ιστολογία - εμβρυολογία Ι</option>
+			<option value="aa076396-4806-4525-99a0-43d563dcaf21">Ανατομική - Ιστολογία - εμβρυολογία ΙΙ</option>
+			<option value="d18fbb63-f4bf-4907-9106-60dcf272da08">Ανοσολογία</option>
+			<option value="6ed0697b-cb95-41e5-bebe-8d8bcbefd4c2">Αρχές και μεθόδοι διδασκαλίας</option>
+			<option value="95043a07-b91d-4b82-b3a7-7f8bb4cedd4e">Βασική Νοσηλευτική Ι</option>
+			<option value="eed4a854-0685-4832-8a4a-66011fb0a2d4">Βασική Νοσηλευτική ΙΙ</option>
+			<option value="e2e8f28c-7b03-4a41-ac65-7423b6ecb0da">Βιοηθική</option>
+			<option value="4770977d-27a5-4b66-846a-f2fed771f93a">Βιολογία της Συμπεριφοράς</option>
+			<option value="de396d9f-4a79-4634-b1d1-e95acae9fea5">Βιολογία του κυττάρου</option>
+			<option value="eb36e188-04d7-4588-94e5-64bc4a4ba5df">Βιοστατιστική</option>
+			<option value="41176cc6-0acc-4c02-8cd1-250eb763a986">Βιοφυσική</option>
+			<option value="a091d2ce-8198-4640-8b5d-2a8f35fb73c8">Βιοχημεία</option>
+			<option value="fb7d81d5-a3b1-431e-b33c-42fc6f07813f">Βιοϊατρική Πληροφορική &amp; Τεχνολογία</option>
+			<option value="41fce481-e25f-4ae1-b960-017cabae3613">Γενετική του ανθρώπου</option>
+			<option value="3a998aa9-6aef-4693-8db3-7191fcf39ec6">Γενική Παθολογική Ανατομική</option>
+			<option value="afd2434a-028c-475b-b7eb-bef987c600e4">Γεροντολογική Νοσηλευτική</option>
+			<option value="b0bab5f5-0b33-4dee-a359-4cb66c917188">Δεξιότητες επικοινωνίας</option>
+			<option value="0b1be587-f4a7-4000-bd4c-d6edd4324079">Δερματολογία</option>
+			<option value="62473c00-5d01-4a8b-8aa8-b8db9add176f">Δημογραφία</option>
+			<option value="809ac2db-1f29-4a22-8f84-ae5a7f93a76a">Διαιτητική - Διατροφή</option>
+			<option value="a1f1038f-c568-4d62-9748-50f928a73f13">Διαπολιτισμική Νοσηλευτική</option>
+			<option value="98b7ae5a-a217-466d-a72f-38d44ee2a2e5">Διασφάλιση ποιότητας στη φροντίδα υγείας</option>
+			<option value="1827ea71-b5c9-4fdb-ba7f-e5675b3f41bc">Διεπιστημονική προσέγγιση στη φροντίδα υγείας</option>
+			<option value="95b08436-1b46-4f36-9784-cdf17e64b99c">Διοίκηση Νοσηλευτικών Υπηρεσιών</option>
+			<option value="b2850618-dc6c-4faa-9764-9781e9b0adb2">Ειδικά θέματα στατιστικής</option>
+			<option value="06de41e4-c752-402b-bde6-666b1786febb">Εισαγωγή στη νοσηλευτική</option>
+			<option value="15548716-36b5-4efb-9625-8213b024bb5c">Εισαγωγή στην Κοινωνιολογία</option>
+			<option value="78202a07-e06b-4c45-a146-ecaa6a0aa2a5">Εισαγωγή στην Πληροφορική</option>
+			<option value="a08097a1-87d5-496e-9514-dd20ff6b3589">Εισαγωγή στην Ψυχολογία</option>
+			<option value="c8732a46-eeac-410b-91b6-10ab83646534">Ενδοσκοπήσεις πεπτικου - νοσηλευτική ενδοσκοπήσεων και ενδοσκοπικής χειρουργικής</option>
+			<option value="b9efe208-43b5-4f1e-a91e-8a84976e7777">Εντατικολογία</option>
+			<option value="c7a4242a-3d81-4037-9591-c1c680a37e70">Επείγουσα Νοσηλευτική και Εντατική Νοσηλεία</option>
+			<option value="3a4dbb5b-0647-44e8-8f96-78c6ac725095">Επειγοντολογία</option>
+			<option value="91a261e2-67d0-491a-8d6e-86114c23d406">Επιδημιολογία</option>
+			<option value="f2b8231c-8733-455f-a848-1cf9dfb9c8a2">Θεωρία της λήψης των κλινικών αποφάσεων</option>
+			<option value="f8be7d86-a457-4a3e-b796-0b6ed9950b86">Θεωρίες της νοσηλευτικής</option>
+			<option value="3aecdffe-4ceb-493d-b62d-847ffc0f96a4">Ιολογία</option>
+			<option value="e51a3eb9-bd21-4ef7-9a94-2b026e0f41f9">Ισοβαρική και υπερβαρική οξυγονοθεραπεία</option>
+			<option value="d3ac9e9c-b790-4297-8ce2-ec70b69d4048">Ιστορία και θεωρία της επιστήμης</option>
+			<option value="a01a4faf-6726-467d-9288-785d4d6d722d">Κλινική Βιοχημεία</option>
+			<option value="7c2a4ba5-fe13-495c-a3b6-96e3c4d81be4">Κλινική Παθολογική Νοσηλευτική</option>
+			<option value="61bdb00b-cdab-4e33-ad6b-4ce79dcd39b5">Κλινική Χειρουργική Νοσηλευτική</option>
+			<option value="e70e573d-f782-4930-b5b5-cfdef9dddb44">Κλινική νευρολογία</option>
+			<option value="35ca09e0-583e-46c1-b828-7fe977fd255f">Κοινοτική Νοσηλευτική Ι</option>
+			<option value="32c780c2-a4eb-4aa8-9dac-219f9d13a9a6">Κοινοτική νοσηλευτική ΙΙ</option>
+			<option value="e2bac246-eeca-4c7d-983c-4106dab23364">Κοινωνική Ψυχιατρική</option>
+			<option value="156172fd-4317-4796-99db-89be980fcc83">Κοινωνιολογία της υγείας</option>
+			<option value="23d18b23-ef70-4263-a4af-a482f4c09785">Κριτική ανάλυση των κλινικών εμπειριών</option>
+			<option value="f0a1daa1-d0d6-49ad-a1f4-19dfdcf8f521">Μεθοδολογία της έρευνας</option>
+			<option value="e2bd2e4d-8624-4fef-996a-feb30c2e8314">Μηχανική υποστήριξη της αναπνοής</option>
+			<option value="a6b33236-fc56-40d4-97fd-9551aa41269c">Μικροβιολογία</option>
+			<option value="151b5f28-51a2-4976-b825-e2b67fcf1fea">Νευρολογική - Νευροχειρουργική Νοσηλευτική</option>
+			<option value="6af8a0ea-3eb3-4c25-9370-dc0ba7db4c3f">Νεφρολογική Νοσηλευτική</option>
+			<option value="c3977b4b-9485-487d-b24b-3c0a2671af7c">Νομοθεσία και δεοντολογία στο χώρο της υγείας</option>
+			<option value="f2492d43-8821-4a22-aa7f-23266aee1c48">Νοσηλευτικά προβλήματα παίδων με χρόνια νοσήματα</option>
+			<option value="5488e71d-9829-479f-9ffd-86323c99b1cf">Νοσηλευτική Αναισθησιολογία</option>
+			<option value="f3c15d96-36e4-469f-86e3-db2569cd49a0">Νοσηλευτική αξιολόγηση</option>
+			<option value="bd501ee9-cce3-4926-a41d-45c395f7bbc4">Νοσηλευτική αποκατάσταση χρονίως πασχόντων</option>
+			<option value="b6771337-7707-4d6b-a05e-155c94918259">Νοσηλευτική πρακτική βασισμένη σε ενδείξης</option>
+			<option value="48ba82f9-9d81-4a83-b268-dc0b1f662fd3">Νοσηλευτική της μητρότητας - Γυναικολογία</option>
+			<option value="f0f1604a-788c-48b6-93d0-43dabf9128f2">Νοσηλευτική της οικογένειας</option>
+			<option value="d82d974d-01ec-4245-bc23-81a5c5a66634">Νοσηλευτική των καρδιαγγειακών παθήσεων</option>
+			<option value="dab9e566-6d71-4720-9297-735a8a1bf00d">Νοσοκομειακές Λοιμώξεις</option>
+			<option value="dd337eb1-082d-4001-8850-f4576fdf0563">Ογκολογική Νοσηλευτική</option>
+			<option value="681eb422-680a-4cd7-9b0f-fdbb776ae7d3">Οι ακτίνες laser και οι εφαρμογές τους στο χώρο της υγείας</option>
+			<option value="3f4968f2-a2a4-46db-96f0-e82bf49eb213">Οικονομικά της υγείας</option>
+			<option value="8e512a26-a662-4ff1-a5a6-950b03845985">Οικονομική αξιολόγηση &amp; αποτίμηση της φροντίδας υγείας</option>
+			<option value="53786418-7f9f-44ae-9e84-621cd005e3f7">Οργάνωση υπηρεσιών υγείας</option>
+			<option value="ea9387e9-b6a0-4f62-9c4e-9fe32abff58e">Ορθοπεδική νοσηλευτική</option>
+			<option value="2f8ed5e0-ebc5-4b00-a367-c0a2253edc3c">Παθολογία Ι</option>
+			<option value="ebb440c3-ac3a-4f22-84a8-e70b65791b46">Παθολογία ΙΙ</option>
+			<option value="4652d491-7d72-42ae-a397-d68f1feddf48">Παθολογίκη Νοσηλευτική Ι</option>
+			<option value="bac855dd-18b6-469a-b653-085279eb63dc">Παθολογική Νοσηλευτική ΙΙ</option>
+			<option value="9b79eb6e-1917-438f-bd66-1232d504f0d0">Παθολογική Φυσιολογία</option>
+			<option value="571d84b5-e3d8-4bab-a4d5-429e1f0967ed">Παιδιατρική</option>
+			<option value="1b270447-aa2a-411a-82b9-1a04f14c12b8">Παιδιατρική Νοσηλευτική</option>
+			<option value="42933865-359c-48a4-8fcf-897e7a518726">Παιδικά ατυχήματα &amp; δηλητηριάσεις</option>
+			<option value="a26eb869-dd35-49f2-88ed-5cd9f8205c00">Πληροφοριακά συστήματα νοσοκομείων</option>
+			<option value="154e549b-bc73-4731-a18d-4c0505c537b2">Πληροφορική της υγείας</option>
+			<option value="95041d55-e137-4c92-8d72-02d075bb725f">Πνευμονολογία - Νοσηλευτική αναπνευστικών νοσημάτων</option>
+			<option value="68996893-1046-45cb-9624-09e9a79704af">Πρόληψη</option>
+			<option value="6081a420-745b-48eb-99ad-61a88910e217">Πρώτες βοήθειες</option>
+			<option value="9590f54b-84a2-4dfc-aab8-a353c894ffa6">Σεξουαλικώς Μεταδιδόμενα Νοσήματα</option>
+			<option value="8287d2e8-71a1-4787-9191-ebd2ad7bc48f">Συστήματα νοσηλευτικής φροντίδας</option>
+			<option value="8ebcd61a-d1a4-4242-8a3e-73a2a7ad4acb">Υγιεινή της εργασίας</option>
+			<option value="633699a6-36c9-4b47-aead-99caad02844b">ΦΥΣΙΟΛΟΓΙΑ ΙΙ</option>
+			<option value="b4a5aaf1-7189-469a-9c0e-26fd263f0bb0">Φαρμακολογία</option>
+			<option value="711ad239-3283-4c6f-bd21-4f9947dc7793">Φυσιολογία</option>
+			<option value="6a57fab1-b70f-44ec-b658-c02bbc003ab9">Χειρουργική Ι</option>
+			<option value="b94b49b8-b4d9-40f2-a105-80deb2cfe75c">Χειρουργική ΙΙ</option>
+			<option value="04e8eb95-7715-4910-abe0-395e30ae9e53">Χειρουργική Νοσηλευτική Ι</option>
+			<option value="c0a6cd4b-eefd-4335-85c6-1407dc512a7c">Χειρουργική Νοσηλευτική ΙΙ</option>
+			<option value="145e223a-3318-43cb-a437-567a45d63fb6">Χειρουργική κεφαλής και τραχήλου</option>
+			<option value="fe22bfe0-a4f0-406a-980f-92762bc1011e">Ψυχιατρική (Γενική-Κοινωνική)</option>
+			<option value="7705666e-9b92-434f-9582-fd34db59c16f">Ψυχιατρική Νοσηλευτική</option>
+			<option value="16d6b3e6-f202-4961-ab73-a522a5b70331">Ψυχοκοινωνική αποκατάσταση</option>
+			<option value="6ee4d1f0-6fdb-4100-891b-f95fd4a53979">Ψυχολογία στο χώρο της υγείας</option>
+
+		</select>
+														</td>
+													</tr>
+													<tr>
+														<td height="25" nowrap >Στρατιωτικά Μαθήματα:</td>
+													</tr>
+													<tr>
+														<td>
+															<select name="c0:ArmyCourcesMandatory" size="4" multiple="multiple" id="c0_ArmyCourcesMandatory" style="height:100%;width:100%;">
+			<option value="c1ad7d4a-966f-439d-84e9-ada87053d18e">Αγγλική Ιατρική  &amp; Νοσηλευτική Ορολογία</option>
+			<option value="7539006e-3ad5-4c0c-a836-0bf4884f809b">Αρχές και μέθοδοι Διδασκαλίας</option>
+			<option value="6eff404c-e647-4c3e-a60b-a3123ca96efd">Ασκήσεις Αόπλου-Ενόπλου</option>
+			<option value="6b27020b-e0c8-4cb8-a002-647f7a708dc5">Γεν. Κανονισμοί</option>
+			<option value="e0ea5248-6af4-413e-9a5a-bad8ec5343ee">Δημόσιο Διεθνή Δίκαιο</option>
+			<option value="94ad7d88-e9dd-4470-b570-d8a66a77af76">Διοκητική Μέριμνα στις ΕΔ</option>
+			<option value="9222c079-6bcd-422f-b38a-a99100133d52">ΙΣΤΟΡΙΑ ΤΗΣ ΝΕΩΤΕΡΗΣ ΕΛΛΑΔΑΣ</option>
+			<option value="b79f54c0-0294-4a3e-b2a2-0325486ab3cb">Ιστορία Στρ. Ιατρικής Νοσηλευτικής</option>
+			<option value="b237aad6-cf35-4ff3-b49a-e2dfe9f702fb">Μουσική</option>
+			<option value="5afdbf0b-ea87-4ccf-acae-f3be2ca61704">Νοσηλευτική Ενόπλων Δυνάμεων</option>
+			<option value="4ede4633-c465-4b9f-a71a-4188635b06a3">Ξένες Γλώσσες</option>
+			<option value="2e481804-c0ae-4d5f-a869-c26152ddb74d">Οργάνωση ΕΔ</option>
+			<option value="e0e3c7a6-8250-49e0-96eb-20ba7bf60129">Περί Ηγεσίας - Αρχές Διοίκησης</option>
+			<option value="3ec43a9a-6cde-4c29-a96e-eff504879e7b">Στρ. Αλληλογραφία</option>
+			<option value="78ed095b-54e1-4eef-97a8-fcc6d28c7f88">Στρ. Κανονισμοί</option>
+			<option value="f06f05e6-8e36-432f-bab7-c104cf2b482a">Στρ. Ποινικό Δίκαιο</option>
+			<option value="6f974099-c855-49d7-ae07-41cf17d19723">Σωματική Αγωγή</option>
+			<option value="99eab977-fbea-42b7-b5a5-0a410864fb12">Τοπογραφία</option>
+			<option value="ad1d2d35-5f1c-4b94-850c-6f0d3c5d1b9b">ΧΒΡΠ Πόλεμος</option>
+			<option value="25d9cf35-20f9-457a-aa39-c68df39210f8">Ψυχολογία Στρατιώτη</option>
+			<option value="b6f1c2a8-b3d0-48e9-9565-0856c53be37a">Ψυχολογικές Επιχειρήσεις</option>
+
+		</select>
+														</td>
+													</tr>
+												</table>
+											</td>
+											<td width="60">
+												<table cellpadding="0" cellspacing="0" border="0" width="100%" height="100%" align="center">
+													<tr>
+														<td height="25" nowrap >&nbsp;</td>
+													</tr>
+													<tr>
+														<td valign="middle" align="center" width="60" nowrap >
+															<div>
+<input type="submit" name="c0:RemoveAllButtonMandatory" value="<<" id="c0_RemoveAllButtonMandatory" title="Αφαίρεση όλων των μαθημάτων" class="appButton" style="width:38px;" /></div><br/>
+															<div>
+<input type="submit" name="c0:AddButtonMandatory" value=">" id="c0_AddButtonMandatory" title="Προσθήκη επιλεγμένων μαθημάτων" class="appButton" style="width:38px;" /></div><br/>
+															<div>
+<input type="submit" name="c0:RemoveButtonMandatory" value="<" id="c0_RemoveButtonMandatory" title="Αφαίρεση επιλεγμένων μαθημάτων" class="appButton" style="width:38px;" /></div><br/>
+															<div>
+<input type="submit" name="c0:AddAllButtonMandatory" value=">>" id="c0_AddAllButtonMandatory" title="Προσθήκη όλων των μαθημάτων" class="appButton" style="width:38px;" /></div>						
+														</td>
+													</tr>
+												</table>
+											</td>
+											<td>
+												<table cellpadding="0" cellspacing="0" border="0" width="100%" height="100%">
+													<tr>
+														<td height="25" nowrap >Υποχρεωτικά Μαθήματα Εξαμήνου:</td>
+													</tr>
+													<tr>
+														<td>
+															<select name="c0:SemesterCourcesMandatory" size="4" multiple="multiple" id="c0_SemesterCourcesMandatory" style="height:100%;width:100%;">
+
+		</select>
+														</td>
+													</tr>
+												</table>			
+											</td>
+										</tr>
+						           </table>
+						                     
+								
+							
+	</MPNS:PageView>
+	<MPNS:PageView>
+		<!-- Optional -->
+								
+									<table id="inputTable" cellpadding="2" cellspacing="0" border="0" width="100%" height="100%" >
+									<tr>
+											<td>
+												<table cellpadding="0" cellspacing="0" border="0" width="100%" height="100%">
+													<tr>
+														<td height="25" nowrap >Πανεπιστημιακά Μαθήματα:</td>
+													</tr>
+													<tr>
+														<td>
+															<select name="c0:UniCourcesOptional" size="4" multiple="multiple" id="c0_UniCourcesOptional" style="height:100%;width:100%;">
+			<option value="1f55570b-342c-4d19-8f5c-7a7a26955b68">Αιματολογία - Αιμοδοσία</option>
+			<option value="cff36a2f-c000-46b4-9896-a57e65ad2367">Ακτινολογία - Απεικονιστικές μέθοδοι</option>
+			<option value="fedfc40d-31d0-4f52-8edf-be99758a5fa9">Ανακουφιστική φροντίδα</option>
+			<option value="7f4128dd-ce79-4c71-9e56-08e4431e7805">Ανατομική - Ιστολογία - εμβρυολογία Ι</option>
+			<option value="aa076396-4806-4525-99a0-43d563dcaf21">Ανατομική - Ιστολογία - εμβρυολογία ΙΙ</option>
+			<option value="d18fbb63-f4bf-4907-9106-60dcf272da08">Ανοσολογία</option>
+			<option value="6ed0697b-cb95-41e5-bebe-8d8bcbefd4c2">Αρχές και μεθόδοι διδασκαλίας</option>
+			<option value="95043a07-b91d-4b82-b3a7-7f8bb4cedd4e">Βασική Νοσηλευτική Ι</option>
+			<option value="eed4a854-0685-4832-8a4a-66011fb0a2d4">Βασική Νοσηλευτική ΙΙ</option>
+			<option value="e2e8f28c-7b03-4a41-ac65-7423b6ecb0da">Βιοηθική</option>
+			<option value="4770977d-27a5-4b66-846a-f2fed771f93a">Βιολογία της Συμπεριφοράς</option>
+			<option value="de396d9f-4a79-4634-b1d1-e95acae9fea5">Βιολογία του κυττάρου</option>
+			<option value="eb36e188-04d7-4588-94e5-64bc4a4ba5df">Βιοστατιστική</option>
+			<option value="41176cc6-0acc-4c02-8cd1-250eb763a986">Βιοφυσική</option>
+			<option value="a091d2ce-8198-4640-8b5d-2a8f35fb73c8">Βιοχημεία</option>
+			<option value="fb7d81d5-a3b1-431e-b33c-42fc6f07813f">Βιοϊατρική Πληροφορική &amp; Τεχνολογία</option>
+			<option value="41fce481-e25f-4ae1-b960-017cabae3613">Γενετική του ανθρώπου</option>
+			<option value="3a998aa9-6aef-4693-8db3-7191fcf39ec6">Γενική Παθολογική Ανατομική</option>
+			<option value="afd2434a-028c-475b-b7eb-bef987c600e4">Γεροντολογική Νοσηλευτική</option>
+			<option value="b0bab5f5-0b33-4dee-a359-4cb66c917188">Δεξιότητες επικοινωνίας</option>
+			<option value="0b1be587-f4a7-4000-bd4c-d6edd4324079">Δερματολογία</option>
+			<option value="62473c00-5d01-4a8b-8aa8-b8db9add176f">Δημογραφία</option>
+			<option value="809ac2db-1f29-4a22-8f84-ae5a7f93a76a">Διαιτητική - Διατροφή</option>
+			<option value="a1f1038f-c568-4d62-9748-50f928a73f13">Διαπολιτισμική Νοσηλευτική</option>
+			<option value="98b7ae5a-a217-466d-a72f-38d44ee2a2e5">Διασφάλιση ποιότητας στη φροντίδα υγείας</option>
+			<option value="1827ea71-b5c9-4fdb-ba7f-e5675b3f41bc">Διεπιστημονική προσέγγιση στη φροντίδα υγείας</option>
+			<option value="95b08436-1b46-4f36-9784-cdf17e64b99c">Διοίκηση Νοσηλευτικών Υπηρεσιών</option>
+			<option value="b2850618-dc6c-4faa-9764-9781e9b0adb2">Ειδικά θέματα στατιστικής</option>
+			<option value="06de41e4-c752-402b-bde6-666b1786febb">Εισαγωγή στη νοσηλευτική</option>
+			<option value="15548716-36b5-4efb-9625-8213b024bb5c">Εισαγωγή στην Κοινωνιολογία</option>
+			<option value="78202a07-e06b-4c45-a146-ecaa6a0aa2a5">Εισαγωγή στην Πληροφορική</option>
+			<option value="a08097a1-87d5-496e-9514-dd20ff6b3589">Εισαγωγή στην Ψυχολογία</option>
+			<option value="c8732a46-eeac-410b-91b6-10ab83646534">Ενδοσκοπήσεις πεπτικου - νοσηλευτική ενδοσκοπήσεων και ενδοσκοπικής χειρουργικής</option>
+			<option value="b9efe208-43b5-4f1e-a91e-8a84976e7777">Εντατικολογία</option>
+			<option value="c7a4242a-3d81-4037-9591-c1c680a37e70">Επείγουσα Νοσηλευτική και Εντατική Νοσηλεία</option>
+			<option value="3a4dbb5b-0647-44e8-8f96-78c6ac725095">Επειγοντολογία</option>
+			<option value="91a261e2-67d0-491a-8d6e-86114c23d406">Επιδημιολογία</option>
+			<option value="f2b8231c-8733-455f-a848-1cf9dfb9c8a2">Θεωρία της λήψης των κλινικών αποφάσεων</option>
+			<option value="f8be7d86-a457-4a3e-b796-0b6ed9950b86">Θεωρίες της νοσηλευτικής</option>
+			<option value="3aecdffe-4ceb-493d-b62d-847ffc0f96a4">Ιολογία</option>
+			<option value="e51a3eb9-bd21-4ef7-9a94-2b026e0f41f9">Ισοβαρική και υπερβαρική οξυγονοθεραπεία</option>
+			<option value="d3ac9e9c-b790-4297-8ce2-ec70b69d4048">Ιστορία και θεωρία της επιστήμης</option>
+			<option value="a01a4faf-6726-467d-9288-785d4d6d722d">Κλινική Βιοχημεία</option>
+			<option value="7c2a4ba5-fe13-495c-a3b6-96e3c4d81be4">Κλινική Παθολογική Νοσηλευτική</option>
+			<option value="61bdb00b-cdab-4e33-ad6b-4ce79dcd39b5">Κλινική Χειρουργική Νοσηλευτική</option>
+			<option value="e70e573d-f782-4930-b5b5-cfdef9dddb44">Κλινική νευρολογία</option>
+			<option value="35ca09e0-583e-46c1-b828-7fe977fd255f">Κοινοτική Νοσηλευτική Ι</option>
+			<option value="32c780c2-a4eb-4aa8-9dac-219f9d13a9a6">Κοινοτική νοσηλευτική ΙΙ</option>
+			<option value="e2bac246-eeca-4c7d-983c-4106dab23364">Κοινωνική Ψυχιατρική</option>
+			<option value="156172fd-4317-4796-99db-89be980fcc83">Κοινωνιολογία της υγείας</option>
+			<option value="23d18b23-ef70-4263-a4af-a482f4c09785">Κριτική ανάλυση των κλινικών εμπειριών</option>
+			<option value="f0a1daa1-d0d6-49ad-a1f4-19dfdcf8f521">Μεθοδολογία της έρευνας</option>
+			<option value="e2bd2e4d-8624-4fef-996a-feb30c2e8314">Μηχανική υποστήριξη της αναπνοής</option>
+			<option value="a6b33236-fc56-40d4-97fd-9551aa41269c">Μικροβιολογία</option>
+			<option value="151b5f28-51a2-4976-b825-e2b67fcf1fea">Νευρολογική - Νευροχειρουργική Νοσηλευτική</option>
+			<option value="6af8a0ea-3eb3-4c25-9370-dc0ba7db4c3f">Νεφρολογική Νοσηλευτική</option>
+			<option value="c3977b4b-9485-487d-b24b-3c0a2671af7c">Νομοθεσία και δεοντολογία στο χώρο της υγείας</option>
+			<option value="f2492d43-8821-4a22-aa7f-23266aee1c48">Νοσηλευτικά προβλήματα παίδων με χρόνια νοσήματα</option>
+			<option value="5488e71d-9829-479f-9ffd-86323c99b1cf">Νοσηλευτική Αναισθησιολογία</option>
+			<option value="f3c15d96-36e4-469f-86e3-db2569cd49a0">Νοσηλευτική αξιολόγηση</option>
+			<option value="bd501ee9-cce3-4926-a41d-45c395f7bbc4">Νοσηλευτική αποκατάσταση χρονίως πασχόντων</option>
+			<option value="b6771337-7707-4d6b-a05e-155c94918259">Νοσηλευτική πρακτική βασισμένη σε ενδείξης</option>
+			<option value="48ba82f9-9d81-4a83-b268-dc0b1f662fd3">Νοσηλευτική της μητρότητας - Γυναικολογία</option>
+			<option value="f0f1604a-788c-48b6-93d0-43dabf9128f2">Νοσηλευτική της οικογένειας</option>
+			<option value="d82d974d-01ec-4245-bc23-81a5c5a66634">Νοσηλευτική των καρδιαγγειακών παθήσεων</option>
+			<option value="dab9e566-6d71-4720-9297-735a8a1bf00d">Νοσοκομειακές Λοιμώξεις</option>
+			<option value="dd337eb1-082d-4001-8850-f4576fdf0563">Ογκολογική Νοσηλευτική</option>
+			<option value="681eb422-680a-4cd7-9b0f-fdbb776ae7d3">Οι ακτίνες laser και οι εφαρμογές τους στο χώρο της υγείας</option>
+			<option value="3f4968f2-a2a4-46db-96f0-e82bf49eb213">Οικονομικά της υγείας</option>
+			<option value="8e512a26-a662-4ff1-a5a6-950b03845985">Οικονομική αξιολόγηση &amp; αποτίμηση της φροντίδας υγείας</option>
+			<option value="53786418-7f9f-44ae-9e84-621cd005e3f7">Οργάνωση υπηρεσιών υγείας</option>
+			<option value="ea9387e9-b6a0-4f62-9c4e-9fe32abff58e">Ορθοπεδική νοσηλευτική</option>
+			<option value="2f8ed5e0-ebc5-4b00-a367-c0a2253edc3c">Παθολογία Ι</option>
+			<option value="ebb440c3-ac3a-4f22-84a8-e70b65791b46">Παθολογία ΙΙ</option>
+			<option value="4652d491-7d72-42ae-a397-d68f1feddf48">Παθολογίκη Νοσηλευτική Ι</option>
+			<option value="bac855dd-18b6-469a-b653-085279eb63dc">Παθολογική Νοσηλευτική ΙΙ</option>
+			<option value="9b79eb6e-1917-438f-bd66-1232d504f0d0">Παθολογική Φυσιολογία</option>
+			<option value="571d84b5-e3d8-4bab-a4d5-429e1f0967ed">Παιδιατρική</option>
+			<option value="1b270447-aa2a-411a-82b9-1a04f14c12b8">Παιδιατρική Νοσηλευτική</option>
+			<option value="42933865-359c-48a4-8fcf-897e7a518726">Παιδικά ατυχήματα &amp; δηλητηριάσεις</option>
+			<option value="a26eb869-dd35-49f2-88ed-5cd9f8205c00">Πληροφοριακά συστήματα νοσοκομείων</option>
+			<option value="154e549b-bc73-4731-a18d-4c0505c537b2">Πληροφορική της υγείας</option>
+			<option value="95041d55-e137-4c92-8d72-02d075bb725f">Πνευμονολογία - Νοσηλευτική αναπνευστικών νοσημάτων</option>
+			<option value="68996893-1046-45cb-9624-09e9a79704af">Πρόληψη</option>
+			<option value="6081a420-745b-48eb-99ad-61a88910e217">Πρώτες βοήθειες</option>
+			<option value="9590f54b-84a2-4dfc-aab8-a353c894ffa6">Σεξουαλικώς Μεταδιδόμενα Νοσήματα</option>
+			<option value="8287d2e8-71a1-4787-9191-ebd2ad7bc48f">Συστήματα νοσηλευτικής φροντίδας</option>
+			<option value="8ebcd61a-d1a4-4242-8a3e-73a2a7ad4acb">Υγιεινή της εργασίας</option>
+			<option value="633699a6-36c9-4b47-aead-99caad02844b">ΦΥΣΙΟΛΟΓΙΑ ΙΙ</option>
+			<option value="b4a5aaf1-7189-469a-9c0e-26fd263f0bb0">Φαρμακολογία</option>
+			<option value="711ad239-3283-4c6f-bd21-4f9947dc7793">Φυσιολογία</option>
+			<option value="6a57fab1-b70f-44ec-b658-c02bbc003ab9">Χειρουργική Ι</option>
+			<option value="b94b49b8-b4d9-40f2-a105-80deb2cfe75c">Χειρουργική ΙΙ</option>
+			<option value="04e8eb95-7715-4910-abe0-395e30ae9e53">Χειρουργική Νοσηλευτική Ι</option>
+			<option value="c0a6cd4b-eefd-4335-85c6-1407dc512a7c">Χειρουργική Νοσηλευτική ΙΙ</option>
+			<option value="145e223a-3318-43cb-a437-567a45d63fb6">Χειρουργική κεφαλής και τραχήλου</option>
+			<option value="fe22bfe0-a4f0-406a-980f-92762bc1011e">Ψυχιατρική (Γενική-Κοινωνική)</option>
+			<option value="7705666e-9b92-434f-9582-fd34db59c16f">Ψυχιατρική Νοσηλευτική</option>
+			<option value="16d6b3e6-f202-4961-ab73-a522a5b70331">Ψυχοκοινωνική αποκατάσταση</option>
+			<option value="6ee4d1f0-6fdb-4100-891b-f95fd4a53979">Ψυχολογία στο χώρο της υγείας</option>
+
+		</select>
+														</td>
+													</tr>
+													<tr>
+														<td height="25" nowrap >Στρατιωτικά Μαθήματα:</td>
+													</tr>
+													<tr>
+														<td>
+															<select name="c0:ArmyCourcesOptional" size="4" multiple="multiple" id="c0_ArmyCourcesOptional" style="height:100%;width:100%;">
+			<option value="c1ad7d4a-966f-439d-84e9-ada87053d18e">Αγγλική Ιατρική  &amp; Νοσηλευτική Ορολογία</option>
+			<option value="7539006e-3ad5-4c0c-a836-0bf4884f809b">Αρχές και μέθοδοι Διδασκαλίας</option>
+			<option value="6eff404c-e647-4c3e-a60b-a3123ca96efd">Ασκήσεις Αόπλου-Ενόπλου</option>
+			<option value="6b27020b-e0c8-4cb8-a002-647f7a708dc5">Γεν. Κανονισμοί</option>
+			<option value="e0ea5248-6af4-413e-9a5a-bad8ec5343ee">Δημόσιο Διεθνή Δίκαιο</option>
+			<option value="94ad7d88-e9dd-4470-b570-d8a66a77af76">Διοκητική Μέριμνα στις ΕΔ</option>
+			<option value="9222c079-6bcd-422f-b38a-a99100133d52">ΙΣΤΟΡΙΑ ΤΗΣ ΝΕΩΤΕΡΗΣ ΕΛΛΑΔΑΣ</option>
+			<option value="b79f54c0-0294-4a3e-b2a2-0325486ab3cb">Ιστορία Στρ. Ιατρικής Νοσηλευτικής</option>
+			<option value="b237aad6-cf35-4ff3-b49a-e2dfe9f702fb">Μουσική</option>
+			<option value="5afdbf0b-ea87-4ccf-acae-f3be2ca61704">Νοσηλευτική Ενόπλων Δυνάμεων</option>
+			<option value="4ede4633-c465-4b9f-a71a-4188635b06a3">Ξένες Γλώσσες</option>
+			<option value="2e481804-c0ae-4d5f-a869-c26152ddb74d">Οργάνωση ΕΔ</option>
+			<option value="e0e3c7a6-8250-49e0-96eb-20ba7bf60129">Περί Ηγεσίας - Αρχές Διοίκησης</option>
+			<option value="3ec43a9a-6cde-4c29-a96e-eff504879e7b">Στρ. Αλληλογραφία</option>
+			<option value="78ed095b-54e1-4eef-97a8-fcc6d28c7f88">Στρ. Κανονισμοί</option>
+			<option value="f06f05e6-8e36-432f-bab7-c104cf2b482a">Στρ. Ποινικό Δίκαιο</option>
+			<option value="6f974099-c855-49d7-ae07-41cf17d19723">Σωματική Αγωγή</option>
+			<option value="99eab977-fbea-42b7-b5a5-0a410864fb12">Τοπογραφία</option>
+			<option value="ad1d2d35-5f1c-4b94-850c-6f0d3c5d1b9b">ΧΒΡΠ Πόλεμος</option>
+			<option value="25d9cf35-20f9-457a-aa39-c68df39210f8">Ψυχολογία Στρατιώτη</option>
+			<option value="b6f1c2a8-b3d0-48e9-9565-0856c53be37a">Ψυχολογικές Επιχειρήσεις</option>
+
+		</select>
+														</td>
+													</tr>
+												</table>
+											</td>
+											<td width="60">
+												<table cellpadding="0" cellspacing="0" border="0" width="100%" height="100%" align="center">
+													<tr>
+														<td height="25" nowrap >&nbsp;</td>
+													</tr>
+													<tr>
+														<td valign="middle" align="center" width="60" nowrap >
+															<div>
+<input type="submit" name="c0:RemoveAllButtonOptional" value="<<" id="c0_RemoveAllButtonOptional" title="Αφαίρεση όλων των μαθημάτων" class="appButton" style="width:38px;" /></div><br/>
+															<div>
+<input type="submit" name="c0:AddButtonOptional" value=">" id="c0_AddButtonOptional" title="Προσθήκη επιλεγμένων μαθημάτων" class="appButton" style="width:38px;" /></div><br/>
+															<div>
+<input type="submit" name="c0:RemoveButtonOptional" value="<" id="c0_RemoveButtonOptional" title="Αφαίρεση επιλεγμένων μαθημάτων" class="appButton" style="width:38px;" /></div><br/>
+															<div>
+<input type="submit" name="c0:AddAllButtonOptional" value=">>" id="c0_AddAllButtonOptional" title="Προσθήκη όλων των μαθημάτων" class="appButton" style="width:38px;" /></div>					
+														</td>
+													</tr>
+												</table>
+											</td>
+											<td>
+												<table cellpadding="0" cellspacing="0" border="0" width="100%" height="100%">
+													<tr>
+														<td height="25" nowrap >Μαθήματα Εξαμήνου Επιλογής:</td>
+													</tr>
+													<tr>
+														<td>
+															<select name="c0:SemesterCourcesOptional" size="4" multiple="multiple" id="c0_SemesterCourcesOptional" style="height:100%;width:100%;">
+
+		</select>
+														</td>
+													</tr>
+												</table>			
+											</td>
+										</tr>
+						           </table>
+								
+							
+	</MPNS:PageView>
+
+</MPNS:MultiPage></TD></TR></TABLE></DIV>
+<DIV style="DISPLAY: none"><IFRAME id="c0_DownloadFrame">
+		</div>
+	</ist:ContentRegion>
+</ist:MasterPage>
+</IFRAME></DIV>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>
+
+
+				</td>
+			</tr>
+		</table>
+	
+															<!-- // Page Content Region --></TD>
+													</TR>
+												</TABLE>
+											</DIV>
+										</TD>
+									</TR>
+								</TABLE>
+							</TD>
+					</TR> <!-- // Page Main Region --> <!-- Page Footer -->
+					<TR>
+						<TD class="TaskBar" style="COLOR: white" vAlign="middle" align="center" height="27">
+							
+								<B>Σ.Α.Ν. Copyright (c) 2005-2006 I.S.T.</B>
+						</TD>
+					</TR> <!-- // Page Footer --></TABLE>
+			
+		<script language="javascript">g_submitForm = true;</script>
+
+</form>
+
+</div>
