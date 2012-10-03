@@ -24,7 +24,7 @@ class StudentController < ApplicationController
   before_filter :find_student, :only => [
     :academic_report, :academic_report_all, :admission3, :change_to_former,
     :delete, :edit, :add_guardian, :email, :remove, :reports, :profile,
-    :guardians, :academic_pdf,:show_previous_details,:fees,:fee_details
+    :guardians, :academic_pdf,:show_previous_details,:fees,:fee_details, :show_grades
   ]
 
   
@@ -169,6 +169,29 @@ class StudentController < ApplicationController
     @previous_subject.save
     #@all_previous_subject = StudentPreviousSubjectMark.find(:all,:conditions=>"student_id = #{@previous_subject.student_id}")
   end
+
+  def grades
+    @student = Student.find(params[:id])
+    @student_subjects = StudentsSubject.find_all_by_student_id(params[:id])
+  end
+
+  def update_grades 
+    @student_subjects_grades = StudentsSubject.find_all_by_student_id(params[:id])
+    @student_subjects_grades.each do |grade_set|
+      subject_id = grade_set.subject_id
+      a_grade = params[:students_subjects][:a_grade][subject_id.to_s]
+      b_grade = params[:students_subjects][:b_grade][subject_id.to_s]
+      c_grade = params[:students_subjects][:c_grade][subject_id.to_s]
+      grade_set.update_attributes({:a_grade=>a_grade, :b_grade=>b_grade, :c_grade=>c_grade})
+    end
+
+
+    respond_to do |format|
+	  format.html { redirect_to :action=>'grades',:id=>params[:id] }
+	  format.xml  { head :ok }
+    end
+  end
+
 
   def delete_previous_subject
     @previous_subject = StudentPreviousSubjectMark.find(params[:id])

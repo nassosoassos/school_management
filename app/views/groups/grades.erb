@@ -31,9 +31,9 @@
   <% unless flash[:notice].nil? %><p class="flash-msg"> <%= flash[:notice] %> </p><% end %>
   <div class="all-user">
     <div class="label-field-pair">
-	    <div class="text-input-bg"><%= select :group_semester, :semester_id, @group_semesters.map {|s| {s.number, s.id}},
+	    <div class="text-input-bg"><%= select :group_semester, :semester_id, @group_semesters.map {|s| [s.number, s.id]},
           {:prompt => "#{t('select_a_semester')}"},
-          {:onChange => "#{remote_function(:url => {:action => "list_grades"},
+          {:onChange => "#{remote_function(:url => {:action => "select_subject"},
           :with => "'semester_id='+value",
           :before => "Element.show('loader')",
           :success => "Element.hide('loader')"
@@ -46,14 +46,11 @@
         :style =>"display: none;" ) %>
 
     </div>
-    <div id="student_user">
-
-    </div>
-    <div id="employee_user">
+    <div id="subject_selection">
 
     </div>
   </div>
-  <div id="users">
+  <div id="grades">
 
   </div>
 </div>

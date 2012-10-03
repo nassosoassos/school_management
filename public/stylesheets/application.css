@@ -409,6 +409,12 @@ body > #content_wrapper {
     width : 250px;
     float:left;
 }
+.multi-input-bg {
+    background : transparent;
+    height : 30px;
+    width : 250px;
+    float:left;
+}
 .label-field-pair label {
     color : #444;
     display : block;

@@ -1906,6 +1906,8 @@ authorization do
       :delete,
       :destroy,
       :email,
+      :grades,
+      :update_grades,
       :exam_report,
       :update_student_result_for_examtype,
       :previous_years_marks_overview,

@@ -1,10 +1,49 @@
 class GroupsController < ApplicationController
+
+  def debug
+      @group = Group.find(params[:id])
+      @student_subjects_grades = StudentsSubject.find_all_by_subject_id_and_group_id("4", "2")
+      
+  end
   def grades
-    @group_semesters = SanSemester.find_all_by_group_id(params[:id])
+      @group_semesters = SanSemester.find_all_by_group_id(params[:id])
+  end
+
+  def update_grades 
+    @student_subjects_grades = StudentsSubject.find_all_by_subject_id_and_group_id(params[:students_subjects][:subject_id], params[:id])
+    @group=Group.find(params[:id])
+    @student_subjects_grades.each do |grade_set|
+      student_id = grade_set.student_id
+      a_grade = params[:students_subjects][:a_grade][student_id.to_s]
+      b_grade = params[:students_subjects][:b_grade][student_id.to_s]
+      c_grade = params[:students_subjects][:c_grade][student_id.to_s]
+      grade_set.update_attributes({:a_grade=>a_grade, :b_grade=>b_grade, :c_grade=>c_grade})
+    end
+    render(:update) do |page|
+    	flash[:notice] = 'Η ενημέρωση των βαθμών πραγματοποιήθηκε επιτυχώς.'
+        page.replace_html 'grades', :partial=> 'grades'
+    end
   end
 
   # GET /groups/1/list_grades
   def list_grades
+      @student_subjects_grades = StudentsSubject.find_all_by_subject_id_and_group_id(params[:subject_id], params[:id])
+      @group=Group.find(params[:id])
+      render(:update) do |page|
+        page.replace_html 'grades', :partial=> 'grades'
+      end
+  end
+
+  # GET /groups/1/select_subject
+  def select_subject
+      @semester_subjects_relations = SemesterSubjects.find_all_by_semester_id(params[:semester_id])
+      @group_semester_subjects = SanSubject.find(@semester_subjects_relations.map(&:subject_id).uniq)
+      #@student_subjects_grades = Array.new
+      #@group=Group.find(params[:id])
+      render(:update) do |page|
+        page.replace_html 'subject_selection', :partial=> 'subject_selection'
+      #  page.replace_html 'grades', :partial=> 'grades'
+      end
   end
 
   # POST /groups/1/subscribe_to_semester
@@ -19,9 +58,10 @@ class GroupsController < ApplicationController
     semester_subjects = SemesterSubjects.find_all_by_semester_id(@san_semester.id)
 
     group_students.each do |student|
-	semester_subjects.each do |subject|
-	   student_subject = StudentsSubject.find_or_create_by_student_id_and_subject_id(student.id, subject.id)
-	end
+	  semester_subjects.each do |subject|
+	   student_subject = StudentsSubject.find_or_create_by_student_id_and_subject_id(student.id, subject.subject_id)
+       student_subject.update_attributes({:group_id=>group_id, :san_semester_id=>@san_semester.id})
+	  end
     end
 
     respond_to do |format|
