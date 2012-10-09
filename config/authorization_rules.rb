@@ -1948,6 +1948,8 @@ authorization do
       :save_previous_subject,
       :delete_previous_subject,
       :profile_pdf,
+      :grades_pdf,
+      :year_grades,
       :generate_tc_pdf,
       :generate_all_tc_pdf,
       :assign_all_students,

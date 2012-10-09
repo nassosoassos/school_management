@@ -10,7 +10,7 @@
   </p>
   <p>
     <%= f.label :kind %><br />
-    <%= f.text_field :kind %>
+    <%= select :san_subject, :kind, {"Στρατιωτικό"=>"Military", "Πανεπιστημιακό"=>"University"} %>
   </p>
   <p>
     <%= f.submit 'Create' %>

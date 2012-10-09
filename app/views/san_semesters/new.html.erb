@@ -132,36 +132,33 @@ function msg()
 <TABLE class=inputTable cellSpacing=1 cellPadding=0 border=0>
   <TR>
     <TD class=label width=120>
-<label for="c0_HeaderDescriptionTextBox" id="c0_HeaderDescriptionLabel">Περιγραφή:</label></TD>
+<label for="c0_HeaderSemesterDropDown" id="c0_HeaderSemesterLabel" class="req">Εξάμηνο:</label></TD>
     <TD width=320>
-<input name="c0:HeaderDescriptionTextBox" type="text" readonly="readonly" id="c0_HeaderDescriptionTextBox" class="inputText" style="width:300px;" /></TD>
+      <%= select :san_semester, :number, {"8" => 8, "7" => 7, "6" => 6, "5" => 5, "4" => 4, "3" => 3, "2" => 2, "1" => 1} %></TD>
     <TD class=label width=120>
 <label for="c0_HeaderYearDropDown" id="c0_HeaderSemesterYearLabel" class="req">Ακαδημαϊκό Έτος:</label></TD>
     <TD width=300>
-<%= s.text_field :year %>	    
+      <%= s.text_field :year %>	    
     </TD>
     <TD width="100%"></TD></TR>
   <TR>
     <TD class=label>
-<label for="c0_HeaderSemesterDropDown" id="c0_HeaderSemesterLabel" class="req">Εξάμηνο:</label></TD>
+<label for="c0_HeaderUniFactorTextBox" id="c0_HeaderUniFactorLabel">Πανεπιστημ. Συντ.:</label></TD>
     <TD>
-<%= select :san_semester, :number, {"8" => 8, "7" => 7, "6" => 6, "5" => 5, "4" => 4, "3" => 3, "2" => 2, "1" => 1} %>
-</TD>
+      <%= s.text_field :uni_weight, :value=>SanSemester.last.uni_weight%></TD>
     <TD class=label>
-<label for="c0_HeaderDisplayOrderTextBox" id="c0_HeaderDisplayOrderLabel">Σειρά Εμφάνισης:</label></TD>
-   <TD>
-<input name="c0:HeaderDisplayOrderTextBox" type="text" id="c0_HeaderDisplayOrderTextBox" class="inputText" /></TD>
-    <TD width="100%"></TD></TR>
+<label for="c0_HeaderArmyFactorTextBox" id="c0_HeaderArmyFactorLabel">Στρατ. Συντ.:</label></TD>
+    <TD>
+      <%= s.text_field :mil_weight , :value=>SanSemester.last.mil_weight%></TD>
+      <TD width="100%"></TD></TR>
   <TR>
     <TD class=label>
-<label for="c0_HeaderUniFactorTextBox" id="c0_HeaderUniFactorLabel">Συντελεστής Παν.:</label></TD>
+<label for="c0_HeaderUniFactorTextBox" id="c0_HeaderUniFactorLabel">Στρατ. Προσόντα Συντ.:</label></TD>
     <TD>
-<%= s.text_field :uni_weight %>
-    <TD class=label>
-<label for="c0_HeaderArmyFactorTextBox" id="c0_HeaderArmyFactorLabel">Συντελεστής Στρατ.:</label></TD>
-    <TD>
-<%= s.text_field :mil_weight %>
-    <TD width="100%"></TD></TR>
+      <%= s.text_field :mil_p_weight, :value=>SanSemester.last.mil_p_weight %></TD>
+    <TD class=label> </TD>
+    <TD></TD>
+      <TD width="100%"></TD></TR>
 </TABLE></DIV>
 <DIV class=fmContent style="HEIGHT: 96%">
 <TABLE class=dialogTabContent height="90%" cellSpacing=0 cellPadding=0 

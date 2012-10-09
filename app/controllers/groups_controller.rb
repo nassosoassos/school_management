@@ -55,9 +55,11 @@ class GroupsController < ApplicationController
 
     # Subscribe all group students to the semester subjects
     group_students = Student.find_all_by_group_id(group_id)
-    semester_subjects = SemesterSubjects.find_all_by_semester_id(@san_semester.id)
+    semester_subjects = SemesterSubjects.find_all_by_semester_id_and_optional(@san_semester.id,false)
+    
 
     group_students.each do |student|
+      student_performance = StudentMilitaryPerformance.find_or_create_by_student_id_and_san_semester_id(student.id, @san_semester.id)
 	  semester_subjects.each do |subject|
 	   student_subject = StudentsSubject.find_or_create_by_student_id_and_subject_id(student.id, subject.subject_id)
        student_subject.update_attributes({:group_id=>group_id, :san_semester_id=>@san_semester.id})

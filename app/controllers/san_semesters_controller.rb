@@ -53,13 +53,17 @@ class SanSemestersController < ApplicationController
     created = @san_semester.save
 
     # Add subjects
-    params[:compulsory_subjects].each do |c|
-      SemesterSubjects.create({ :semester_id => @san_semester.id, :subject_id => c, :optional => false})
+    if params[:compulsory_subjects] != nil
+      params[:compulsory_subjects].each do |c|
+        SemesterSubjects.create({ :semester_id => @san_semester.id, :subject_id => c, :optional => false})
+      end
     end
 
-    params[:optional_subjects].each do |o|
-      SemesterSubjects.create({ :semester_id => @san_semester.id, :subject_id => o, :optional => true})
-   end
+    if params[:optional_subjects] != nil
+      params[:optional_subjects].each do |o|
+        SemesterSubjects.create({ :semester_id => @san_semester.id, :subject_id => o, :optional => true})
+      end
+    end
 
     respond_to do |format|
       if created

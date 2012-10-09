@@ -86,6 +86,150 @@ class Student < ActiveRecord::Base
     
   end
 
+  def finalize_grade_set(grade_set_array)
+    grades = Array.new
+    grade_set_array.each do |grade_set| 
+      if grade_set.a_grade != nil
+        final_grade = grade_set.a_grade
+      elsif grade_set.b_grade != nil
+        final_grade = grade_set.b_grade
+      end
+      if grade_set.c_grade != nil
+        final_grade = grade_set.c_grade
+      end
+      grades.push(final_grade)
+    end
+    return grades
+  end
+
+  def gpa_for_year(year, kind)
+    student_semesters = SanSemester.find_all_by_year_and_group_id(year, self.group_id)
+
+    uni_sum = 0
+    mil_sum = 0
+    n_mil_p_semesters = 0
+    mil_p_sum = 0
+    weighted_uni_sum = 0
+    weighted_mil_sum = 0
+    weighted_mil_p_sum = 0
+    uni_weights_sum = 0
+    mil_weights_sum = 0
+    mil_p_weights_sum = 0
+    n_mil_subs = 0
+    n_uni_subs = 0
+    n_mil_p_grades = 0
+    tot_uni_subs = 0
+    tot_mil_subs = 0
+    tot_mil_p_grades = 0
+    n_unfinished_subjects = 0
+
+    student_semesters.each do |semester|
+      mil_weight = semester.mil_weight
+      uni_weight = semester.uni_weight
+      mil_p_weight = semester.mil_p_weight
+      student_semester_grades = StudentsSubject.find_all_by_san_semester_id_and_student_id(semester.id, self.id)
+      uni_semester_grades = Array.new
+      mil_semester_grades = Array.new
+      student_semester_grades.each do |s|
+        if SanSubject.find(s.subject_id).kind=='University'
+           uni_semester_grades.push(s)
+        else
+           mil_semester_grades.push(s)
+        end
+      end
+      if kind=='all' or kind=='University'
+        uni_grade_set = self.finalize_grade_set(uni_semester_grades)
+        n_uni_subs = uni_grade_set.nitems
+        low_grades = uni_grade_set.select {|g| g!=nil and g<5 }
+        n_unfinished_subjects += low_grades.length
+        cur_sum = uni_grade_set.compact.inject(0,:+)
+        weighted_uni_sum += cur_sum*uni_weight.to_f
+        uni_sum += cur_sum
+        uni_weights_sum += uni_weight*n_uni_subs
+        tot_uni_subs += n_uni_subs
+      end
+      if kind=='all' or kind=='Military'
+        mil_grade_set = self.finalize_grade_set(mil_semester_grades)
+        n_mil_subs = mil_grade_set.nitems
+        low_grades = mil_grade_set.select {|g| g!=nil and g<5 }
+        n_unfinished_subjects += low_grades.length
+        cur_sum = mil_grade_set.compact.inject(0,:+)
+        weighted_mil_sum += cur_sum*mil_weight.to_f
+        mil_sum += cur_sum
+        mil_weights_sum += mil_weight*n_mil_subs
+        tot_mil_subs += n_mil_subs
+      end
+      if kind=='all' or kind=='MilitaryPerformance'
+        mil_p_weight = semester.mil_p_weight
+        # Estimate average military performance
+        student_mil_performance = StudentMilitaryPerformance.find_by_san_semester_id_and_student_id(semester.id, self.id)
+        if student_mil_performance.grade != nil
+          n_mil_p_semesters += 1
+          mil_p_sum += student_mil_performance.grade
+          mil_p_weights_sum += mil_p_weight
+          weighted_mil_p_sum += student_mil_performance.grade*mil_p_weight
+        end
+      end
+    end
+    if kind=='University'
+
+      if tot_uni_subs>0
+        return uni_sum/tot_uni_subs.to_f, uni_sum
+      else
+        return nil, nil
+      end
+    elsif kind=='Military'
+      if tot_uni_subs>0
+        return mil_sum/tot_mil_subs.to_f, mil_sum
+      else
+        return nil, nil
+      end
+    elsif kind=='MilitaryPerformance'
+      if n_mil_p_semesters>0
+        return mil_p_sum/n_mil_p_semesters.to_f, mil_p_sum
+      else
+        return nil, nil
+      end
+    else 
+      if tot_uni_subs>0
+        uni_gpa = weighted_uni_sum/uni_weights_sum.to_f
+        # This is just in case the weights per semester change (It shouldn't happen)
+        avg_uni_weight = uni_weights_sum.to_f / tot_uni_subs
+        total_uni_sum = uni_gpa * avg_uni_weight 
+      else
+        uni_gpa = nil
+        total_uni_sum = 0
+        avg_uni_weight = 0
+      end
+      if tot_mil_subs>0
+        mil_gpa = weighted_mil_sum / mil_weights_sum.to_f
+        avg_mil_weight = mil_weights_sum.to_f / tot_mil_subs.to_f
+        total_mil_sum = mil_gpa * avg_mil_weight
+      else 
+        mil_gpa = nil
+        total_mil_sum = 0
+        avg_mil_weight = 0
+      end
+      if n_mil_p_semesters>0
+        mil_p_gpa = weighted_mil_p_sum / mil_p_weights_sum.to_f
+        avg_mil_p_weight = mil_p_weights_sum / n_mil_p_semesters.to_f
+        total_mil_p_sum = mil_p_gpa * avg_mil_p_weight
+      else 
+        mil_p_gpa = nil
+        total_mil_p_sum = 0
+        avg_mil_p_weight = 0
+      end
+      total_sum = total_mil_sum + total_uni_sum + total_mil_p_sum
+      if total_sum>0
+        total_gpa = total_sum/(avg_mil_p_weight + avg_uni_weight + avg_mil_weight)
+      else
+        total_gpa = nil
+      end
+
+      return total_gpa, total_sum, uni_gpa, mil_gpa, mil_p_gpa, n_unfinished_subjects
+    end
+  end
+
   def create_user_and_validate
     if self.new_record?
       user_record = self.build_user

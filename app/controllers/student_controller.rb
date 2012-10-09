@@ -24,7 +24,7 @@ class StudentController < ApplicationController
   before_filter :find_student, :only => [
     :academic_report, :academic_report_all, :admission3, :change_to_former,
     :delete, :edit, :add_guardian, :email, :remove, :reports, :profile,
-    :guardians, :academic_pdf,:show_previous_details,:fees,:fee_details, :show_grades
+    :guardians, :academic_pdf,:show_previous_details,:fees,:fee_details, :grades
   ]
 
   
@@ -170,9 +170,73 @@ class StudentController < ApplicationController
     #@all_previous_subject = StudentPreviousSubjectMark.find(:all,:conditions=>"student_id = #{@previous_subject.student_id}")
   end
 
+  def year_grades
+    @student = Student.find(params[:id])
+    @year = params[:year]
+    semester_ids = SanSemester.find_all_by_year(@year)
+    student_subjects = StudentsSubject.find_all_by_student_id_and_san_semester_id(params[:id], semester_ids)
+    @university_student_subjects = Array.new
+    @military_student_subjects = Array.new
+    student_subjects.each do |subject|
+      if SanSubject.find(subject.subject_id).kind=='University'
+        @university_student_subjects.push(subject)
+      else
+        @military_student_subjects.push(subject)
+      end
+    end
+    @student_mil_perf = StudentMilitaryPerformance.find_all_by_student_id_and_san_semester_id(params[:id], semester_ids)
+    
+    # Find all the academic years to which the student has been subscribed
+    group_id = @student.group_id
+
+    @total_gpa, @global_sum, @uni_gpa, @mil_gpa, @mil_p_gpa, @n_unfinished_subjects = @student.gpa_for_year(@year,'all')
+    render :update do |page|
+      page.replace_html 'year_grades', :partial => 'year_grades'
+    end
+  end
+
   def grades
     @student = Student.find(params[:id])
-    @student_subjects = StudentsSubject.find_all_by_student_id(params[:id])
+    @years = SanSemester.find_all_by_group_id(@student.group_id).map(&:year).uniq
+    student_subjects = StudentsSubject.find_all_by_student_id(params[:id])
+     
+    # Find all the academic years to which the student has been subscribed
+    group_id = @student.group_id
+
+    @total_gpa, @global_sum, @uni_gpa, @mil_gpa, @mil_p_gpa, @n_unfinished_subjects = @student.gpa_for_year(@years,'all')
+  end
+
+  def grades_pdf
+    @student = Student.find(params[:id])
+    @years = SanSemester.find_all_by_group_id(@student.group_id).map(&:year).uniq
+
+    @total_gpa, @global_sum, @uni_gpa, @mil_gpa, @mil_p_gpa = @student.gpa_for_year(@years,'all')
+    @grades_info = {}
+    @years.each do |y|
+      semester_ids = SanSemester.find_all_by_year(y)
+      student_subjects = StudentsSubject.find_all_by_student_id_and_san_semester_id(params[:id], semester_ids)
+      university_student_subjects = Array.new
+      military_student_subjects = Array.new
+      student_subjects.each do |subject|
+        if SanSubject.find(subject.subject_id).kind=='University'
+          university_student_subjects.push(subject)
+        else
+          military_student_subjects.push(subject)
+        end
+      end
+      student_mil_perf = StudentMilitaryPerformance.find_all_by_student_id_and_san_semester_id(params[:id], semester_ids)
+
+      total_gpa, global_sum, uni_gpa, mil_gpa, mil_p_gpa = @student.gpa_for_year(y,'all')
+
+      year_info = {:uni_subs=>university_student_subjects, :mil_subs=>military_student_subjects,
+                    :student_mil_perf=>student_mil_perf, :total_gpa=>total_gpa,
+                    :global_sum=>global_sum, :uni_gpa=>uni_gpa, :mil_gpa=>mil_gpa, 
+                    :mil_p_gpa=>mil_p_gpa}
+      @grades_info[y] = year_info
+    end
+
+    render :pdf=>'grades_pdf'
+
   end
 
   def update_grades 
@@ -184,11 +248,14 @@ class StudentController < ApplicationController
       c_grade = params[:students_subjects][:c_grade][subject_id.to_s]
       grade_set.update_attributes({:a_grade=>a_grade, :b_grade=>b_grade, :c_grade=>c_grade})
     end
-
-
-    respond_to do |format|
-	  format.html { redirect_to :action=>'grades',:id=>params[:id] }
-	  format.xml  { head :ok }
+    @student_mil_perf = StudentMilitaryPerformance.find_all_by_student_id(params[:id])
+    @student_mil_perf.each do |performance| 
+      grade = params[:student_military_performances][:grade][performance.san_semester_id.to_s]
+      performance.update_attributes({:grade=>grade})
+    end
+    render :update do |page|
+      flash[:notice] = "Οι βαθμοί ενημερώθηκαv."
+      page.redirect_to :action => 'grades',:id=>params[:id]
     end
   end
 
