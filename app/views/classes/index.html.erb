@@ -1,0 +1,24 @@
+<h1>Listing classes</h1>
+
+<table>
+  <tr>
+    <th>Name</th>
+    <th>First year</th>
+    <th>Graduation year</th>
+  </tr>
+
+<% @classes.each do |class| %>
+  <tr>
+    <td><%=h class.name %></td>
+    <td><%=h class.first_year %></td>
+    <td><%=h class.graduation_year %></td>
+    <td><%= link_to 'Show', class %></td>
+    <td><%= link_to 'Edit', edit_class_path(class) %></td>
+    <td><%= link_to 'Destroy', class, :confirm => 'Are you sure?', :method => :delete %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New class', new_class_path %>

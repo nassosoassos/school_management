@@ -1,0 +1,11 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  grade: 1
+  student_id: 1
+  san_semester_id: 1
+
+two:
+  grade: 1
+  student_id: 1
+  san_semester_id: 1

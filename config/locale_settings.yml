@@ -1,4 +1,4 @@
-default: "en"
+default: "gr"
 available:
   ar: "العربية"
   en: "English"
@@ -8,6 +8,7 @@ available:
   pt: "português"
   mr: "मराठी"
   ja: "日本の"
+  gr: "Ελληνικά"
   
 fallbacks:
   en-GB:

@@ -46,6 +46,7 @@ class StudentController < ApplicationController
     @last_admitted_student = Student.find(:last)
     @config = Configuration.find_by_config_key('AdmissionNumberAutoIncrement')
     @categories = StudentCategory.active
+
     if request.post?
       if @config.config_value.to_i == 1
         @exist = Student.find_by_admission_no(params[:student][:admission_no])
@@ -60,6 +61,18 @@ class StudentController < ApplicationController
         @status = @student.save
       end
       if @status
+        # Subscribe the student to group's subjects
+        # Typically, the student is created before the group is subscribed
+        # to a semester and this won't be necessary
+        semesters = SanSemester.find_all_by_group_id(@student.group_id)
+        semesters.each do |sem|
+          stu_perf = StudentMilitaryPerformance.find_or_create_by_student_id_and_san_semester_id(@student.id, sem.id)
+          subjects = SemesterSubjects.find_all_by_semester_id_and_optional(sem.id, false)
+          subjects.each do |sub|
+            stu_sub = StudentsSubject.find_or_create_by_student_id_and_subject_id_and_group_id_and_san_semester_id(@student.id, sub.subject_id, @student.group_id, sem.id)
+          end
+        end
+
         sms_setting = SmsSetting.new()
         if sms_setting.application_sms_active and @student.is_sms_enabled
           recipients = []
@@ -210,7 +223,7 @@ class StudentController < ApplicationController
     @student = Student.find(params[:id])
     @years = SanSemester.find_all_by_group_id(@student.group_id).map(&:year).uniq
 
-    @total_gpa, @global_sum, @uni_gpa, @mil_gpa, @mil_p_gpa = @student.gpa_for_year(@years,'all')
+    @total_gpa, @global_sum, @uni_gpa, @mil_gpa, @mil_p_gpa, @n_unfinished_subjects = @student.gpa_for_year(@years,'all')
     @grades_info = {}
     @years.each do |y|
       semester_ids = SanSemester.find_all_by_year(y)
@@ -235,7 +248,7 @@ class StudentController < ApplicationController
       @grades_info[y] = year_info
     end
 
-    render :pdf=>'grades_pdf'
+    render :pdf=>'grades'
 
   end
 
@@ -243,15 +256,19 @@ class StudentController < ApplicationController
     @student_subjects_grades = StudentsSubject.find_all_by_student_id(params[:id])
     @student_subjects_grades.each do |grade_set|
       subject_id = grade_set.subject_id
-      a_grade = params[:students_subjects][:a_grade][subject_id.to_s]
-      b_grade = params[:students_subjects][:b_grade][subject_id.to_s]
-      c_grade = params[:students_subjects][:c_grade][subject_id.to_s]
-      grade_set.update_attributes({:a_grade=>a_grade, :b_grade=>b_grade, :c_grade=>c_grade})
+      if params[:students_subjects][:a_grade].has_key?(subject_id.to_s)
+        a_grade = params[:students_subjects][:a_grade][subject_id.to_s]
+        b_grade = params[:students_subjects][:b_grade][subject_id.to_s]
+        c_grade = params[:students_subjects][:c_grade][subject_id.to_s]
+        grade_set.update_attributes({:a_grade=>a_grade, :b_grade=>b_grade, :c_grade=>c_grade})
+      end
     end
     @student_mil_perf = StudentMilitaryPerformance.find_all_by_student_id(params[:id])
     @student_mil_perf.each do |performance| 
-      grade = params[:student_military_performances][:grade][performance.san_semester_id.to_s]
-      performance.update_attributes({:grade=>grade})
+      if params[:student_military_performances][:grade].has_key?(performance.san_semester_id.to_s)
+        grade = params[:student_military_performances][:grade][performance.san_semester_id.to_s]
+        performance.update_attributes({:grade=>grade})
+      end
     end
     render :update do |page|
       flash[:notice] = "Οι βαθμοί ενημερώθηκαv."

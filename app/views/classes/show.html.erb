@@ -1,0 +1,18 @@
+<p>
+  <b>Name:</b>
+  <%=h @class.name %>
+</p>
+
+<p>
+  <b>First year:</b>
+  <%=h @class.first_year %>
+</p>
+
+<p>
+  <b>Graduation year:</b>
+  <%=h @class.graduation_year %>
+</p>
+
+
+<%= link_to 'Edit', edit_class_path(@class) %> |
+<%= link_to 'Back', classes_path %>

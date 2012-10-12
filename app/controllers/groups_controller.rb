@@ -5,6 +5,36 @@ class GroupsController < ApplicationController
       @student_subjects_grades = StudentsSubject.find_all_by_subject_id_and_group_id("4", "2")
       
   end
+  def show_lists
+    group = Group.find(params[:id])
+    type = Integer(params[:list_type])
+    year = params[:group_year]
+    if year == 'all'
+      year = SanSemester.find_all_by_group_id(group.id).map(&:year).uniq
+    end
+    @sorted_students, @undef_students = group.get_hierarchy_list_for_year(year)
+    render(:update) do |page|
+        page.replace_html 'list', :partial=>'hierarchy_list'
+    end
+  end
+  def lists
+    @group = Group.find(params[:id])
+    @all_years = SanSemester.find_all_by_group_id(@group.id).map(&:year).uniq
+  end
+
+  def print_lists
+    group = Group.find(params[:id])
+    type = Integer(params[:list_type])
+    @year = params[:group_year]
+    if @year == 'all'
+      @year = SanSemester.find_all_by_group_id(group.id).map(&:year).uniq
+    end
+    @sorted_students, @undef_students = group.get_hierarchy_list_for_year(@year)
+    if type ==0
+      render :pdf=>'hierarchy_list', :template=>'groups/hierarchy_list_pdf.erb', :orientation=>'Landscape' 
+    end
+  end
+
   def grades
       @group_semesters = SanSemester.find_all_by_group_id(params[:id])
   end

@@ -224,6 +224,7 @@ class Student < ActiveRecord::Base
         total_gpa = total_sum/(avg_mil_p_weight + avg_uni_weight + avg_mil_weight)
       else
         total_gpa = nil
+        n_unfinished_subjects = nil
       end
 
       return total_gpa, total_sum, uni_gpa, mil_gpa, mil_p_gpa, n_unfinished_subjects
