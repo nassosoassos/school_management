@@ -1,28 +1,57 @@
-<h1>Listing san_semesters</h1>
+<div id="content-header">
+     <%= image_tag("/images/show_settings.png") %>
+  <h1>Εξάμηνα</h1>
+  <h3>Διαχείριση</h3>
+  <div id="app-back-button">
+    <%= link_to_function image_tag("/images/buttons/back.png",:border => 0), "history.back()" %>
+  </div>
+</div>
 
-<table>
-  <tr>
-    <th>Number</th>
-    <th>Ακαδημαϊκό Έτος</th>
-    <th>Uni weight</th>
-    <th>Mil weight</th>
+<div id="inner-tab-menu">
+  <ul>
+    <li><%= link_to "Προβολή όλων", :action => "index" %></li>
+    <li><%= link_to "Προσθήκη νέου", :action => "new" %></li>
+  </ul>
+</div>
+
+
+<div id="page-yield">
+  <div id="flash-box">
+  <% unless flash[:notice].nil? %>
+    <p class="flash-msg"> <%= flash[:notice] %> </p>
+  <% end %>
+  </div>
+<div class="box">
+
+	<div id="semesters">
+
+<table width="100%" id="listing">
+  <tr class="tr-head">
+    <td>Αριθμός</td>
+    <td>Ακαδημαϊκό Έτος</td>
+    <td>Συντ. <br/>Παν/μίου</td>
+    <td>Συντ. <br/>Στρατ/κών</td>
+    <td>Συντ. <br/>Προσόντων</td>
+    <td>Ενέργειες</td>
   </tr>
 
-<% @san_semesters.each do |san_semester| %>
-  <tr>
-    <td><%=h san_semester.number %></td>
-    <td><%=h san_semester.year %></td>
-    <td><%=h san_semester.uni_weight %></td>
-    <td><%=h san_semester.mil_weight %></td>
-    <td><%= link_to 'Show', san_semester %></td>
-    <td><%= link_to 'Edit', edit_san_semester_path(san_semester) %></td>
-    <td><%= link_to 'Destroy', san_semester, :confirm => 'Are you sure?', :method => :delete %></td>
+  <% @san_semesters.sort!{|a, b| a.year==b.year ? (b.number <=> a.number):b.year<=>a.year}.each do |san_semester| %>
+   <tr class="tr-<%= cycle('odd', 'even') %>">
+
+    <td class="col-1"><%=h san_semester.number %></td>
+    <td class="col-1"><%=h san_semester.year %></td>
+    <td class="col-1"><%=h san_semester.uni_weight %></td>
+    <td class="col-1"><%=h san_semester.mil_weight %></td>
+    <td class="col-1"><%=h san_semester.mil_p_weight %></td>
+    <td class="col-2"><%= link_to 'Προβολή', san_semester %> | <%= link_to 'Μετατροπή', edit_san_semester_path(san_semester) %> | <%= link_to 'Διαγραφή', san_semester, :confirm => 'Είστε σίγουρος;', :method => :delete %></td>
   </tr>
 <% end %>
 </table>
 
 <br />
 
-<%= link_to 'New san_semester', new_san_semester_path %>
+</div>
+</div>
+
 
 

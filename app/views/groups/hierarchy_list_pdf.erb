@@ -62,10 +62,10 @@
         <% end %>
 
         <td class="col-5" align="center"> <%= mil_p_gpa_string %></td>
-        <% if student[:global_sum].blank? %>
+        <% if student[:total_sum].blank? %>
           <% global_sum_string = "" %>
         <% else %>
-          <% global_sum_string = sprintf( "%.02f" , student[:global_sum]) %>
+          <% global_sum_string = sprintf( "%.02f" , student[:total_sum]) %>
         <% end %>
         <td class="col-5" align="center"> <%= global_sum_string %></td>
         <% if student[:gpa].blank? %>

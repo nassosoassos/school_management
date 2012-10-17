@@ -44,6 +44,10 @@ class SanSemestersController < ApplicationController
   # GET /san_semesters/1/edit
   def edit
     @san_semester = SanSemester.find(params[:id])
+    @uni_subjects = SanSubject.find_all_by_kind("University")
+    @mil_subjects = SanSubject.find_all_by_kind("Military")
+    @compulsory_semester_subjects = SanSubject.find(SemesterSubjects.find_all_by_semester_id_and_optional(@san_semester.id, false).map(&:subject_id))
+    @optional_semester_subjects = SanSubject.find(SemesterSubjects.find_all_by_semester_id_and_optional(@san_semester.id, true).map(&:subject_id))
   end
 
   # POST /san_semesters
@@ -84,7 +88,22 @@ class SanSemestersController < ApplicationController
 
     respond_to do |format|
       if @san_semester.update_attributes(params[:san_semester])
+        if params[:compulsory_subjects] != nil
+          compulsory_subject_ids = params[:compulsory_subjects].map {|s| Integer(s)}
+        else
+          compulsory_subject_ids = nil
+        end
+        if params[:optional_subjects] != nil
+          optional_subject_ids = params[:optional_subjects].map {|s| Integer(s)}
+        else
+          optional_subject_ids = nil
+        end
+        @san_semester.update_subjects(compulsory_subject_ids, false)
+        @san_semester.update_subjects(optional_subject_ids, true)
+
         flash[:notice] = 'SanSemester was successfully updated.'
+
+
         format.html { redirect_to(@san_semester) }
         format.xml  { head :ok }
       else

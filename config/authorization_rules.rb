@@ -1958,6 +1958,9 @@ authorization do
       :admission3_1,
       :admission3_2,
       :show_previous_details,
+      :subscribe_subjects,
+      :update_subjects,
+      :show_subjects,
       :fees,
       :fee_details
     ]

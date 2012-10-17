@@ -183,6 +183,69 @@ class StudentController < ApplicationController
     #@all_previous_subject = StudentPreviousSubjectMark.find(:all,:conditions=>"student_id = #{@previous_subject.student_id}")
   end
 
+  def show_subjects
+    @semester_id = params[:semester_id]
+    @student = Student.find(params[:id])
+    @group = Group.find(@student.group_id)
+    optional_semester_subjects = SemesterSubjects.find_all_by_semester_id_and_optional(@semester_id, true)
+    compulsory_semester_subjects = SemesterSubjects.find_all_by_semester_id_and_optional(@semester_id, false)
+    optional_subjects = SanSubject.find_all_by_id(optional_semester_subjects.map(&:subject_id))
+    compulsory_subjects = SanSubject.find_all_by_id(compulsory_semester_subjects.map(&:subject_id))
+
+    @optional_subjects_info = Array.new
+    @compulsory_subjects_info = Array.new
+    optional_subjects.each do |o|
+      op_info = { :id => o.id, :title => o.title, :kind => o.kind } 
+      if StudentsSubject.find_by_student_id_and_subject_id(@student.id, o.id).blank?
+        op_info[:subscribed] = false
+      else
+        op_info[:subscribed] = true
+      end
+      @optional_subjects_info.push(op_info)
+    end
+    compulsory_subjects.each do |o|
+      cmp_info = { :id => o.id, :title => o.title, :kind => o.kind } 
+      stu = StudentsSubject.find_or_create_by_student_id_and_subject_id_and_group_id_and_san_semester_id(@student.id, o.id, @group.id, @semester_id).blank?
+      @compulsory_subjects_info.push(cmp_info)
+    end
+
+    render :update do |page|
+      page.replace_html 'subjects', :partial => 'subject_checks'
+    end
+  end
+
+  def update_subjects
+    student_id = params[:id]
+    semester_id = params[:semester_id]
+    group_id = params[:group_id]
+    optional_semester_subjects = SemesterSubjects.find_all_by_semester_id_and_optional(semester_id, true)
+    optional_subjects = SanSubject.find_all_by_id(optional_semester_subjects.map(&:subject_id))
+
+    subjects = params[:subjects]
+    optional_subjects.each do |sub|
+      if subjects.blank?
+        selected_sub = nil
+      else
+        selected_sub = params[:subjects].select {|v| v=sub.id.to_s}
+      end
+      if selected_sub.blank?
+        stu_su = StudentsSubject.find_by_subject_id_and_student_id_and_group_id_and_san_semester_id(sub.id, student_id, group_id, semester_id) 
+        if stu_su != nil
+          stu_su.destroy
+        end
+      else
+        stu_su = StudentsSubject.find_or_create_by_subject_id_and_student_id_and_group_id_and_san_semester_id(sub.id, student_id, group_id, semester_id) 
+      end
+    end
+    redirect_to :action => 'subscribe_subjects',:id=>params[:id]
+  end
+
+  def subscribe_subjects
+    @student = Student.find(params[:id])
+    group = Group.find(@student.group_id)
+    @group_semesters = SanSemester.find_all_by_group_id(group)
+  end
+
   def year_grades
     @student = Student.find(params[:id])
     @year = params[:year]

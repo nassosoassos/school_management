@@ -1,11 +1,11 @@
 development:
-      host: int.instance28735.db.xeround.com
+      host: localhost
       adapter: mysql
-      database: testdb
-      port: 18775
-      username: app8349118
-      password: nassos
-      
+      database: sandb
+      port: 3306
+      username: root
+      password: san
+     
 test: &test
       host: int.instance28735.db.xeround.com:18775
       adapter: mysql

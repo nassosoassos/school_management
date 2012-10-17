@@ -49,6 +49,8 @@
         :action => 'remove', :id => @student.id %></li>
       <li><%= link_to "#{t('grades')}", :controller => 'student',
         :action => 'grades', :id => @student.id %></li>
+      <li><%= link_to "Μαθήματα", :controller => 'student',
+        :action => 'subscribe_subjects', :id => @student.id %></li>
     <% end %>
     <li>
       <a href="#" class="drops" id="link_one"><%= t('more') %> &#9660;</a>
