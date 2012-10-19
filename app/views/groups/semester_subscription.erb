@@ -19,8 +19,8 @@
 
 <div id="content-header">
   <%= image_tag("/images/user_profile/user_profile_logo.jpg") %>
-  <h1><%= t('all_users') %></h1>
-  <h3><%= t('details_about_user') %></h3>
+  <h1><%= @group.name %></h1>
+  <h3><%= t('san_semesters') %></h3>
   <div id="app-back-button">
     <%= link_to_function image_tag("/images/buttons/back.png",:border => 0), "history.back()" %>
   </div>

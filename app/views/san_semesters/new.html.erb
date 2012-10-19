@@ -88,6 +88,43 @@ function PopulateListbox(IsCompulsory)
 
 }
 
+function RemoveFromListbox(IsCompulsory)
+{
+    var comp_final_result = document.getElementById("compulsory_subjects_");
+    var opt_final_result = document.getElementById("optional_subjects_");
+    var to_be_removed_value;
+    
+    if (IsCompulsory==1) {
+       origin = document.getElementById("CompulsorySemesterSubjects");
+    }
+    else {
+       origin = document.getElementById("OptionalSemesterSubjects");
+    }
+    for (i=0; i<origin.options.length; i++) {
+      if (origin.options[i].selected) {
+        to_be_removed_value = origin.options[i].value;
+        origin.remove(i);
+        break;
+      }
+    }
+    if (IsCompulsory==1) {
+      for (i=0; i<comp_final_result.options.length; i++) {
+        if (comp_final_result.options[i].value == to_be_removed_value) {
+          comp_final_result.remove(i);
+          break;
+        }
+      }
+    }
+    else {
+      for (i=0; i<opt_final_result.options.length; i++) {
+        if (opt_final_result.options[i].value == to_be_removed_value) {
+          opt_final_result.remove(i);
+          break;
+        }
+      }
+    }
+}
+
 function msg()
 {
    alert("Hello world!");
@@ -145,17 +182,28 @@ function msg()
     <TD class=label>
 <label for="c0_HeaderUniFactorTextBox" id="c0_HeaderUniFactorLabel">Πανεπιστημ. Συντ.:</label></TD>
     <TD>
-      <%= s.text_field :uni_weight, :value=>SanSemester.last.uni_weight%></TD>
+      <% ssem = SanSemester.last %>
+      <% if ssem != nil %>
+        <% uni_weight = ssem.uni_weight %>
+        <% mil_weight = ssem.mil_weight %>
+        <% mil_p_weight = ssem.mil_p_weight %>
+      <% else %>
+        <% uni_weight = 7 %>
+        <% mil_weight = 10 %>
+        <% mil_p_weight = 12 %>
+      <% end %>
+        <%= s.text_field :uni_weight, :value=>uni_weight%></TD>
+
     <TD class=label>
 <label for="c0_HeaderArmyFactorTextBox" id="c0_HeaderArmyFactorLabel">Στρατ. Συντ.:</label></TD>
     <TD>
-      <%= s.text_field :mil_weight , :value=>SanSemester.last.mil_weight%></TD>
+      <%= s.text_field :mil_weight , :value=>mil_weight%></TD>
       <TD width="100%"></TD></TR>
   <TR>
     <TD class=label>
 <label for="c0_HeaderUniFactorTextBox" id="c0_HeaderUniFactorLabel">Στρατ. Προσόντα Συντ.:</label></TD>
     <TD>
-      <%= s.text_field :mil_p_weight, :value=>SanSemester.last.mil_p_weight %></TD>
+      <%= s.text_field :mil_p_weight, :value=>mil_p_weight %></TD>
     <TD class=label> </TD>
     <TD></TD>
       <TD width="100%"></TD></TR>
@@ -199,7 +247,7 @@ width="110%" border=0>
 		    <td valign="middle" align="center" width="40%">
 		      Υποχρεωτικά Μαθήματα <br/>
 		       <input type="button" name="c0:AddButtonMandatory" value=">" id="c0_AddButtonMandatory" title="Προσθήκη επιλεγμένων μαθημάτων" class="appButton" onclick="PopulateListbox(1)" style="width:38px;" /><br/>
-		       <input type="button" name="c0:RemoveButtonMandatory" value="<" id="c0_RemoveButtonMandatory" title="Αφαίρεση επιλεγμένων μαθημάτων" class="appButton" style="width:38px;" onclick="msg()" /><br/>
+		       <input type="button" name="c0:RemoveButtonMandatory" value="<" id="c0_RemoveButtonMandatory" title="Αφαίρεση επιλεγμένων μαθημάτων" class="appButton" style="width:38px;" onclick="RemoveFromListbox(1)" /><br/>
 		    </td>
 		    <td>
 		       <select id="CompulsorySemesterSubjects" size="8" multiple="multiple" style="height:100%;width:60%;"></select>
@@ -210,7 +258,7 @@ width="110%" border=0>
 		    <td valign="middle" align="center" width="40%">
 		      Μαθήματα Επιλογής <br/>
 	       <input type="button" name="c0:AddButtonMandatory" value=">" id="c0_AddButtonMandatory" title="Προσθήκη επιλεγμένων μαθημάτων" class="appButton" onclick="PopulateListbox(0)" style="width:38px;" /><br/>
-	       <input type="button" name="c0:RemoveButtonMandatory" value="<" id="c0_RemoveButtonMandatory" title="Αφαίρεση επιλεγμένων μαθημάτων" class="appButton" style="width:38px;" onclick="msg()" /><br/>
+	       <input type="button" name="c0:RemoveButtonMandatory" value="<" id="c0_RemoveButtonMandatory" title="Αφαίρεση επιλεγμένων μαθημάτων" class="appButton" style="width:38px;" onclick="RemoveFromListbox(0)" /><br/>
 		    </td>
 		<td>
 		<select id="OptionalSemesterSubjects" size="8" multiple="multiple" style="height:100%;width:60%;"></select>

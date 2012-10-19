@@ -55,6 +55,20 @@ class GroupsController < ApplicationController
     end
   end
 
+  def edit_semesters
+    @group = Group.find(params[:id])
+    semesters= SanSemester.find_all_by_group_id(params[:id])
+    @active_semesters = Array.new
+    semesters.each do |sem|
+      is_active = false
+      if sem.id == @group.active_semester_id
+        is_active = true
+      end
+      sem_info = {:number=>sem.number, :year=>sem.year, :id=>sem.id, :is_active=>is_active }
+      @active_semesters.push(sem_info)
+    end
+  end
+
   # GET /groups/1/list_grades
   def list_grades
       @student_subjects_grades = StudentsSubject.find_all_by_subject_id_and_group_id(params[:subject_id], params[:id])
@@ -114,8 +128,81 @@ class GroupsController < ApplicationController
     end
   end
 
+  def add_semester
+    @group = Group.find(params[:id])
+    semester = SanSemester.find(params[:san_semester][:id])
+    semester.update_attributes({:group_id=>@group.id}) 
+    @group.update_attributes({:active_semester_id=>semester.id})
+
+    # Subscribe all group students to the semester subjects
+    group_students = Student.find_all_by_group_id(@group.id)
+    semester_subjects = SemesterSubjects.find_all_by_semester_id_and_optional(semester.id,false)
+
+    group_students.each do |student|
+      student_performance = StudentMilitaryPerformance.find_or_create_by_student_id_and_san_semester_id(student.id, semester.id)
+	  semester_subjects.each do |subject|
+	   student_subject = StudentsSubject.find_or_create_by_student_id_and_subject_id(student.id, subject.subject_id)
+       student_subject.update_attributes({:group_id=>@group.id, :san_semester_id=>semester.id})
+	  end
+    end
+
+    flash[:notice] = "Η τάξη εγγράφτηκε στο εξάμηνο κανονικά." 
+
+    semesters= SanSemester.find_all_by_group_id(@group.id)
+    @active_semesters = Array.new
+    semesters.each do |sem|
+      is_active = false
+      if sem.id == @group.active_semester_id
+        is_active = true
+      end
+      sem_info = {:number=>sem.number, :year=>sem.year, :id=>sem.id, :is_active=>is_active }
+      @active_semesters.push(sem_info)
+    end
+
+  end
+
+  def delete_semester
+    @group = Group.find(params[:id])
+    semester = SanSemester.find(params[:semester_id])
+    semester.update_attributes({:group_id=>nil}) 
+    if @group.active_semester_id == semester.id
+      @group.update_attributes({:active_semester_id=>nil})
+    end
+
+    # Unsubscribe all group students from the semester subjects
+    group_students = Student.find_all_by_group_id(@group.id)
+    semester_subjects = SemesterSubjects.find_all_by_semester_id_and_optional(semester.id,false)
+
+    group_students.each do |student|
+      student_performance = StudentMilitaryPerformance.delete(:student_id=>student.id, :san_semester_id=>semester.id)
+      StudentsSubject.delete_all(:student_id=>student.id, :san_semester_id=>semester.id)
+    end
+
+    respond_to do |format|
+      format.html { redirect_to :action=> "edit_semesters" }
+      format.xml  { head :ok }
+    end
+  end
+
+  def subscribe_semester
+    @group = Group.find(params[:id])
+    @san_semester = SanSemester.last
+
+    @semester_collection = Array.new
+    semesters = SanSemester.find_all_by_group_id(nil)
+    semesters.each do |sem|
+      sem_info = {:id=>sem.id, :name=>sem.number.to_s + 'ο Εξάμηνο, ' + sem.year}
+      @semester_collection.push(sem_info)
+    end
+
+    respond_to do |format|
+      format.js { render :action => 'semester_subscription' }
+    end
+  end
+
   # GET /groups/1/semester_subscription
   def semester_subscription
+    @group = Group.find(params[:id])
     @san_semester = SanSemester.last()
     @semester_years = SanSemester.find(:all, :select=>'year').map(&:year).uniq
     @semester_numbers = SanSemester.find(:all, :select=>'number').map(&:number).uniq
@@ -136,6 +223,10 @@ class GroupsController < ApplicationController
   # GET /groups/1.xml
   def show
     @group = Group.find(params[:id])
+    group_students = Student.find_all_by_group_id(@group.id)
+    @students = group_students.paginate :page=>params[:page], :per_page=>3
+    @semesters = SanSemester.find_all_by_group_id(@group.id)
+
 
     respond_to do |format|
       format.html # show.html.erb

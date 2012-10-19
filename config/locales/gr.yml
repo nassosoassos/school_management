@@ -73,6 +73,11 @@ gr: # locale
         name: "Name"
         min_score: "Minimum Score"
 
+      group:
+        name: "Τίτλος"
+        first_year: "Πρώτο έτος"
+        graduation_year: "Έτος αποφοίτησης"
+
       guardian:
         first_name: "First Name"
 
@@ -351,6 +356,8 @@ gr: # locale
   sl_no: "Sl  no."
   name: "Όνομα"
   adm_no: "Α.Μ."
+  group: "Τάξη"
+  control: "Διαχείριση"
   view_profile: "Προβολή προφίλ"
   select_a_category: "Select a Category"
   select_a_batch: "Select a Batch"
@@ -1269,8 +1276,8 @@ gr: # locale
   user_information: "User Information"
   privilege: "privilege"
   to_dashboard: "to Fedena dashboard"
-  admission_link_title: "Enter students admission details into the school records."
-  student_link_title: "Search for existing and former students."
+  admission_link_title: "Εισαγωγή στοιχείων σπουδαστή για την εγγραφή του στα αρχεία της σχολής."
+  student_link_title: "Αναζήτηση ενεργών ή παλαιότερων σπουδαστών."
   user_link_title: "         Manage Users         "
   news_link_title: "View or publish latest school news and announcements"
   exam_link_title: "See examination details and results"

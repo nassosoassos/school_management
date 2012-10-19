@@ -5,7 +5,7 @@ class SanSubjectsController < ApplicationController
   # GET /san_subjects
   # GET /san_subjects.xml
   def index
-    @san_subjects = SanSubject.all
+    @san_subjects = SanSubject.paginate :page=>params[:page], :per_page=>14
 
 #    respond_to do |format|
 #      format.html # index.html.erb

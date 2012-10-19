@@ -226,7 +226,7 @@ class StudentController < ApplicationController
       if subjects.blank?
         selected_sub = nil
       else
-        selected_sub = params[:subjects].select {|v| v=sub.id.to_s}
+        selected_sub = params[:subjects].select {|v| v==sub.id.to_s}
       end
       if selected_sub.blank?
         stu_su = StudentsSubject.find_by_subject_id_and_student_id_and_group_id_and_san_semester_id(sub.id, student_id, group_id, semester_id) 

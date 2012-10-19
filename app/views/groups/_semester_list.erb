@@ -1,0 +1,25 @@
+  <table width="50%" id="listing">
+    <tr class="tr-head">
+      <td>Αριθμός</td>
+      <td>Ακαδημαϊκό Έτος</td>
+      <td>Τρέχον</td>
+      <td>Περατωθέν</td>
+      <td>Ενέργειες</td>
+    </tr>
+    <% @active_semesters.each do |sem| %>
+      <tr class="tr-<%= cycle('odd', 'even') %>">
+        <td align="center"><%= sem[:number] %></td>
+        <td><%= sem[:year] %></td>
+        <% if sem[:is_active] %>
+          <td align="center"><%= radio_button_tag sem[:id], "active", true %> </td>  
+          <td align="center"><%= radio_button_tag sem[:id], "past" %> </td>  
+        <% else %>
+          <td align="center"><%= radio_button_tag sem[:id], "active" %> </td>  
+          <td align="center"><%= radio_button_tag sem[:id], "past", true %> </td>  
+        <% end %>
+        <td> <%= link_to 'Ακύρωση Εγγραφής', {:controller=>"groups", :action=>"delete_semester", :semester_id=>sem[:id]}, :method=>:post, :confirm => 'Είστε σίγουρος;' %></td>
+      </tr>
+    <% end %>
+  </table>
+  <p/>
+

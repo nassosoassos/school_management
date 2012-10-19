@@ -1,2 +1,2 @@
-page.replace_html 'modal-box', :partial => 'new'
+page.replace_html 'modal-box', :partial => 'semester_subscription'
 page << "Modalbox.show($('modal-box'), {title: 'Εγγραφή σε νέο εξάμηνο', width: 500});"

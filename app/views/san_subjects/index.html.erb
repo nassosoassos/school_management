@@ -48,22 +48,19 @@
           <td colspan="4" align="center"> Λίστα Μαθημάτων Σχολής </td>
         </tr>
 	 <tr class="tr-head">
-	   <td>Α/Α</td>
 	   <td>Τίτλος</td>
 	   <td>Τύπος</td>
 	   <td>Ενέργειες</td>
     </tr>
-    <% index = 0 %>
     <% @san_subjects.sort!{|a, b| a.kind==b.kind ? (a.title <=> b.title):a.kind <=>b.kind}.each do |san_subject| %>
-      <% index += 1 %>
     <tr class="tr-<%= cycle('odd', 'even') %>">
-      <td class="col-1"><%=h index %></td>
       <td class="col-2"><%=h san_subject.title %></td>
       <td class="col-3"><%=h san_subject.kind %></td>
       <td class="col-2"><%= link_to 'Προβολή', san_subject %> | <%= link_to 'Μετατροπή', edit_san_subject_path(san_subject) %> | <%= link_to 'Διαγραφή', san_subject, :confirm => 'Είστε σίγουρος;', :method => :delete %></td>
   </tr>
 <% end %>
 </table>
+<%= will_paginate @san_subjects %>
 
 	
 	
