@@ -40,7 +40,7 @@
           <%= link_to SanSubject.find(subject_id).title,:controller => "san_subjects", :action => 'show', :id => subject_id %>
         </td>
         <td class="col-5" align="center">
-          <%= SanSemester.find_by_id(StudentsSubject.find_by_subject_id_and_group_id(subject_id, @student.group_id).san_semester_id ).number %>
+          <%= SanSemester.find_by_id(StudentsSubject.find_by_subject_id_and_group_id_and_san_semester_id(subject_id, @student.group_id, @semester_ids).san_semester_id ).number %>
         </td>
         <td class="col-5"><div class="label-field-pair2">
                 <div class="text-input-bg2">

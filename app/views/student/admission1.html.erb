@@ -58,6 +58,15 @@
               <%= s.text_field :admission_no %>
             <% end %>
           </div>
+          <br/>
+          <label for="student_uni_admission_no"><%= t('uni_admission_number') %> <span class="necessary-field">*</span> </label>
+          <div class="text-input-bg-admission">
+            <% unless @config.config_value == '0' or @last_admitted_student.nil? %>
+              <%= s.text_field :uni_admission_no , :value=> @last_admitted_student.uni_admission_no.next%>
+            <% else %>
+              <%= s.text_field :uni_admission_no %>
+            <% end %>
+          </div>
         </div>
 
         <div class="student_admission_date">
@@ -81,14 +90,14 @@
       <hr class="label-underline"></hr>
 
       <div class="label-field-pair">
-        <label for="student_grade"><%= t('middle_name') %></label>
-        <div class="text-input-bg"><%= s.text_field :middle_name %></div>
+        <label for="student_grade"><%= t('fathers_first_name') %><span class="necessary-field">*</span> </label>
+        <div class="text-input-bg"><%= s.text_field :fathers_first_name %></div>
       </div>
 
       <hr class="label-underline"></hr>
 
       <div class="label-field-pair">
-        <label for="student_grade"><%= t('last_name') %></label>
+        <label for="student_grade"><%= t('last_name') %><span class="necessary-field">*</span> </label>
         <div class="text-input-bg"><%= s.text_field :last_name %></div>
       </div>
 
@@ -96,12 +105,13 @@
 
       <div id="admission1_form_vertical_block_left">
 	      
-	<div class="label-field-pair">
-          <label for="student_grade"><%= t('group') %></label>
+	  <div class="label-field-pair">
+          <label for="student_grade"><%= t('group') %><span class="necessary-field">*</span> </label>
           <div class="text-input-bg"><%= select :student, :group_id, Group.all.map {|g| [g.name, g.id]} %></div>
         </div>
+        <hr class="label-underline"></hr>
 
--        <div class="label-field-pair">
+        <div class="label-field-pair">
           <label for="student_grade"><%= t('course_and_batch') %></label>
           <div class="text-input-bg"><%= select :student, :batch_id, Batch.active.map {|b| [b.full_name, b.id]} %></div>
   	</div> 

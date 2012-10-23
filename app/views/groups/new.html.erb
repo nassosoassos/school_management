@@ -1,3 +1,26 @@
+<div id="content-header">
+     <%= image_tag("/images/show_settings.png") %>
+  <h1>Τάξεις</h1>
+  <h3>Διαχείριση</h3>
+  <div id="app-back-button">
+    <%= link_to_function image_tag("/images/buttons/back.png",:border => 0), "history.back()" %>
+  </div>
+</div>
+
+<div id="inner-tab-menu">
+  <ul>
+    <li><%= link_to "Προβολή όλων", :action => "index" %></li>
+  </ul>
+</div>
+
+
+<div id="page-yield">
+  <div id="flash-box">
+  <% unless flash[:notice].nil? %>
+    <p class="flash-msg"> <%= flash[:notice] %> </p>
+  <% end %>
+  </div>
+<div class="box">
 <h1>New group</h1>
 
 <% form_for(@group) do |f| %>
@@ -9,15 +32,20 @@
   </p>
   <p>
     <%= f.label :first_year %><br />
-    <%= f.datetime_select :first_year %>
+    <%= f.date_select :first_year, :discard_month=>true, :discard_day=>true, :start_year=>2003 %>
   </p>
   <p>
     <%= f.label :graduation_year %><br />
-    <%= f.datetime_select :graduation_year %>
+    <%= f.date_select :graduation_year, :discard_month=>true, :discard_day=>true, :start_year=>2007 %>
   </p>
   <p>
-    <%= f.submit 'Create' %>
+    <%= f.submit t('create_text') %>
   </p>
 <% end %>
 
-<%= link_to 'Back', groups_path %>
+<div id="modal-box" style="display:none;"></div>
+
+<div class="extender"></div>
+</div>
+
+</div>

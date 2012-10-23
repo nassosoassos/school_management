@@ -10,7 +10,7 @@
 <div id="inner-tab-menu">
   <ul>
     <li><%= link_to "Προβολή όλων", :action => "index" %></li>
-    <li><%= link_to "Προσθήκη νέου", :action => "new" %></li>
+    <li><%= link_to "Δημιουργία Τάξης", :action => "new" %></li>
   </ul>
 </div>
 
@@ -23,32 +23,29 @@
   </div>
 <div class="box">
 
-	<div id="groups">
-
 <table width="100%" id="listing">
   <tr class="tr-head">
     <td>Α/Α</td>
     <td>Τίτλος</td>
-    <td>Πρώτο έτος</td>
-    <td>Έτος αποφοίτησης</td>
-    <td>Ενέργειες</td>
+    <td align="center">Πρώτο έτος</td>
+    <td align="center">Έτος αποφοίτησης</td>
+    <td align="center">Ενέργειες</td>
   </tr>
   <% index = 0 %>
 <% @groups.each do |group| %>
    <tr class="tr-<%= cycle('odd', 'even') %>">
     <% index += 1 %>
-    <td><%= index %></td>
+    <td align="center"><%= index %></td>
     <td><%= link_to group.name, group %></td>
     <td align="center"><%= group.first_year.year %></td>
     <td align="center"><%= group.graduation_year.year %></td>
-    <td><%= link_to 'Προβολή', group %> | <%= link_to 'Μετατροπή', edit_group_path(group) %> | <%= link_to 'Διαγραφή', group, :confirm => 'Είστε βέβαιος;', :method => :delete %></td>
+    <td align="center"><%= link_to 'Προβολή', group %> | <%= link_to 'Μετατροπή', edit_group_path(group) %> | <%= link_to 'Διαγραφή', group, :confirm => 'Είστε βέβαιος;', :method => :delete %></td>
   </tr>
 <% end %>
 </table>
 
 <br />
 
-	</div>
 <div id="modal-box" style="display:none;"></div>
 
 <div class="extender"></div>

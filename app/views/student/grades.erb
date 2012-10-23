@@ -58,7 +58,8 @@
       </tr>
       <tr class="tr-odd">
         <td class="col-2"> <%= @student.full_name %></td>
-        <td class="col-2"> <%= Guardian.find(@student.immediate_contact_id).first_name %></td>
+        <% parent_id = @student.immediate_contact_id %>
+        <td class="col-2"> <%= (parent_id.blank?) ? '' : Guardian.find(parent_id).first_name %></td>
         <% if @uni_gpa.blank? %>
           <% uni_gpa_string = "" %>
         <% else %>

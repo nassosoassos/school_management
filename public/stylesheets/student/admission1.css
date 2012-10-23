@@ -179,7 +179,7 @@
 }
 .student_admission_date {
     float:left;
-    height:80px;
+    height:140px;
     width:450px;
 }
 .student_admission_date label {
@@ -190,6 +190,7 @@
     padding-top: 10px;
     font-weight: 600;
     font-size: 14px;
+    width: 200px;
 }
 .text-input-bg-admission input  {
     -moz-border-radius:10px 10px 10px 10px;

@@ -9,11 +9,11 @@
 
 <div id="inner-tab-menu">
   <ul>
-    <li><%= link_to "Εξάμηνα", :action => "edit_semesters" %></li>
-    <li><%= link_to "Βαθμοί", :action => "grades" %></li>
-    <li><%= link_to "Λίστες", :action => "lists" %></li>
-    <li><%= link_to 'Μετατροπή', edit_group_path(@group) %> 
-    <li><%= link_to "Προβολή όλων", :action => "index" %></li>
+    <li><%= link_to t('semesters'), :action => "edit_semesters" %></li>
+    <li><%= link_to t('grades'), :action => "grades" %></li>
+    <li><%= link_to t('lists'), :action => "lists" %></li>
+    <li><%= link_to t('edit_text'), edit_group_path(@group) %> 
+    <li><%= link_to t('view_all'), :action => "index" %></li>
   </ul>
 </div>
 

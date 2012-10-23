@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121018091939) do
+ActiveRecord::Schema.define(:version => 20121023112235) do
 
   create_table "additional_exam_groups", :force => true do |t|
     t.string  "name"
@@ -219,7 +219,7 @@ ActiveRecord::Schema.define(:version => 20121018091939) do
     t.integer  "descriptive_indicator_id"
   end
 
-  add_index "assessment_scores", ["student_id", "batch_id", "descriptive_indicator_id", "exam_id"], :name => "score_index", :limit => {"exam_id"=>nil, "descriptive_indicator_id"=>nil, "batch_id"=>nil, "student_id"=>nil}
+  add_index "assessment_scores", ["student_id", "batch_id", "descriptive_indicator_id", "exam_id"], :name => "score_index", :limit => {"batch_id"=>nil, "descriptive_indicator_id"=>nil, "exam_id"=>nil, "student_id"=>nil}
 
   create_table "assets", :force => true do |t|
     t.string   "title"
@@ -282,7 +282,7 @@ ActiveRecord::Schema.define(:version => 20121018091939) do
     t.string   "employee_id"
   end
 
-  add_index "batches", ["is_deleted", "is_active", "course_id", "name"], :name => "index_batches_on_is_deleted_and_is_active_and_course_id_and_name", :limit => {"is_active"=>nil, "course_id"=>nil, "is_deleted"=>nil, "name"=>nil}
+  add_index "batches", ["is_deleted", "is_active", "course_id", "name"], :name => "index_batches_on_is_deleted_and_is_active_and_course_id_and_name", :limit => {"is_deleted"=>nil, "is_active"=>nil, "name"=>nil, "course_id"=>nil}
 
   create_table "cce_exam_categories", :force => true do |t|
     t.string   "name"
@@ -318,7 +318,7 @@ ActiveRecord::Schema.define(:version => 20121018091939) do
     t.integer  "exam_id"
   end
 
-  add_index "cce_reports", ["observable_id", "student_id", "batch_id", "exam_id", "observable_type"], :name => "cce_report_join_index", :limit => {"exam_id"=>nil, "batch_id"=>nil, "observable_id"=>nil, "observable_type"=>nil, "student_id"=>nil}
+  add_index "cce_reports", ["observable_id", "student_id", "batch_id", "exam_id", "observable_type"], :name => "cce_report_join_index", :limit => {"observable_type"=>nil, "batch_id"=>nil, "observable_id"=>nil, "exam_id"=>nil, "student_id"=>nil}
 
   create_table "cce_weightages", :force => true do |t|
     t.integer  "weightage"
@@ -414,7 +414,7 @@ ActiveRecord::Schema.define(:version => 20121018091939) do
     t.integer  "sort_order"
   end
 
-  add_index "descriptive_indicators", ["describable_id", "describable_type", "sort_order"], :name => "describable_index", :limit => {"sort_order"=>nil, "describable_type"=>nil, "describable_id"=>nil}
+  add_index "descriptive_indicators", ["describable_id", "describable_type", "sort_order"], :name => "describable_index", :limit => {"describable_type"=>nil, "describable_id"=>nil, "sort_order"=>nil}
 
   create_table "elective_groups", :force => true do |t|
     t.string   "name"
@@ -585,7 +585,7 @@ ActiveRecord::Schema.define(:version => 20121018091939) do
     t.string   "origin_type"
   end
 
-  add_index "events", ["is_common", "is_holiday", "is_exam"], :name => "index_events_on_is_common_and_is_holiday_and_is_exam", :limit => {"is_holiday"=>nil, "is_exam"=>nil, "is_common"=>nil}
+  add_index "events", ["is_common", "is_holiday", "is_exam"], :name => "index_events_on_is_common_and_is_holiday_and_is_exam", :limit => {"is_holiday"=>nil, "is_common"=>nil, "is_exam"=>nil}
 
   create_table "exam_groups", :force => true do |t|
     t.string  "name"
@@ -625,7 +625,7 @@ ActiveRecord::Schema.define(:version => 20121018091939) do
     t.datetime "updated_at"
   end
 
-  add_index "exams", ["exam_group_id", "subject_id"], :name => "index_exams_on_exam_group_id_and_subject_id", :limit => {"subject_id"=>nil, "exam_group_id"=>nil}
+  add_index "exams", ["exam_group_id", "subject_id"], :name => "index_exams_on_exam_group_id_and_subject_id", :limit => {"exam_group_id"=>nil, "subject_id"=>nil}
 
   create_table "fa_criterias", :force => true do |t|
     t.string   "fa_name"
@@ -655,7 +655,7 @@ ActiveRecord::Schema.define(:version => 20121018091939) do
     t.integer "fa_group_id"
   end
 
-  add_index "fa_groups_subjects", ["fa_group_id", "subject_id"], :name => "score_index", :limit => {"subject_id"=>nil, "fa_group_id"=>nil}
+  add_index "fa_groups_subjects", ["fa_group_id", "subject_id"], :name => "score_index", :limit => {"fa_group_id"=>nil, "subject_id"=>nil}
   add_index "fa_groups_subjects", ["fa_group_id"], :name => "index_fa_groups_subjects_on_fa_group_id", :limit => {"fa_group_id"=>nil}
   add_index "fa_groups_subjects", ["subject_id"], :name => "index_fa_groups_subjects_on_subject_id", :limit => {"subject_id"=>nil}
 
@@ -755,7 +755,7 @@ ActiveRecord::Schema.define(:version => 20121018091939) do
     t.boolean "is_paid",           :default => false
   end
 
-  add_index "finance_fees", ["fee_collection_id", "student_id"], :name => "index_finance_fees_on_fee_collection_id_and_student_id", :limit => {"student_id"=>nil, "fee_collection_id"=>nil}
+  add_index "finance_fees", ["fee_collection_id", "student_id"], :name => "index_finance_fees_on_fee_collection_id_and_student_id", :limit => {"fee_collection_id"=>nil, "student_id"=>nil}
 
   create_table "finance_transaction_categories", :force => true do |t|
     t.string  "name"
@@ -1052,7 +1052,7 @@ ActiveRecord::Schema.define(:version => 20121018091939) do
     t.boolean  "optional"
   end
 
-  add_index "semester_subjects", ["semester_id", "subject_id"], :name => "index_semester_subjects_on_semester_id_and_subject_id", :unique => true, :limit => {"subject_id"=>nil, "semester_id"=>nil}
+  add_index "semester_subjects", ["semester_id", "subject_id"], :name => "index_semester_subjects_on_semester_id_and_subject_id", :unique => true, :limit => {"semester_id"=>nil, "subject_id"=>nil}
   add_index "semester_subjects", ["semester_id"], :name => "index_semester_subjects_on_semester_id", :limit => {"semester_id"=>nil}
   add_index "semester_subjects", ["subject_id"], :name => "index_semester_subjects_on_subject_id", :limit => {"subject_id"=>nil}
 
@@ -1152,11 +1152,15 @@ ActiveRecord::Schema.define(:version => 20121018091939) do
     t.integer  "photo_file_size"
     t.integer  "user_id"
     t.integer  "group_id"
+    t.string   "uni_admission_no"
+    t.string   "fathers_first_name"
+    t.integer  "height"
+    t.integer  "weight"
   end
 
   add_index "students", ["admission_no"], :name => "index_students_on_admission_no", :limit => {"admission_no"=>"10"}
   add_index "students", ["batch_id"], :name => "index_students_on_batch_id", :limit => {"batch_id"=>nil}
-  add_index "students", ["first_name", "middle_name", "last_name"], :name => "index_students_on_first_name_and_middle_name_and_last_name", :limit => {"last_name"=>"10", "middle_name"=>"10", "first_name"=>"10"}
+  add_index "students", ["first_name", "middle_name", "last_name"], :name => "index_students_on_first_name_and_middle_name_and_last_name", :limit => {"middle_name"=>"10", "last_name"=>"10", "first_name"=>"10"}
 
   create_table "students_subjects", :force => true do |t|
     t.integer "student_id"
@@ -1169,7 +1173,7 @@ ActiveRecord::Schema.define(:version => 20121018091939) do
     t.integer "san_semester_id"
   end
 
-  add_index "students_subjects", ["student_id", "subject_id"], :name => "index_students_subjects_on_student_id_and_subject_id", :limit => {"subject_id"=>nil, "student_id"=>nil}
+  add_index "students_subjects", ["student_id", "subject_id"], :name => "index_students_subjects_on_student_id_and_subject_id", :limit => {"student_id"=>nil, "subject_id"=>nil}
 
   create_table "subject_leaves", :force => true do |t|
     t.integer  "student_id"
@@ -1183,7 +1187,7 @@ ActiveRecord::Schema.define(:version => 20121018091939) do
     t.integer  "batch_id"
   end
 
-  add_index "subject_leaves", ["month_date", "subject_id", "batch_id"], :name => "index_subject_leaves_on_month_date_and_subject_id_and_batch_id", :limit => {"subject_id"=>nil, "batch_id"=>nil, "month_date"=>nil}
+  add_index "subject_leaves", ["month_date", "subject_id", "batch_id"], :name => "index_subject_leaves_on_month_date_and_subject_id_and_batch_id", :limit => {"batch_id"=>nil, "month_date"=>nil, "subject_id"=>nil}
   add_index "subject_leaves", ["student_id", "batch_id"], :name => "index_subject_leaves_on_student_id_and_batch_id", :limit => {"batch_id"=>nil, "student_id"=>nil}
 
   create_table "subjects", :force => true do |t|
@@ -1201,7 +1205,7 @@ ActiveRecord::Schema.define(:version => 20121018091939) do
     t.decimal  "amount",             :precision => 15, :scale => 2
   end
 
-  add_index "subjects", ["batch_id", "elective_group_id", "is_deleted"], :name => "index_subjects_on_batch_id_and_elective_group_id_and_is_deleted", :limit => {"batch_id"=>nil, "elective_group_id"=>nil, "is_deleted"=>nil}
+  add_index "subjects", ["batch_id", "elective_group_id", "is_deleted"], :name => "index_subjects_on_batch_id_and_elective_group_id_and_is_deleted", :limit => {"batch_id"=>nil, "is_deleted"=>nil, "elective_group_id"=>nil}
 
   create_table "time_zones", :force => true do |t|
     t.string   "name"
@@ -1231,7 +1235,7 @@ ActiveRecord::Schema.define(:version => 20121018091939) do
     t.datetime "updated_at"
   end
 
-  add_index "timetables", ["start_date", "end_date"], :name => "by_start_and_end", :limit => {"start_date"=>nil, "end_date"=>nil}
+  add_index "timetables", ["start_date", "end_date"], :name => "by_start_and_end", :limit => {"end_date"=>nil, "start_date"=>nil}
 
   create_table "user_events", :force => true do |t|
     t.integer  "event_id"

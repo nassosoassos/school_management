@@ -213,7 +213,7 @@
         </li>
       <% end %>
       <% if @current_user.admin? %>
-        <li><%= link_to "#{t('user_text')}" , :controller => "user", :action=>"index" %></li>
+        <li><%= link_to "#{t('users')}" , :controller => "user", :action=>"index" %></li>
       <% end %>
     </ul>
   </li>

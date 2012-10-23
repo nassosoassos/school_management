@@ -249,8 +249,8 @@ class StudentController < ApplicationController
   def year_grades
     @student = Student.find(params[:id])
     @year = params[:year]
-    semester_ids = SanSemester.find_all_by_year(@year)
-    student_subjects = StudentsSubject.find_all_by_student_id_and_san_semester_id(params[:id], semester_ids)
+    @semester_ids = SanSemester.find_all_by_year(@year)
+    student_subjects = StudentsSubject.find_all_by_student_id_and_san_semester_id(params[:id], @semester_ids)
     @university_student_subjects = Array.new
     @military_student_subjects = Array.new
     student_subjects.each do |subject|
@@ -260,7 +260,7 @@ class StudentController < ApplicationController
         @military_student_subjects.push(subject)
       end
     end
-    @student_mil_perf = StudentMilitaryPerformance.find_all_by_student_id_and_san_semester_id(params[:id], semester_ids)
+    @student_mil_perf = StudentMilitaryPerformance.find_all_by_student_id_and_san_semester_id(params[:id], @semester_ids)
     
     # Find all the academic years to which the student has been subscribed
     group_id = @student.group_id
@@ -763,6 +763,7 @@ class StudentController < ApplicationController
 
   def view_all
     @batches = Batch.active
+    @groups = Batch.active
   end
 
   def advanced_search
