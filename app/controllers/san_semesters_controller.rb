@@ -1,5 +1,8 @@
 # -*- coding: iso-8859-7 -*-
 class SanSemestersController < ApplicationController
+  filter_access_to :all
+  before_filter :login_required
+
   
   def add_subjects
     

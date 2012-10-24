@@ -80,7 +80,7 @@
         <hr class="label-underline"></hr>
 
         <div class="label-field-pair">
-          <label for="parent_detail_name"><%= t('last_name') %></label>
+          <label for="parent_detail_name"><%= t('last_name') %><span class="necessary-field">*</span></label>
           <div class="text-input-bg"><%= f.text_field :last_name %></div>
         </div>
 
@@ -88,7 +88,7 @@
 
         <div class="label-field-pair">
           <label for="parent_detail_relation"><%= t('relation') %><span class="necessary-field">*</span></label>
-          <div class="text-input-bg"><%= f.text_field :relation %></div>
+          <div class="text-input-bg"><%= select :guardian, :relation, ["#{t('father')}", "#{t('mother')}", "#{t('spouse')}", "#{t('relative')}", "#{t('other')}"],{:prompt=> "#{t('unknown')}"} %></div>
         </div>
 
         <hr class="label-underline"></hr>

@@ -50,7 +50,7 @@
           </tr>
           <tr class="<%= cycle(c,(["odd","even"]-[c]).first) %>">
             <td class="col-pdf"><%= t('last_course') %></td>
-            <td class="col-pdf"><%= @student.batch.full_name %></td>
+            <td class="col-pdf"><%= @student.group.name %></td>
           </tr>
           <tr class="<%= cycle(c,(["odd","even"]-[c]).first) %>">
             <td class="col-pdf"><%= t('blood_group') %></td>

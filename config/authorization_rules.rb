@@ -1365,6 +1365,29 @@ authorization do
     has_permission_on [:configuration], :to => [:index,:settings,:permissions, :add_weekly_holidays, :delete]
     has_permission_on [:subjects], :to => [:index, :new, :create,:destroy,:edit,:update, :show]
     has_permission_on [:san_subjects], :to => [:all, :index, :new, :create,:destroy,:edit,:update, :show, :view_all]
+    has_permission_on [:groups], :to => [
+      :new, 
+      :show, 
+      :index, 
+      :show_lists,
+      :lists,
+      :print_lists,
+      :grades,
+      :update_grades,
+      :edit_semesters,
+      :list_grades,
+      :select_subject,
+      :subscribe_to_semester,
+      :show_group_semester,
+      :add_semester,
+      :delete_semester,
+      :subscribe_semester,
+      :semester_subscription,
+      :edit,
+      :create,
+      :update,
+      :destroy
+    ]
     has_permission_on [:courses],
       :to => [
       :index,

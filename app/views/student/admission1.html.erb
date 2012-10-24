@@ -148,6 +148,21 @@
         <hr class="label-underline"></hr>
 
         <div class="label-field-pair">
+          <label for="student_height"><%= t('height')+' (cm)' %></label>
+          <div class="text-input-bg"><%= s.text_field :height %></div>
+        </div>
+
+        <hr class="label-underline"></hr>
+
+        <div class="label-field-pair">
+          <label for="student_weight"><%= t('weight')+ ' (kg)' %></label>
+          <div class="text-input-bg"><%= s.text_field :weight %></div>
+        </div>
+
+        <hr class="label-underline"></hr>
+
+
+        <div class="label-field-pair">
           <label for="student_birth_place"><%= t('birth_place') %></label>
           <div class="text-input-bg"><%= s.text_field :birth_place %></div>
         </div>
@@ -170,12 +185,15 @@
 
         <hr class="label-underline"></hr>
 
-        <div class="label-field-pair">
-          <label for="student_category"><%= t('category') %></label>
+        <%- # FIXME: Left out for S.A.N -%>
+        <% if false %>
+          <div class="label-field-pair">
+            <label for="student_category"><%= t('category') %></label>
           <div class="text-input-bg"><%= s.select :student_category_id, @categories.map {|c| [c.name, c.id]}, { :prompt => "#{t('select_a_category')}" } %></div>
-        </div>
-
+          </div>
         <hr class="label-underline"></hr>
+        <% end %>
+
 
         <div class="label-field-pair">
           <label for="student_religion"><%= t('religion') %></label>

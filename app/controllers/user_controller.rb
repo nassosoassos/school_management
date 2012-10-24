@@ -364,7 +364,10 @@ class UserController < ApplicationController
   def successful_user_login(user)
     session[:user_id] = user.id
     flash[:notice] = "#{t('welcome')}, #{user.first_name} #{user.last_name}!"
-    redirect_to session[:back_url] || {:controller => 'user', :action => 'dashboard'}
+    # FIXME: It's not clear what :back_url corresponds to, Commented out for S.A.N.,
+    # so that the user is always sent to the dashboard
+    #redirect_to session[:back_url] || {:controller => 'user', :action => 'dashboard'}
+    redirect_to :controller => 'user', :action => 'dashboard'
   end
 end
 

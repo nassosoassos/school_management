@@ -1,4 +1,6 @@
 class GroupsController < ApplicationController
+  filter_access_to :all
+  before_filter :login_required
 
   def debug
       @group = Group.find(params[:id])

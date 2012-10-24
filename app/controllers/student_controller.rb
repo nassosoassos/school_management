@@ -647,7 +647,7 @@ class StudentController < ApplicationController
   end
 
   def list_students_by_course
-    @students = Student.find_all_by_batch_id(params[:batch_id], :order => 'first_name ASC')
+    @students = Student.find_all_by_group_id(params[:group_id], :order => 'last_name DESC')
     render(:update) { |page| page.replace_html 'students', :partial => 'students_by_course' }
   end
 
@@ -763,23 +763,22 @@ class StudentController < ApplicationController
 
   def view_all
     @batches = Batch.active
-    @groups = Batch.active
+    @groups = Group.all
   end
 
   def advanced_search
     @batches = Batch.all
+    @groups = Group.all
     @search = Student.search(params[:search])
     if params[:search]
-      unless params[:advv_search][:course_id].empty?
-        if params[:search][:batch_id_equals].empty?
-          batches = Batch.find_all_by_course_id(params[:advv_search][:course_id]).collect{|b|b.id}
-        end
+      if params[:search][:group_id_equals].empty?
+         groups = Group.all.collect{|b|b.id}
       end
-      if batches.is_a?(Array)
+      if groups.is_a?(Array)
 
         @students = []
-        batches.each do |b|
-          params[:search][:batch_id_equals] = b
+        groups.each do |b|
+          params[:search][:group_id_equals] = b
           if params[:search][:is_active_equals]=="true"
             @search = Student.search(params[:search])
             @students+=@search.all
@@ -792,7 +791,7 @@ class StudentController < ApplicationController
             @students+=@search1+@search2
           end
         end
-        params[:search][:batch_id_equals] = nil
+        params[:search][:group_id_equals] = nil
       else
         if params[:search][:is_active_equals]=="true"
           @search = Student.search(params[:search])
@@ -809,13 +808,11 @@ class StudentController < ApplicationController
       @searched_for = ''
       @searched_for += "<span>#{t('name')}: </span>" + params[:search][:first_name_or_middle_name_or_last_name_like].to_s unless params[:search][:first_name_or_middle_name_or_last_name_like].empty?
       @searched_for += " <span>#{t('admission_no')}: </span>" + params[:search][:admission_no_equals].to_s unless params[:search][:admission_no_equals].empty?
-      unless params[:advv_search][:course_id].empty?
-        course = Course.find(params[:advv_search][:course_id])
-        batch = Batch.find(params[:search][:batch_id_equals]) unless (params[:search][:batch_id_equals]).blank?
-        @searched_for += "<span>#{t('course_text')}: </span>" + course.full_name
-        @searched_for += "<span>#{t('batch')}: </span>" + batch.full_name unless batch.nil?
-      end
-      @searched_for += "<span>#{t('category')}: </span>" + StudentCategory.find(params[:search][:student_category_id_equals]).name.to_s unless params[:search][:student_category_id_equals].empty?
+      #course = Course.find(params[:advv_search][:course_id])
+      group = Group.find(params[:search][:group_id_equals]) unless (params[:search][:group_id_equals]).blank?
+      #@searched_for += "<span>#{t('course_text')}: </span>" + course.full_name
+      @searched_for += "<span>#{t('group')}: </span>" + group.name unless group.nil?
+      #@searched_for += "<span>#{t('category')}: </span>" + StudentCategory.find(params[:search][:student_category_id_equals]).name.to_s unless params[:search][:student_category_id_equals].empty?
       unless  params[:search][:gender_equals].empty?
         if  params[:search][:gender_equals] == 'm'
           @searched_for += "<span>#{t('gender')}: </span>#{t('male')}"
@@ -961,13 +958,10 @@ class StudentController < ApplicationController
     @searched_for = ''
     @searched_for += "<span>#{t('name')}</span>" + params[:search][:first_name_or_middle_name_or_last_name_like].to_s unless params[:search][:first_name_or_middle_name_or_last_name_like].empty?
     @searched_for += "<span>#{t('admission_no')}</span>" + params[:search][:admission_no_equals].to_s unless params[:search][:admission_no_equals].empty?
-    unless params[:advv_search][:course_id].empty?
-      course = Course.find(params[:advv_search][:course_id])
-      batch = Batch.find(params[:search][:batch_id_equals]) unless (params[:search][:batch_id_equals]).blank?
-      @searched_for += "<span>#{t('course_text')}</span>" + course.full_name
-      @searched_for += "<span>#{t('batch')}</span>" + batch.full_name unless batch.nil?
-    end
-    @searched_for += "<span>#{t('category')}</span>" + StudentCategory.find(params[:search][:student_category_id_equals]).name.to_s unless params[:search][:student_category_id_equals].empty?
+    #course = Course.find(params[:advv_search][:course_id])
+    group = Group.find(params[:search][:group_id_equals]) unless (params[:search][:group_id_equals]).blank?
+    @searched_for += "<span>#{t('group')}</span>" + group.name unless group.nil?
+    #@searched_for += "<span>#{t('category')}</span>" + StudentCategory.find(params[:search][:student_category_id_equals]).name.to_s unless params[:search][:student_category_id_equals].empty?
     unless  params[:search][:gender_equals].empty?
       if  params[:search][:gender_equals] == 'm'
         @searched_for += "<span>#{t('gender')}</span>#{t('male')}"
@@ -989,16 +983,14 @@ class StudentController < ApplicationController
       @searched_for += "<span>#{t('all_students')}</span>"
     end
 
-    unless params[:advv_search][:course_id].empty?
-      if params[:search][:batch_id_equals].empty?
-        batches = Batch.find_all_by_course_id(params[:advv_search][:course_id]).collect{|b|b.id}
-      end
+    if params[:search][:group_id_equals].empty?
+      groups = Group.all.collect{|b|b.id}
     end
-    if batches.is_a?(Array)
+    if groups.is_a?(Array)
 
       @students = []
-      batches.each do |b|
-        params[:search][:batch_id_equals] = b
+      groups.each do |b|
+        params[:search][:group_id_equals] = b
         if params[:search][:is_active_equals]=="true"
           @search = Student.search(params[:search])
           @students+=@search.all
@@ -1011,7 +1003,7 @@ class StudentController < ApplicationController
           @students+=@search1+@search2
         end
       end
-      params[:search][:batch_id_equals] = nil
+      params[:search][:group_id_equals] = nil
     else
       if params[:search][:is_active_equals]=="true"
         @search = Student.search(params[:search])

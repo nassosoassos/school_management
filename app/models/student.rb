@@ -21,7 +21,6 @@ class Student < ActiveRecord::Base
   include CceReportMod
     
   belongs_to :country
-  belongs_to :batch
   belongs_to :group
   belongs_to :student_category
   belongs_to :nationality, :class_name => 'Country'
@@ -53,13 +52,17 @@ class Student < ActiveRecord::Base
 
   named_scope :by_first_name, :order=>'first_name',:conditions => { :is_active => true }
 
-  validates_presence_of :admission_no, :admission_date, :first_name, :batch_id, :date_of_birth, :group_id
-  validates_uniqueness_of :admission_no
-  validates_presence_of :gender
+  validates_presence_of :admission_no, :uni_admission_no, :admission_date, :first_name, :last_name, :date_of_birth, :group_id
+  validates_uniqueness_of :admission_no, :uni_admission_no
+  validates_presence_of :gender, :fathers_first_name
   validates_format_of     :email, :with => /^[A-Z0-9._%-]+@([A-Z0-9-]+\.)+[A-Z]{2,4}$/i,   :allow_blank=>true,
     :message => "#{t('must_be_a_valid_email_address')}"
   validates_format_of     :admission_no, :with => /^[A-Z0-9_-]*$/i,
     :message => "#{t('must_contain_only_letters')}"
+  validates_numericality_of :height, :only_integer=>true, :greater_than=>100, :less_than=>250, :allow_nil=>true, 
+    :message => "#{t('must_be_height')}"
+  validates_numericality_of :weight, :only_integer=>true, :greater_than=>30, :less_than=>150, :allow_nil=>true, 
+    :message => "#{t('must_be_weight')}"
 
   validates_associated :user
   before_validation :create_user_and_validate
@@ -83,7 +86,6 @@ class Student < ActiveRecord::Base
       unless self.gender.nil?
     errors.add(:admission_no, "#{t('model_errors.student.error3')}.") if self.admission_no=='0'
     errors.add(:admission_no, "#{t('should_not_be_admin')}") if self.admission_no.to_s.downcase== 'admin'
-    
   end
 
   def finalize_grade_set(grade_set_array)
@@ -275,7 +277,7 @@ class Student < ActiveRecord::Base
   end
 
   def full_name
-    "#{first_name} #{middle_name} #{last_name}"
+    "#{last_name} #{first_name} #{middle_name}"
   end
 
   def gender_as_text

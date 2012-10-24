@@ -44,6 +44,10 @@
           <%= f.text_field :admission_no_equals %>
         </div>
       </div>
+
+
+      <%- # FIXME: This was left out for S.A.N. -%>
+      <% if false %>
       <div class="label-field-pair">
         <label for="student_course"><%= t('course_text') %><%= image_tag("loader.gif",
             :align => "absmiddle",
@@ -72,6 +76,13 @@
           <%= f.collection_select :student_category_id_equals,StudentCategory.active,:id,:name,{:prompt=>"#{t('select_category')}"}%>
         </div>
       </div>
+    <% end %>
+     <div class="label-field-pair">
+       <label for="student_group"><%= t('group') %></label>
+          <div class="text-input-bg" >
+       <%= select :search, :group_id_equals, @groups.map{|c| [c.name, c.id]},{:prompt=>"#{t('select_group')}"} %>
+     </div>
+   </div>
       <div class="label_field_pair">
         <label class="label_for_student" for="student_gender"><%= t('gender') %></label>
         <div class="student_gender_value">
@@ -160,7 +171,7 @@
     <% end %>
   </div>
   <% unless @students.nil? %>
-    <% @students= @students.to_a.sort_by{|s| s.first_name} %>
+    <% @students= @students.to_a.sort_by{|s| s.last_name} %>
     <script type="text/javascript">
       Event.observe(window, 'load', function() { $('search-form').hide(); });
     </script>
@@ -193,7 +204,7 @@
             <td>
               <%= t('first_name') %>
             </td>
-            <td><%= t('batch') %></td>
+            <td><%= t('group') %></td>
             <td><%= t('adm_no') %></td>
 
           </tr>
@@ -206,7 +217,7 @@
               <% else  %>
                 <td class="col-2"><%=  link_to student.full_name, :controller => 'archived_student', :action => 'profile', :id => student.id%></td>
               <% end %>
-              <td class="col-2"><%= student.batch.full_name %></td>
+              <td class="col-2"><%= student.group.name %></td>
               <td class="col-2"><%= student.admission_no %></td>
             </tr>
           <% end %>
@@ -219,8 +230,6 @@
       </table>
 
       <div class="extender">
-
-
 
 
       </div>

@@ -21,7 +21,7 @@ class Guardian < ActiveRecord::Base
   belongs_to :ward, :class_name => 'Student'
   belongs_to :user,:dependent=>:destroy, :autosave =>true
 
-  validates_presence_of :first_name, :relation
+  validates_presence_of :first_name, :last_name, :relation
   before_destroy :immediate_contact_nil
 
   def validate

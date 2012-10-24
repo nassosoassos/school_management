@@ -34,12 +34,12 @@
     <div class="report">
       <table id="pdf-table" width="100%" cellspacing="0">
         <% c= 'odd' %>
-        <tr class="table-header"><td class="col-pdf"><%= t('sl_no') %></td><td class="col-pdf"><%= t('name') %></td><td class="col-pdf"><%= t('batch') %></td><td class="col-pdf"><%= t('adm_no') %></td><td class="col-pdf"><%= t('date_of_birth') %></td></tr>
+        <tr class="table-header"><td class="col-pdf"><%= t('sl_no') %></td><td class="col-pdf"><%= t('name') %></td><td class="col-pdf"><%= t('group') %></td><td class="col-pdf"><%= t('adm_no') %></td><td class="col-pdf"><%= t('date_of_birth') %></td></tr>
         <% students.each.each_with_index do |student,i| %>
           <tr class="<%= cycle((["odd","even"]-[c]).first,c) %>">
             <td class="col-pdf"><%= index+=1 %></td>
             <td class="col-pdf"><%= student.full_name %></td>
-            <td class="col-pdf"><%= student.batch.full_name %></td>
+            <td class="col-pdf"><%= student.group.name %></td>
             <td class="col-pdf"><%= student.admission_no %></td>
             <td class="col-pdf"><%= student.date_of_birth.strftime("%d %b, %Y") %></td>
           </tr>

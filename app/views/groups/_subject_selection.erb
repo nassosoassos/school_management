@@ -20,7 +20,7 @@
  <div class="label-field-pair">
     <div class="text-input-bg"><%= select :subject, :subject_id,
       @group_semester_subjects.map {|s| [s.title, s.id]},
-      {:prompt => "#{t('select_a_subject')}"},
+      {:prompt => "#{t('select_subject')}"},
       {:onChange => "#{remote_function(:url => {:action => "list_grades"},
         :with => "'subject_id='+value",
         :before => "Element.show('loader')",
