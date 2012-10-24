@@ -48,7 +48,7 @@
 
     <div id ="student_main_info">
       <h3> <%= @student.full_name %>  </h3>
-      <h4> <%= t('course_and_batch') %> : <%= @student.batch.course_name %> </h4>
+      <h4> <%= t('group') %> : <%= @student.group.name %> </h4>
       <h4><%= t('adm_no') %>: <%= @student.admission_no %> </h4>
     </div>
 
@@ -65,14 +65,14 @@
         <div class="profile_info_text_top"><%=@previous_data.institution %></div>
       </div>
       <div class="new_profile_info_area1">
-        <div class="profile_info_label_top2"><%= t('course_text') %></div>
-        <div class="profile_info_text_top2"><%=@previous_data.course %></div>
+        <div class="profile_info_label_top2"><%= t('admission_points') %></div>
+        <div class="profile_info_text_top2"><%=@previous_data.admission_points %></div>
 
-        <div class="profile_info_label_top"><%= t('year') %></div>
-        <div class="profile_info_text_top"><%=@previous_data.year %></div>
+        <div class="profile_info_label_top"><%= t('admission_rank') %></div>
+        <div class="profile_info_text_top"><%=@previous_data.admission_rank %></div>
       </div>
       <div class="new_profile_info_area1">
-        <div class="profile_info_label_top2"><%= t('total_mark') %></div>
+        <div class="profile_info_label_top2"><%= t('total_admission_mark') %></div>
         <div class="profile_info_text_top2"><%=@previous_data.total_mark %></div>
       </div>
       <div class="new_profile_info_area1">

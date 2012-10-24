@@ -84,8 +84,7 @@
 
     <div id ="student_main_info">
       <h3> <%= @student.full_name %>  </h3>
-      <h4> <%= t('course_text') %>: <%= @student.batch.course.full_name %> </h4>
-      <h4> <%= t('batch') %> : <%= @student.batch.name %> </h4>
+      <h4> <%= t('group') %> : <%= @student.group.name %> </h4>
       <h4> <%= t('adm_no') %> : <%= @student.admission_no %> </h4>
     </div>
 
@@ -117,6 +116,8 @@
       <tr class="even left"><td><%= t('phone') %></td><td class="right"><%= @student.phone1 %></td></tr>
       <tr class="odd left"><td><%= t('mobile') %></td><td class="right"><%= @student.phone2 %></td></tr>
       <tr class="even left"><td><%= t('email') %></td><td class="right"><%= @student.email %></td></tr>
+      <%- # FIXME: Left out for school. -%>
+      <% if false %>
       <% unless @student.batch.employee_id.nil? %>
         <% @assigned_employees = Employee.find(:all,:conditions=>"FIND_IN_SET(id,\"#{@student.batch.employee_id}\")")  %>
         <tr class="even left"><td><%= t('group_tutor') %>(s) :</td><td class="right">
@@ -125,7 +126,8 @@
             <%= link_to @tutors.join(", "),:controller=>'reminder',:action=>'create_reminder',:send_to=>@tutor_ids.join(",")  %>
           </td></tr>
 
-      <% end  %>
+        <% end  %>
+      <% end %>
       <% FedenaPlugin::REGISTERED_HOOKS[:student_profile].each do |mod| %>
         <%= render :partial=>mod.camelize.constantize.send("student_profile_hook"),:locals=>{:student=>@student} %>
       <% end %>

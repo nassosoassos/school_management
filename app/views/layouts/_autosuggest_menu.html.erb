@@ -50,7 +50,7 @@
     var options = jQuery.ui.autocomplete.filter(available_options,query).slice(0,11);
     options.push({'menutype': 'action',
       'label' : '<%=t('autosuggest_menu.search_students')%> : <strong>'+query+'</strong>',
-      'value' : "/student/advanced_search?search%5Border%5D=&search%5Bfirst_name_or_middle_name_or_last_name_like%5D="+query+"&search%5Badmission_no_equals%5D=&advv_search%5Bcourse_id%5D=&search%5Bbatch_id_equals%5D=&search%5Bstudent_category_id_equals%5D=&search%5Bgender_equals%5D=&search%5Bblood_group_like%5D=&search%5Bnationality_id_equals%5D=&advv_search%5Bdoa_option%5D=&advv_search%5Bdoa_year%5D=&advv_search%5Bdob_option%5D=&advv_search%5Bdob_year%5D=&commit=Search"})
+      'value' : "/student/advanced_search?search%5Border%5D=&search%5Bfirst_name_or_middle_name_or_last_name_like%5D="+query+"&search%5Badmission_no_equals%5D=&advv_search%5Bcourse_id%5D=&search%5Bgroup_id_equals%5D=&search%5Bstudent_category_id_equals%5D=&search%5Bgender_equals%5D=&search%5Bblood_group_like%5D=&search%5Bnationality_id_equals%5D=&advv_search%5Bdoa_option%5D=&advv_search%5Bdoa_year%5D=&advv_search%5Bdob_option%5D=&advv_search%5Bdob_year%5D=&commit=Search"})
 
     options.push({'menutype': 'action',
       'label' : '<%=t('autosuggest_menu.search_employees')%>: <strong>'+query+'</strong>',

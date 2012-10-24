@@ -89,12 +89,6 @@
 
       <hr class="label-underline"></hr>
 
-      <div class="label-field-pair">
-        <label for="student_grade"><%= t('fathers_first_name') %><span class="necessary-field">*</span> </label>
-        <div class="text-input-bg"><%= s.text_field :fathers_first_name %></div>
-      </div>
-
-      <hr class="label-underline"></hr>
 
       <div class="label-field-pair">
         <label for="student_grade"><%= t('last_name') %><span class="necessary-field">*</span> </label>
@@ -102,6 +96,14 @@
       </div>
 
       <hr class="label-underline"></hr>
+
+      <div class="label-field-pair">
+        <label for="student_grade"><%= t('fathers_first_name') %><span class="necessary-field">*</span> </label>
+        <div class="text-input-bg"><%= s.text_field :fathers_first_name %></div>
+      </div>
+
+      <hr class="label-underline"></hr>
+
 
       <div id="admission1_form_vertical_block_left">
 	      
@@ -185,7 +187,7 @@
 
         <hr class="label-underline"></hr>
 
-        <%- # FIXME: Left out for S.A.N -%>
+        <%- # FIXME: Left out for school-%>
         <% if false %>
           <div class="label-field-pair">
             <label for="student_category"><%= t('category') %></label>

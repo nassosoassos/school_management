@@ -107,7 +107,7 @@ class ApplicationController < ActionController::Base
   end
   
   def initialize
-    @title = FEDENA_SETTINGS[:company_name]
+    #@title = Configuration.get_config_value('InstitutionName')
   end
 
   def message_user

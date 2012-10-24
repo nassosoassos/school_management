@@ -35,7 +35,7 @@
 
 
   <% form_for :student_previous_details do |a| %>
-  <%#= error_messages_for 'employee_bank_details' %>
+    <%= error_messages_for 'student_previous_data_', :header_message => nil %>
 
     <span class="span-sub-heading"><%= t('previous_educational_details') %></span>
     <hr class="sub-heading"></hr>
@@ -47,17 +47,17 @@
         <div class="extender"></div>
       </div>
       <div class="label-field-pair">
-        <label><%= t('course_text') %></label>
-        <div class="text-input-bg"><%= a.text_field :course %></div>
+        <label><%= t('admission_points') %></label>
+        <div class="text-input-bg"><%= a.text_field :admission_points %></div>
         <div class="extender"></div>
       </div>
       <div class="label-field-pair">
-        <label><%= t('year') %></label>
-        <div class="text-input-bg"><%= a.text_field :year %></div>
+        <label><%= t('admission_rank') %></label>
+        <div class="text-input-bg"><%= a.text_field :admission_rank %></div>
         <div class="extender"></div>
       </div>
       <div class="label-field-pair">
-        <label><%= t('total_mark') %></label>
+        <label><%= t('total_admission_mark') %></label>
         <div class="text-input-bg"><%= a.text_field :total_mark %></div>
         <div class="extender"></div>
       </div>
@@ -70,6 +70,9 @@
     </div>
   <% end %>
   <div class="ajax-subject">
+    <div class="label-field-pair"> 
+      <label><%= "#{t('foreign_languages')}" %> </label>
+    </div>
     <ul id="added-subjects">
       <%  unless @previous_subject.nil? %>
         <% @previous_subject.each  do |p| %>
@@ -85,7 +88,7 @@
         <% end %>
       <% end %>
     </ul>
-    <%= link_to_remote "#{t('add_subject')}", :url=>{:controller=>"student",:action=>"previous_subject", :id=>@student.id}%>
+    <%= link_to_remote "#{t('add_foreign_language')}", :url=>{:controller=>"student",:action=>"previous_subject", :id=>@student.id}%>
     <div id="subject">
 
     </div>

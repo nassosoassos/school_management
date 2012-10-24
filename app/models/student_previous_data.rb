@@ -19,4 +19,10 @@
 class StudentPreviousData < ActiveRecord::Base
   belongs_to :student
   validates_presence_of :institution
+  validates_numericality_of :admission_points, :only_integer=>true, :greater_than=>0, :allow_nil=>true, 
+    :message => "#{t('must_be_integer_greater_than_zero')}"
+  validates_numericality_of :admission_rank, :only_integer=>true, :greater_than=>0, :less_than=> 500, :allow_nil=>true, 
+    :message => "#{t('must_be_integer_greater_than_zero_and_less_than_500')}"
+  validates_numericality_of :total_mark, :greater_than=>0, :allow_nil=>true,
+    :message => "#{t('must_be_greater_than_zero')}"
 end

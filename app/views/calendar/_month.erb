@@ -30,10 +30,13 @@
     <div id="legend-symbol"> <div class="legend-icon" style='background:#00b400;'></div></div>
     <div id="legend-text"><%= t('holidays') %></div>
   </div>
-  <div id="legend-entry">
+  <%- # FIXME: Left out for school -%>
+  <% if false %>
+    <div id="legend-entry">
     <div id="legend-symbol"> <div class="legend-icon" style='background:#b40000;'></div></div>
     <div id="legend-text"><%= t('dues') %></div>
   </div>
+<% end %>
 </div>
 <br/>
 <div id="head-month">

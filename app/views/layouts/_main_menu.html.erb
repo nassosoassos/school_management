@@ -27,7 +27,7 @@
     <li class="a"><%= link_to t('students'), :controller => "student", :action => "index" %></li>
   <% end %>
   <% if @current_user.admin? %>
-    <%- # FIXME: Left out for SAN -%>
+    <%- # FIXME: Left out for school -%>
     <% if false %>
     <li class="a"><%= link_to "#{t('attendance')} ▼", :controller => "student_attendance", :action => "index" %>
       <ul class="level-1">
@@ -68,7 +68,7 @@
   <% if permitted_to? :index, :configuration %>
     <li class="a"><%= link_to "#{t('settings')} ▼", :controller => "configuration", :action => "index" %>
     <ul class="level-1">
-        <%- # FIXME: Left out for S.A.N. -%>
+        <%- # FIXME: Left out for school -%>
         <% if false %>
         <% if permitted_to? :create, :courses %>
           <li><%= link_to "#{t('manage_course_batch')}", courses_path %></li>
@@ -83,7 +83,7 @@
         <% if permitted_to? :settings, :configuration %>
           <li><%= link_to "#{t('general_settings')}", :controller => "configuration", :action => "settings" %></li>
         <% end %>
-        <%- # FIXME: Left out for S.A.N. -%>
+        <%- # FIXME: Left out for school -%>
         <% if false %>
         <% if permitted_to? :settings, :configuration %>
           <li><%= link_to "#{t('add_admission_additional_detail')}", :controller=>"student", :action => "add_additional_details" %></li>
@@ -99,7 +99,7 @@
   <li><%= link_to t('news_text'), :controller => "news", :action => "index" \
   if @current_user.admin? %></li> -->
 
-  <%- # FIXME: Left out for S.A.N. -%>
+  <%- # FIXME: Left out for school -%>
   <% if false %>
   <% if permitted_to? :index, :timetable %>
     <li class="a"><%= link_to "#{t('timetable_text')} <span class='down-arrow'>▼</span>", :controller => "timetable", :action => "index" %>
@@ -145,7 +145,7 @@
   <li class="a"><a href="#"><%= t('more') %> ▼</a>
     <ul class="level-1" id="more-parent">
       <li><%= link_to "#{t('calendar_text')}" , :controller => "calendar", :action=>"index" %></li>
-      <%- # FIXME: Left out for S.A.N. -%>
+      <%- # FIXME: Left out for school -%>
       <% if false %>
       <% if permitted_to? :index, :exam %>
         <li><%= link_to "#{t('examination')} <span class='right-arrow'>#{arrow_dir}</span>" , :controller => "exam", :action=>"index" %>
@@ -184,7 +184,7 @@
       <% if permitted_to? :index, :event %>
         <li><%= link_to "#{t('event_creations')}" , :controller => "event", :action=>"index" %></li>
       <% end %>
-      <%- # FIXME: Left out for S.A.N. -%>
+      <%- # FIXME: Left out for school -%>
       <% if false %>
       <% if permitted_to? :hr, :employee %>
         <li><%= link_to "#{t('human_resource')} <span class='right-arrow'>#{arrow_dir}</span>" , :controller => "employee", :action=>"hr" %>

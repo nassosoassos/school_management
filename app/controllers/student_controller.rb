@@ -153,8 +153,9 @@ class StudentController < ApplicationController
     @previous_data = StudentPreviousData.new params[:student_previous_details]
     @previous_subject = StudentPreviousSubjectMark.find_all_by_student_id(@student)
     if request.post?
-      @previous_data.save
-      redirect_to :action => "admission4", :id => @student.id
+      if @previous_data.save
+        redirect_to :action => "admission4", :id => @student.id
+      end
     else
       return
     end
