@@ -151,7 +151,8 @@ class StudentController < ApplicationController
   def previous_data
     @student = Student.find(params[:id])
     @previous_data = StudentPreviousData.new params[:student_previous_details]
-    @previous_subject = StudentPreviousSubjectMark.find_all_by_student_id(@student)
+    @previous_language = StudentLanguage.find_all_by_student_id(@student)
+    #@previous_subject = StudentPreviousSubjectMark.find_all_by_student_id(@student)
     if request.post?
       if @previous_data.save
         redirect_to :action => "admission4", :id => @student.id
@@ -164,10 +165,12 @@ class StudentController < ApplicationController
   def previous_data_edit
     @student = Student.find(params[:id])
     @previous_data = StudentPreviousData.find_by_student_id(params[:id])
-    @previous_subject = StudentPreviousSubjectMark.find_all_by_student_id(@student)
+    @previous_language = StudentLanguage.find_all_by_student_id(@student)
+    #@previous_subject = StudentPreviousSubjectMark.find_all_by_student_id(@student)
     if request.post?
-      @previous_data.update_attributes(params[:previous_data])
-      redirect_to :action => "show_previous_details", :id => @student.id
+      if @previous_data.update_attributes(params[:previous_data])
+         redirect_to :action => "show_previous_details", :id => @student.id
+      end
     end
   end
 
@@ -178,9 +181,23 @@ class StudentController < ApplicationController
     end
   end
 
+  def previous_language
+    @student = Student.find(params[:id])
+    @foreign_languages = ForeignLanguage.all
+    render(:update) do |page|
+      page.replace_html 'language', :partial=>"previous_language"
+    end
+  end
+
   def save_previous_subject
     @previous_subject = StudentPreviousSubjectMark.new params[:student_previous_subject_details]
     @previous_subject.save
+    #@all_previous_subject = StudentPreviousSubjectMark.find(:all,:conditions=>"student_id = #{@previous_subject.student_id}")
+  end
+
+  def save_previous_language
+    @previous_language = StudentLanguage.new params[:student_language]
+    @previous_language.save
     #@all_previous_subject = StudentPreviousSubjectMark.find(:all,:conditions=>"student_id = #{@previous_subject.student_id}")
   end
 
@@ -346,6 +363,15 @@ class StudentController < ApplicationController
     @student =Student.find(@previous_subject.student_id)
     if@previous_subject.delete
       @previous_subject=StudentPreviousSubjectMark.find_all_by_student_id(@student.id)
+    end
+    #@all_previous_subject = StudentPreviousSubjectMark.find(:all,:conditions=>"student_id = #{@previous_subject.student_id}")
+  end
+
+  def delete_previous_language
+    @previous_language = StudentLanguage.find(params[:id])
+    @student =Student.find(@previous_language.student_id)
+    if@previous_language.delete
+      @previous_language=StudentLanguage.find_all_by_student_id(@student.id)
     end
     #@all_previous_subject = StudentPreviousSubjectMark.find(:all,:conditions=>"student_id = #{@previous_subject.student_id}")
   end
@@ -679,7 +705,8 @@ class StudentController < ApplicationController
 
   def show_previous_details
     @previous_data = StudentPreviousData.find_by_student_id(@student.id)
-    @previous_subjects = StudentPreviousSubjectMark.find_all_by_student_id(@student.id)
+    #@previous_subjects = StudentPreviousSubjectMark.find_all_by_student_id(@student.id)
+    @previous_languages = StudentLanguage.find_all_by_student_id(@student.id)
   end
   
   def show

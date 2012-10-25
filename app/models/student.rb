@@ -34,8 +34,8 @@ class Student < ActiveRecord::Base
   has_many   :attendances
   has_many   :finance_fees
   has_many   :fee_category ,:class_name => "FinanceFeeCategory"
-  has_many   :students_subjects
-  has_many   :subjects ,:through => :students_subjects
+  has_many   :students_subjects, :foreign_key => 'student_id', :dependent => :destroy
+  has_many   :san_subjects ,:through => :students_subjects
   has_many   :student_additional_details
   has_many   :batch_students
   has_many   :subject_leaves

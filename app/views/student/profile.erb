@@ -28,10 +28,13 @@
 
 <div id="nav">
   <ul>
+    <% # FIXME: Left out for school %>
+    <% if false %>
     <% if permitted_to? :reports,:student %>
       <li><%= link_to "#{t('reports_text')}", :controller => 'student',
           :action => 'reports', :id => @student %></li>
-    <%end%>
+        <%end%>
+      <% end %>
 
     <% if permitted_to? :guardians,:student %>
       <li><%= link_to "#{t('guardians_text')}", :controller => "student",
@@ -52,6 +55,8 @@
       <li><%= link_to "Μαθήματα", :controller => 'student',
         :action => 'subscribe_subjects', :id => @student.id %></li>
     <% end %>
+    <% # FIXME: Left out for school %>
+      <% if false %>
     <li>
       <a href="#" class="drops" id="link_one"><%= t('more') %> &#9660;</a>
       <ul id="box_one" class="scriptaculously" style="display:none;">
@@ -64,7 +69,8 @@
           <% end %>
         <% end %>
       </ul>
-    </li>
+      </li>
+    <% end %>
   </ul>
 </div>
 
@@ -139,10 +145,10 @@
             unless @immediate_contact.nil? %><%= "(" + @immediate_contact.mobile_phone + ")" if @immediate_contact and !@immediate_contact.mobile_phone.empty? %>
           <% if @current_user.admin? %>
             <% unless @immediate_contact.nil? %>
-              <span>(<%= link_to "#{t('change_contact')}", :controller => 'student', :action => 'admission3_1', :id => @student.id %>)</span>
+              <br/><span>(<%= link_to "#{t('change_contact')}", :controller => 'student', :action => 'admission3_1', :id => @student.id %>)</span>
             <%else%>
               <% if permitted_to? :add_guardian,:student %>
-                <span><%= t('no_guardian') %>(<%= link_to "#{t('add_guardian')}",:controller => 'student',:action => 'add_guardian', :id => @student.id %>)</span>
+                <span><%= t('no_guardian') %><br/>(<%= link_to "#{t('add_guardian')}",:controller => 'student',:action => 'add_guardian', :id => @student.id %>)</span>
               <%else%>
                 <span><%= t('no_guardian') %></span>
               <%end%>

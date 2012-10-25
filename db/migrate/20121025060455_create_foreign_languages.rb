@@ -1,3 +1,18 @@
+class CreateForeignLanguages < ActiveRecord::Migration
+  def self.up
+    create_table :foreign_languages do |t|
+      t.string :name
+      t.timestamps
+    end
+    create_default
+  end
+
+  def self.down
+    drop_table :foreign_languages
+  end
+
+  def self.create_default
+    llist = [
 "Άβαρικ",
 "Έσκιμο (Άλλο)",
 "Αβεστάν",
@@ -456,3 +471,11 @@
 "Χοτανίζ",
 "Χουβάς",
 "Χούπα"
+    ]
+    llist.each do |l|
+      @l1 = ForeignLanguage.new
+      @l1.name = l
+      @l1.save
+    end  
+  end
+end

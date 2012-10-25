@@ -11,7 +11,7 @@ class Group < ActiveRecord::Base
         total_gpa, total_sum, uni_gpa, mil_gpa, mil_p_gpa, n_unfinished_subjects = stu.gpa_for_year(year, 'all')      
         stu_info = {:gpa=>total_gpa, :total_sum=>total_sum, :uni_gpa=>uni_gpa, :full_name=>stu.full_name,
           :mil_gpa=>mil_gpa,:mil_p_gpa=>mil_p_gpa, :n_unfinished_subjects=>n_unfinished_subjects, 
-          :father=>Guardian.find(stu.immediate_contact_id).first_name, :gender=>stu.gender, :id=>stu.id}
+          :father=>stu.fathers_first_name, :gender=>stu.gender, :id=>stu.id}
         if total_gpa!=nil and uni_gpa!=nil
           unsorted_students.push(stu_info)
         else

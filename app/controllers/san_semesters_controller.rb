@@ -23,6 +23,7 @@ class SanSemestersController < ApplicationController
   # GET /san_semesters/1.xml
   def show
     @san_semester = SanSemester.find(params[:id])
+    @semester_subjects = SemesterSubjects.find_all_by_semester_id(@san_semester.id)
 
     respond_to do |format|
       format.html # show.html.erb

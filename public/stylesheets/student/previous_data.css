@@ -112,6 +112,7 @@
 .ajax-subject a{
     color:#9B1017;
     font-weight:bold;
+    margin-left: 15px;
 }
 
 
@@ -132,19 +133,19 @@ li div.sub-mark {
 
 li div.prev_subject{
     float: left;
-    width: 250px;
+    width: 300px;
 
 }
 
 .ajax-subject li{
-    width: 300px;
+    width: 350px;
 }
 
 
 .name{
     color: #999999;
     float: left;
-    width: 160px;
+     width: 100px;
     font-weight: bold;
     font-size: 13px;
 }
@@ -154,7 +155,7 @@ li div.prev_subject{
     font-weight: bold;
     font-size: 13px;
     float: left;
-    width: 50px;
+    width: 100px;
 }
 
 .val span{
@@ -171,7 +172,9 @@ ul{
 }
 
 .delete{
-    float: left;
+    /*float: left;*/
+    width: 50px;
+    clear: left;
     margin-top: -2px;
-    margin-left: 5px;
+    margin-left: 10px;
 }

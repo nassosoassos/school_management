@@ -1365,6 +1365,16 @@ authorization do
     has_permission_on [:configuration], :to => [:index,:settings,:permissions, :add_weekly_holidays, :delete]
     has_permission_on [:subjects], :to => [:index, :new, :create,:destroy,:edit,:update, :show]
     has_permission_on [:san_subjects], :to => [:all, :index, :new, :create,:destroy,:edit,:update, :show, :view_all]
+    has_permission_on [:san_semesters], :to => [
+      :add_subjects,
+      :index,
+      :show,
+      :new,
+      :edit,
+      :create,
+      :update,
+      :destroy
+    ]
     has_permission_on [:groups], :to => [
       :new, 
       :show, 
@@ -1967,9 +1977,12 @@ authorization do
       :advanced_search_pdf,
       :previous_data,
       :previous_subject,
+      :previous_language,
       :previous_data_edit,
       :save_previous_subject,
+      :save_previous_language,
       :delete_previous_subject,
+      :delete_previous_language,
       :profile_pdf,
       :grades_pdf,
       :year_grades,

@@ -74,24 +74,30 @@
     </div>
   <% end %>
   <div class="ajax-subject">
+    <div class="label-field-pair"> 
+      <label><%= "#{t('foreign_languages')}" %> </label>
+    </div>
     <ul id="added-subjects">
-      <%  unless @previous_subject.nil? %>
-        <% @previous_subject.each  do |p| %>
+      <%  unless @previous_language.nil? %>
+        <% @previous_language.each  do |p| %>
 
-          <li><div><span class="name"><%= p.subject %></span>
-            <span class="val"><span>:</span><%= p.mark %></span>
+          <li><div><span class="name"><%= p.foreign_language.name %></span>
+            <span class="val"><span>:</span><%= p.knowledge %></span>
             <span class="delete"><%= link_to_remote image_tag("/images/buttons/delete-new.png", :border => 0),
-                :url => {:action => "delete_previous_subject", :id => p.id},
+                :url => {:action => "delete_previous_language", :id => p.id},
 
-                :update => "added_subjects"%></span></div></li>
+                :update => "added_languages"%></span></div></span></li>
 
         <% end %>
       <% end %>
     </ul>
-    <%= link_to_remote "#{t('add_subject')}", :url=>{:controller=>"student",:action=>"previous_subject", :id=>@student.id}%>
+    <%= link_to_remote "#{t('add_foreign_language')}", :url=>{:controller=>"student",:action=>"previous_language", :id=>@student.id}%>
+    <div id="language">
+    </div>
     <div id="subject">
 
     </div>
+
   </div>
 </div>
 

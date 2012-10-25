@@ -77,22 +77,22 @@
       </div>
       <div class="new_profile_info_area1">
         <div class="profile_info_label_top"></div>
-        <div class="profile_info_text_top"><u><%= t('subject') %></u></div>
+        <div class="profile_info_text_top"><u><%= t('language') %></u></div>
       </div>
-      <% unless @previous_subjects.blank? %>
+      <% unless @previous_languages.blank? %>
         <div class="prev_subject_box">
-          <% @previous_subjects.each do |s| %>
+          <% @previous_languages.each do |s| %>
             <% a =cycle('2','') %>
             <div class="new_profile_info_area2">
-              <div class="profile_info_label_top_1<%=a %>"><%= s.subject %> </div>
-              <div class="profile_info_text_top_1<%=a %>"><%= s.mark %> </div>
+              <div class="profile_info_label_top_1<%=a %>"><%= s.foreign_language.name %> </div>
+              <div class="profile_info_text_top_1<%=a %>"><%= s.knowledge %> </div>
             </div>
           <% end %>
         </div>
       <% else %>
         <div class="new_profile_info_area1">
           <div class="profile_info_label_top"></div>
-          <div class="profile_info_text_top"><u>(<%= t('no_previous_subject') %>)</u></div>
+          <div class="profile_info_text_top"><u>(<%= t('no_previous_language') %>)</u></div>
         </div>
       <% end %>
     <% end %>

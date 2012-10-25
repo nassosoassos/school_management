@@ -1,0 +1,11 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  foreign_language_id: 1
+  student_id: 1
+  knowledge: MyString
+
+two:
+  foreign_language_id: 1
+  student_id: 1
+  knowledge: MyString
