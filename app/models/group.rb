@@ -3,6 +3,8 @@ class Group < ActiveRecord::Base
 	has_many :students
     has_many :students_subjects
 
+    validates_presence_of :name, :first_year, :graduation_year 
+
     def get_hierarchy_list_for_year(year)
       students = Student.find_all_by_group_id(self.id)
       unsorted_students = Array.new

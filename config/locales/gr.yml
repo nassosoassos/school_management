@@ -114,6 +114,15 @@ gr: # locale
         max_weekly_classes: "Maximum Weekly Classes"
         code: "Code"
 
+      san_subject:
+        title: "Τίτλος"
+        kind: "Τύπος"
+
+      san_semester:
+        mil_p_weight: "Συντελεστής Στρατιωτικών Προσόντων"
+        mil_weight: "Συντελεστής Στρατιωτικών Μαθημάτων"
+        uni_weight: "Συντελεστής Πανεπιστημιακών Μαθημάτων"
+
       asset:
         amount: "Amount"
         title: "Title"
@@ -487,7 +496,7 @@ gr: # locale
   december: "December"
 
   reject: "Reject"
-  are_you_completely_sure: "Are you completely sure?"
+  are_you_completely_sure: "Είστε απολύτως βέβαιος;"
   common: "common"
   done: "Done"
   home: "Home"
@@ -711,6 +720,7 @@ gr: # locale
   enter_exam_related_details: "Enter exam related details here"
   subject_name: "Subject name"
   do_not_create: "Do not create"
+  create: "Δημιουργία"
   exam_type: "Exam Type"
   select_subject: "Επιλέξτε Μάθημα"
   academic_reports: "Academic  reports"
@@ -921,6 +931,8 @@ gr: # locale
   the_subject: "The subject"
   status_description: "Status description"
   add_new_subjects: "Add new subjects"
+  add_new_subject: "Προσθήκη νέου μαθήματος"
+  new_semester: "Δημιουργία νέου εξαμήνου"
   assign_old_batch_subject: "Assign old batch subjects"
   previous_batch: "Previous Batch"
   assign_subject: "Assign Subject"
@@ -935,8 +947,7 @@ gr: # locale
   add_subject_to_elective_group: "Add Subject to this Elective group"
   new_elective_group: "New Elective Group"
   cannot_delete_subjects: "Cannot delete subjects"
-  edit_subject: "Edit Subject"
-  add_new_subject: "Add New Subject"
+  edit_subject: "Τροποποίηση Μαθήματος"
   import_subject_from_batch: "Import subject from a batch"
   no_subjects: "No Subjects available for import in selected batch"
   no_new_message: "No new messages."
@@ -1505,6 +1516,7 @@ gr: # locale
   create_new_category: "Create new category"
   is_this_under_income: "Is this under income?"
   are_you_sure_to_delete: "Are you sure to delete this finance category?"
+
   select_student_category: "Select Student Category"
   fee_component: "Fee component"
   due_date_exceeded_collect_fine: "Due date has been exceeded. Please collect fine amount."
@@ -1862,7 +1874,7 @@ gr: # locale
   must_contain_only_letters: "must contain only letters, numbers, hyphen, and  underscores"
   must_contain_only_letters_numbers_space: "must contain only letters, numbers, and space"
   must_be_height: "Το ύψος του σπουδαστή πρέπει να είναι σε εκατοστόμετρα (cm), μεταξύ 100 και 250."
-  must_be_weight: "το βάρος του σπουδαστή πρέπει να είναι σε κιλά (kg), μεταξύ 30 και 150."
+  must_be_weight: "Το βάρος του σπουδαστή πρέπει να είναι σε κιλά (kg), μεταξύ 30 και 150."
   partial: "partial"
   student_category_updated_succesfully: "Student category updated successfully"
   student_category_deleted_succesfully: "Student category deleted successfully"
@@ -1999,7 +2011,8 @@ gr: # locale
   select_a_student: "Select a Student"
   transcript_of_academic_record: "Transcript of Academic Record"
   subject_code: "Subject Code"
-  subject_title: "Subject Title"
+  subject_title: "Όνομα Μαθήματος"
+  subject_kind: "Τύπος Μαθήματος"
   combined_weighted_average: "Combined Weighted Average"
   batch_wise_cumulative_grade_point_average: "Batch wise Cumulative Grade Point Average"
   combined_percentage: "Combined Percentage"
@@ -2074,6 +2087,9 @@ gr: # locale
   flash_msg40: "Assign all students successfully"
   flash_msg41: "Remove students successfully"
   flash_msg42: "Remove all students successfully"
+  flash_msg43: "Το εξάμηνο αποθηκεύτηκε επιτυχώς."
+  flash_msg44: "Το μάθημα δημιουργήθηκε επιτυχώς."
+  flash_msg45: "Το μάθημα ενημερώθηκε επιτυχώς."
 
 #configuration controller translation
   configuration:

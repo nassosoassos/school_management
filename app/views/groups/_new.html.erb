@@ -1,0 +1,26 @@
+
+<% form_remote_for @group do |f| %>
+  <div id="form-errors"> </div>
+
+  <div class="label-field-pair">
+    <label for="group_name"><%= t('group_name')%></label>
+    <div class="text-input-bg">
+      <%= f.text_field :name %>
+    </div>
+  </div>
+  <div class="label-field-pair">
+    <label for="group_first_year"><%= t('subscription_year')%></label>
+    <div class="text-input-bg">
+      <%= f.date_select :first_year, :discard_month=>true, :discard_day=>true, :start_year=>2003 %>
+    </div>
+  </div>
+  <div class="label-field-pair">
+    <label for="group_graduation_year"><%= t('graduation_year')%></label>
+    <div class="text-input-bg">
+      <%= f.date_select :graduation_year, :discard_month=>true, :discard_day=>true, :start_year=>2003 %>
+    </div>
+  </div>
+
+  <%= f.submit t('create'), :class => "submit_button"  %>
+<% end %>
+

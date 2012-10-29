@@ -1,6 +1,6 @@
 if @error.nil?
 	page.replace_html 'form-errors', :text => ''
-  page.replace_html 'san_subjects', :partial => 'san_subjects'
+  page.replace_html 'groups', :partial => 'groups'
   page.replace_html 'flash-box', :text=>"<p class='flash-msg'>#{flash[:notice]}</p>" unless flash[:notice].nil?
   page << "Modalbox.hide();"
 else

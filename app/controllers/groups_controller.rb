@@ -242,8 +242,9 @@ class GroupsController < ApplicationController
     @group = Group.new
 
     respond_to do |format|
-      format.html # new.html.erb
-      format.xml  { render :xml => @group }
+      #format.html # new.html.erb
+      #format.xml  { render :xml => @group }
+      format.js { render :action => 'new' }
     end
   end
 
@@ -256,16 +257,12 @@ class GroupsController < ApplicationController
   # POST /groups.xml
   def create
     @group = Group.new(params[:group])
+    @groups = Group.all
 
-    respond_to do |format|
-      if @group.save
-        flash[:notice] = 'Group was successfully created.'
-        format.html { redirect_to(@group) }
-        format.xml  { render :xml => @group, :status => :created, :location => @group }
-      else
-        format.html { render :action => "new" }
-        format.xml  { render :xml => @group.errors, :status => :unprocessable_entity }
-      end
+    if @group.save
+      flash[:notice] = 'Group was successfully created.'
+    else
+      @error = true
     end
   end
 

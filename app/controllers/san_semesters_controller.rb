@@ -58,6 +58,8 @@ class SanSemestersController < ApplicationController
   # POST /san_semesters.xml
   def create
     @san_semester = SanSemester.new(params[:san_semester])
+    @uni_subjects = SanSubject.find_all_by_kind("University")
+    @mil_subjects = SanSubject.find_all_by_kind("Military")
     created = @san_semester.save
 
     # Add subjects
@@ -79,6 +81,7 @@ class SanSemestersController < ApplicationController
         format.html { redirect_to(@san_semester) }
         format.xml  { render :xml => @san_semester, :status => :created, :location => @san_semester }
       else
+        flash[:notice] = 'SanSemester errors.'
         format.html { render :action => "new" }
         format.xml  { render :xml => @san_semester.errors, :status => :unprocessable_entity }
       end
@@ -105,7 +108,7 @@ class SanSemestersController < ApplicationController
         @san_semester.update_subjects(compulsory_subject_ids, false)
         @san_semester.update_subjects(optional_subject_ids, true)
 
-        flash[:notice] = 'SanSemester was successfully updated.'
+        flash[:notice] = t('flash_msg43')
 
 
         format.html { redirect_to(@san_semester) }

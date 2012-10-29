@@ -30,6 +30,7 @@
     <ul>
     <li><%= link_to "#{t('edit_text')}", :action => "edit" %></li>
     <li><%= link_to "#{t('add_new')}", :action => "new" %></li>
+    <li><%= link_to t("view_all"), :action => "index" %></li>
   </ul>
   </div>
 
@@ -69,10 +70,16 @@
   </tr>
 
 
-  <% @semester_subjects.each do |semester_subject| %>
+  <% @semester_subjects.sort!{|a,b| a.san_subject.kind==b.san_subject.kind ? ( a.optional == b.optional ? (a.san_subject.title <=> b.san_subject.title) : ( a.optional ? 1:-1 )) : b.san_subject.kind <=> a.san_subject.kind }.each do |semester_subject| %>
       <tr class="tr-<%= cycle('odd', 'even') %>">
         <td class="col-2"><%=h semester_subject.san_subject.title %></td>
-        <td class="col-2"><%=h semester_subject.san_subject.kind %></td>
+        <% if semester_subject.san_subject.kind=="University" %>
+          <% subject_kind = "Πανεπιστημιακό" %>
+        <% else %>
+          <% subject_kind = "Στρατιωτικό" %>
+        <% end %>
+        <td class="col-2">
+          <%=h subject_kind %></td>
         <% if semester_subject.optional %>
           <td class="col-2"><%= t('optional') %></td>
         <% else %>

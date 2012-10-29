@@ -1,0 +1,21 @@
+<table width="100%" id="listing">
+  <tr class="tr-head">
+    <td>Α/Α</td>
+    <td>Τίτλος</td>
+    <td align="center">Πρώτο έτος</td>
+    <td align="center">Έτος αποφοίτησης</td>
+    <td align="center">Ενέργειες</td>
+  </tr>
+  <% index = 0 %>
+<% @groups.each do |group| %>
+   <tr class="tr-<%= cycle('odd', 'even') %>">
+    <% index += 1 %>
+    <td align="center"><%= index %></td>
+    <td><%= link_to group.name, group %></td>
+    <td align="center"><%= group.first_year.year %></td>
+    <td align="center"><%= group.graduation_year.year %></td>
+    <td align="center"><%= link_to 'Προβολή', group %> | <%= link_to 'Μετατροπή', edit_group_path(group) %> | <%= link_to 'Διαγραφή', group, :confirm => t('are_you_completely_sure'), :method => :delete %></td>
+  </tr>
+<% end %>
+</table>
+

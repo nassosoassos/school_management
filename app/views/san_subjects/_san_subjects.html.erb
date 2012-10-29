@@ -1,0 +1,42 @@
+	<div id="subjects">
+      <table width="100%" id="listing">
+        <tr class="tr-head">
+          <td colspan="3" align="center"> Πανεπιστημιακά Μαθήματα </td>
+        </tr>
+	 <tr class="tr-head">
+       <td><%= t('title') %></td>
+       <td></td>
+       <td></td>
+    </tr>
+    <% @san_university_subjects.sort!{|a, b| a.kind==b.kind ? (a.title <=> b.title):a.kind <=>b.kind}.each do |san_subject| %>
+    <tr class="tr-<%= cycle('odd', 'even') %>">
+      <td class="col-2"><%=h san_subject.title %></td>
+      <td class="col-5"> <%= link_to image_tag("/images/buttons/edit_small.png"), san_subject, :method => :edit %></td>
+      <td class="col-5"> <%= link_to image_tag("/images/buttons/tt_delete.png"), san_subject, :confirm => 'Είστε σίγουρος;', :method => :delete %></td>
+  </tr>
+<% end %>
+</table>
+<%= will_paginate @san_university_subjects %>
+</div>
+	<div id="subjects">
+      <table width="100%" id="listing">
+        <tr class="tr-head">
+          <td colspan="3" align="center"> Στρατιωτικά Μαθήματα </td>
+        </tr>
+	 <tr class="tr-head">
+       <td><%= t('title') %></td>
+       <td></td>
+       <td></td>
+    </tr>
+    <% @san_military_subjects.sort!{|a, b| a.kind==b.kind ? (a.title <=> b.title):a.kind <=>b.kind}.each do |san_subject| %>
+    <tr class="tr-<%= cycle('odd', 'even') %>">
+      <td class="col-2"><%=h san_subject.title %></td>
+      <td class="col-5"> <%= link_to image_tag("/images/buttons/edit_small.png"), san_subject, :method => :edit %></td>
+      <td class="col-5"> <%= link_to image_tag("/images/buttons/tt_delete.png"), san_subject, :confirm => 'Είστε σίγουρος;', :method => :delete %></td>
+  </tr>
+<% end %>
+</table>
+<%= will_paginate @san_military_subjects %>
+	
+    </div>
+

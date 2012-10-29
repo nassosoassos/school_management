@@ -137,71 +137,54 @@ function RemoveFromListbox(IsCompulsory)
 </div>
 
 <div id="page-yield">
+  <span class="span-sub-heading"><%= t('semester_info') %></span>
+   <hr class="sub-heading"></hr>
 
-<% form_for(@san_semester, :url => {:action=> 'update'}, :html=> {:multipart=>true}) do |s| %>
+   <% form_for(@san_semester, :url => {:action=> 'update'}, :html=> {:multipart=>true}) do |s| %>
 
-		<table cellpadding="0" cellspacing="0" width="100%" height="100%" border="0">
-			<tr>
-				<td valign="top" style="padding: 10px">
+    <%= error_messages_for 'san_semester', :header_message => nil %>
 
-					
-<table cellpadding="0" cellspacing="0" border="0" width="100%" height="100%">
-	<tr>
-		<td valign="top" style="PADDING:5px;">
-			<table cellpadding="0" cellspacing="0" border="0" width="100%" height="100%">
-				<tr>
-					<td height="1" class="pagetitle" valign="top">
-						
-<span id="c0_TitleLabel">Εξάμηνο</span>
-					</td>
-				</tr>
-				<tr>
-					<td valign="top" style="PADDING-TOP:5px">
-						
-
-<DIV style="HEIGHT: 1%">
-
-<TABLE class=inputTable cellSpacing=1 cellPadding=0 border=0>
-  <TR>
-    <TD class=label width=120>
-<label for="c0_HeaderSemesterDropDown" id="c0_HeaderSemesterLabel" class="req">Εξάμηνο:</label></TD>
-    <TD width=320>
-      <%= select :san_semester, :number, {"8" => 8, "7" => 7, "6" => 6, "5" => 5, "4" => 4, "3" => 3, "2" => 2, "1" => 1}, :selected=>@san_semester.number %></TD>
-    <TD class=label width=120>
-<label for="c0_HeaderYearDropDown" id="c0_HeaderSemesterYearLabel" class="req">Ακαδημαϊκό Έτος:</label></TD>
-    <TD width=300>
-      <%= s.text_field :year %>	    
-    </TD>
-    <TD width="100%"></TD></TR>
-  <TR>
-    <TD class=label>
-<label for="c0_HeaderUniFactorTextBox" id="c0_HeaderUniFactorLabel">Πανεπιστημ. Συντ.:</label></TD>
-    <TD>
-      <%= s.text_field :uni_weight, :value=>@san_semester.uni_weight%></TD>
-    <TD class=label>
-<label for="c0_HeaderArmyFactorTextBox" id="c0_HeaderArmyFactorLabel">Στρατ. Συντ.:</label></TD>
-    <TD>
-      <%= s.text_field :mil_weight , :value=>@san_semester.mil_weight%></TD>
-      <TD width="100%"></TD></TR>
-  <TR>
-    <TD class=label>
-<label for="c0_HeaderUniFactorTextBox" id="c0_HeaderUniFactorLabel">Στρατ. Προσόντα Συντ.:</label></TD>
-    <TD>
-      <%= s.text_field :mil_p_weight, :value=>@san_semester.mil_p_weight %></TD>
-    <TD class=label> </TD>
-    <TD></TD>
-      <TD width="100%"></TD></TR>
-</TABLE></DIV>
-<DIV class=fmContent style="HEIGHT: 96%">
-<TABLE class=dialogTabContent height="90%" cellSpacing=0 cellPadding=0 
-width="110%" border=0>
-  <TR>
-    <TD 
-    style="PADDING-RIGHT: 10px; PADDING-LEFT: 10px; PADDING-BOTTOM: 10px; PADDING-TOP: 0px" 
-    vAlign=top noWrap>
-
+      <div class="label-field-pair">
+        <label for="semester_number"><%= t('semester_number') %><span class="necessary-field">*</span></label>
+        <div class="text-input-bg">
+          <%= select :san_semester, :number, {"8" => 8, "7" => 7, "6" => 6, "5" => 5, "4" => 4, "3" => 3, "2" => 2, "1" => 1}, :selected=>@san_semester.number %>
+        </div>
+      </div>
+      <hr class="label-underline"></hr>
+      
+      <div class="label-field-pair">
+        <label for="semester_year"><%= t('academic_year') %><span class="necessary-field">*</span></label>
+        <div class="text-input-bg">
+          <%= s.text_field :year %>	    
+        </div>
+      </div>
+      <hr class="label-underline"></hr>
+      <div class="label-field-pair">
+        <label for="semester_uni_weight"><%= t('factor')+' '+t('of_university_subjects') %><span class="necessary-field">*</span></label>
+        <div class="text-input-bg">
+          <%= s.text_field :uni_weight, :value=>@san_semester.uni_weight%>
+        </div>
+      </div>
+      <hr class="label-underline"></hr>
+      <div class="label-field-pair">
+        <label for="semester_mil_weight"><%= t('factor')+' '+t('of_military_subjects') %><span class="necessary-field">*</span></label>
+        <div class="text-input-bg">
+          <%= s.text_field :mil_weight, :value=>@san_semester.mil_weight%>
+        </div>
+      </div>
+      <hr class="label-underline"></hr>
+      <div class="label-field-pair">
+        <label for="semester_mil_weight"><%= t('factor')+' '+t('of_military_performance') %><span class="necessary-field">*</span></label>
+        <div class="text-input-bg">
+          <%= s.text_field :mil_weight, :value=>@san_semester.mil_p_weight%>
+        </div>
+      </div>
+      <p/>
+     
 		<!-- Mandatory-->
 								
+  <span class="span-sub-heading"><%= t('san_subjects') %></span>
+   <hr class="sub-heading"></hr>
     <table id="inputTable" cellpadding="2" cellspacing="0" border="0" width="100%" height="100%" >
 	<tr>
         	<td width="40%">
@@ -261,41 +244,8 @@ width="110%" border=0>
 		</tr>
            </table>
 						                     
-<DIV style="DISPLAY: none"><IFRAME id="c0_DownloadFrame">
-		</div>
-	</ist:ContentRegion>
-</ist:MasterPage>
-</IFRAME></DIV>
-					</td>
-				</tr>
-			</table>
-		</td>
-	</tr>
-</table>
-
-
-				</td>
-			</tr>
-		</table>
-	
-															<!-- // Page Content Region --></TD>
-													</TR>
-												</TABLE>
-											</DIV>
-										</TD>
-									</TR>
-								</TABLE>
-							</TD>
-					</TR> <!-- // Page Main Region --> <!-- Page Footer -->
-					<TR>
-						<TD class="TaskBar" style="COLOR: white" vAlign="middle" align="center" height="27">
-						</TD>
-					</TR> <!-- // Page Footer --></TABLE>
-
    <%=select_tag 'compulsory_subjects[]', options_for_select(@compulsory_semester_subjects.map {|s| [s.title, s.id]}, @compulsory_semester_subjects.map(&:id)), :multiple => true, :size => "1", :style => "visibility:hidden;height:0%"  %>
    <%=select_tag 'optional_subjects[]', options_for_select(@optional_semester_subjects.map {|s| [s.title, s.id]}, @optional_semester_subjects.map(&:id)), :multiple => true, :size => "1", :style => "visibility:hidden;height:0%;"  %>
-
-
 
    <%= submit_tag "", :value => "#{t('save_changes')}", :class => "submit_button" %>
   <% end %>

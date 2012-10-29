@@ -5,7 +5,8 @@ class SanSubjectsController < ApplicationController
   # GET /san_subjects
   # GET /san_subjects.xml
   def index
-    @san_subjects = SanSubject.paginate :page=>params[:page], :per_page=>14
+    @san_university_subjects = SanSubject.paginate :page=>params[:page], :per_page=>15, :conditions=>{:kind=>'University'}
+    @san_military_subjects = SanSubject.paginate :page=>params[:page], :per_page=>15, :conditions=>{:kind=>'Military'}
 
 #    respond_to do |format|
 #      format.html # index.html.erb
@@ -30,14 +31,19 @@ class SanSubjectsController < ApplicationController
     @san_subject = SanSubject.new
 
     respond_to do |format|
-      format.html # new.html.erb
-      format.xml  { render :xml => @san_subject }
+      #format.html # new.html.erb
+      #format.xml  { render :xml => @san_subject }
+      format.js { render :action => 'new' }
     end
   end
 
   # GET /san_subjects/1/edit
   def edit
     @san_subject = SanSubject.find(params[:id])
+    respond_to do |format|
+      format.html { }
+      format.js {render :action => 'edit' }
+    end
   end
 
   # POST /san_subjects
@@ -45,15 +51,13 @@ class SanSubjectsController < ApplicationController
   def create
     @san_subject = SanSubject.new(params[:san_subject])
 
-    respond_to do |format|
-      if @san_subject.save
-        flash[:notice] = 'SanSubject was successfully created.'
-        format.html { redirect_to(@san_subject) }
-        format.xml  { render :xml => @san_subject, :status => :created, :location => @san_subject }
-      else
-        format.html { render :action => "new" }
-        format.xml  { render :xml => @san_subject.errors, :status => :unprocessable_entity }
-      end
+    if @san_subject.save
+
+      @san_university_subjects = SanSubject.paginate :page=>params[:page], :per_page=>15, :conditions=>{:kind=>'University'}
+      @san_military_subjects = SanSubject.paginate :page=>params[:page], :per_page=>15, :conditions=>{:kind=>'Military'}
+      flash[:notice] = t('flash_msg44')
+    else
+      @error = true
     end
   end
 
@@ -62,15 +66,12 @@ class SanSubjectsController < ApplicationController
   def update
     @san_subject = SanSubject.find(params[:id])
 
-    respond_to do |format|
-      if @san_subject.update_attributes(params[:san_subject])
-        flash[:notice] = 'SanSubject was successfully updated.'
-        format.html { redirect_to(@san_subject) }
-        format.xml  { head :ok }
-      else
-        format.html { render :action => "edit" }
-        format.xml  { render :xml => @san_subject.errors, :status => :unprocessable_entity }
-      end
+    if @san_subject.update_attributes(params[:san_subject])
+      @san_university_subjects = SanSubject.paginate :page=>params[:page], :per_page=>15, :conditions=>{:kind=>'University'}
+      @san_military_subjects = SanSubject.paginate :page=>params[:page], :per_page=>15, :conditions=>{:kind=>'Military'}
+      flash[:notice] = t('flash_msg45')
+    else
+      @errors = @san_subject.errors
     end
   end
 

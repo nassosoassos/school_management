@@ -113,12 +113,15 @@
         </div>
         <hr class="label-underline"></hr>
 
+        <% # FIXME: Left out for school %>
+        <% if false %>
         <div class="label-field-pair">
           <label for="student_grade"><%= t('course_and_batch') %></label>
           <div class="text-input-bg"><%= select :student, :batch_id, Batch.active.map {|b| [b.full_name, b.id]} %></div>
     	</div> 
 
         <hr class="label-underline"></hr>
+      <% end %>
 
         <div class="label-field-pair">
           <label for="student_date_of_birth"><%= t('date_of_birth') %> <span class="necessary-field">*</span> </label>
