@@ -1,8 +1,9 @@
 class SanSemester < ActiveRecord::Base
   belongs_to :group
+  belongs_to :academic_year
   has_many :san_subjects, :through => :semester_subjects, :source => :subject_id
   has_many :semester_subjects, :foreign_key => :semester_id, :dependent => :destroy
-  validates_presence_of :number, :year, :uni_weight, :mil_weight, :mil_p_weight
+  validates_presence_of :number, :academic_year_id, :uni_weight, :mil_weight, :mil_p_weight
   validates_numericality_of :uni_weight, :only_integer=>true, :greater_than=>1, :less_than=>100, :allow_nil=>true, 
     :message => "#{t('must_be_greater_than_zero')}"
   validates_numericality_of :mil_weight, :greater_than=>0, :allow_nil=>true, 

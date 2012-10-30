@@ -12,7 +12,6 @@
     <li><%= link_to t('semesters'), :action => "edit_semesters" %></li>
     <li><%= link_to t('grades'), :action => "grades" %></li>
     <li><%= link_to t('lists'), :action => "lists" %></li>
-    <li><%= link_to t('edit_text'), edit_group_path(@group) %> 
     <li><%= link_to t('view_all'), :action => "index" %></li>
   </ul>
 </div>
@@ -26,17 +25,14 @@
   </div>
 <div class="box">
 
-	<div id="subjects">
 
-<p>
-  <b>Ημερομηνία πρώτης εγγραφής:</b>
-  <%=h @group.first_year %>
-</p>
-
-<p>
-<b>Ημερομηνία αποφοίτησης:</b>
-  <%=h @group.graduation_year %>
-  </p>
+  <div id="profile_view">
+    <div class="profile_info_label2"><%= t('first_year') %></div>
+    <div class="profile_info_text2"> <%= @group.first_year.year %> </div>
+    
+    <div class="profile_info_label2"><%= t('graduation_year') %></div>
+    <div class="profile_info_text2"> <%= @group.graduation_year.year %> </div>
+  </div>
 
   <div id="semesters">
    <table id="listing">
@@ -48,10 +44,10 @@
       <td>Ακαδημαϊκό Έτος</td>
       <td>Περατωθέν</td>
     </tr>
-    <% @semesters.sort!{|a,b| a.year==b.year ? (b.number <=> a.number) : b.year <=> a.year}.each do |sem| %>
+    <% @semesters.sort!{|a,b| a.academic_year.start_date==b.academic_year.start_date ? (b.number <=> a.number) : b.academic_year.start_date <=> a.academic_year.end_date}.each do |sem| %>
       <tr class="tr-<%= cycle('odd', 'even') %>">
-        <td class="col-1"> <%= sem.number %> </td>
-        <td class="col-2"> <%= sem.year %> </td>
+        <td class="col-1" align="center"> <%= link_to sem.number, sem %> </td>
+        <td class="col-2"> <%= sem.academic_year.name %> </td>
         <% if sem.id == @group.active_semester_id %>
           <td class="col-1"> Τρέχον </td>
         <% else %>

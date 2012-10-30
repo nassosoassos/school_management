@@ -6,6 +6,7 @@ div#semesters {
 #profile_view{
     margin:25px auto;
     width:700px;
+    height:100px;
 }
 
 .profile_info_label {
@@ -26,7 +27,7 @@ div#semesters {
     padding-top:15px;
     padding-bottom:5px;
     height:25px;
-    width:150px;
+    width:300px;
     text-align:right;
     padding-right:20px;
     float:left;
@@ -41,7 +42,7 @@ div#semesters {
     padding-bottom:5px;
     padding-left:20px;
     height:25px;
-    width:500px;
+    width:300px;
     float:left;
     font-weight:bold;
     color:#000;
@@ -53,7 +54,7 @@ div#semesters {
     padding-bottom:5px;
     padding-left:20px;
     height:25px;
-    width:500px;
+    width:300px;
     float:left;
     font-weight:bold;
     color:#000;

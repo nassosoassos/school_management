@@ -17,6 +17,7 @@
 #specific language governing permissions and limitations
 #under the License. -%>
 
+<% unless @year.blank? %>
 <% remote_form_for @student, :url=>{ :action=>'update_grades', :id=>@student.id, :year=>@year}, :html=>{:multipart=>true, :method=>:post} do |g_form| %>
 
   <%= g_form.error_messages %>
@@ -205,5 +206,5 @@
 <p/>
   <%= submit_tag "", :value => "► Αποθήκευση Αλλαγών", :class => "submit_button2" %>
 
+  <% end %>
 <% end %>
-

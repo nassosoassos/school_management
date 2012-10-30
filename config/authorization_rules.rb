@@ -1398,6 +1398,15 @@ authorization do
       :update,
       :destroy
     ]
+    has_permission_on [:academic_years], :to => [
+      :new,
+      :show,
+      :index,
+      :edit,
+      :create,
+      :update,
+      :destroy
+    ]
     has_permission_on [:courses],
       :to => [
       :index,

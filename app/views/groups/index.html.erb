@@ -23,7 +23,7 @@
   </div>
   <div class="box">
 
-    <div class="groups">
+    <div id="groups">
 
 <table width="100%" id="listing">
   <tr class="tr-head">
@@ -41,7 +41,7 @@
     <td><%= link_to group.name, group %></td>
     <td align="center"><%= group.first_year.year %></td>
     <td align="center"><%= group.graduation_year.year %></td>
-    <td align="center"><%= link_to 'Προβολή', group %> | <%= link_to 'Μετατροπή', edit_group_path(group) %> | <%= link_to 'Διαγραφή', group, :confirm => 'Είστε βέβαιος;', :method => :delete %></td>
+    <td align="center"><%= link_to 'Προβολή', group %> | <%= link_to_remote 'Μετατροπή', :url=>{:controller=>"groups", :action=>"edit", :id=>group.id}, :method=>:get %> | <%= link_to 'Διαγραφή', group, :confirm => 'Είστε βέβαιος;', :method => :delete %></td>
   </tr>
 <% end %>
 </table>

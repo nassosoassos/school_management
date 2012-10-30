@@ -1,0 +1,19 @@
+
+<% form_remote_for @academic_year do |f| %>
+  <div id="form-errors"> </div>
+
+  <div class="label-field-pair">
+    <label for="academic_year_start_date"><%= t('start_date')%></label>
+    <div class="date-input-bg">
+      <%= f.date_select :start_date, :discard_day=>true, :start_year=>2003 %>
+    </div>
+  </div>
+  <div class="label-field-pair">
+    <label for="academic_year_end_date"><%= t('end_date')%></label>
+    <div class="date-input-bg">
+      <%= f.date_select :end_date, :discard_day=>true, :start_year=>2003 %>
+    </div>
+  </div>
+  <%= f.submit t('create'), :class => "submit_button"  %>
+<% end %>
+

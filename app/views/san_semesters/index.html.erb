@@ -33,14 +33,14 @@
     <td><%= t('actions') %></td>
   </tr>
 
-  <% @san_semesters.sort!{|a, b| a.year==b.year ? (b.number <=> a.number):b.year<=>a.year}.each do |san_semester| %>
+  <% @san_semesters.sort!{|a, b| a.academic_year.start_date==b.academic_year.start_date ? (b.number <=> a.number):b.academic_year.start_date<=>a.academic_year.start_date}.each do |san_semester| %>
    <tr class="tr-<%= cycle('odd', 'even') %>">
 
-    <td class="col-1"><%=h san_semester.number %></td>
-    <td class="col-1"><%=h san_semester.year %></td>
-    <td class="col-1"><%=h san_semester.uni_weight %></td>
-    <td class="col-1"><%=h san_semester.mil_weight %></td>
-    <td class="col-1"><%=h san_semester.mil_p_weight %></td>
+    <td class="col-1" align="center"><%=link_to san_semester.number, san_semester %></td>
+    <td class="col-1"><%=h san_semester.academic_year.name %></td>
+    <td class="col-1" align="center"><%=h san_semester.uni_weight %></td>
+    <td class="col-1" align="center"><%=h san_semester.mil_weight %></td>
+    <td class="col-1" align="center"><%=h san_semester.mil_p_weight %></td>
     <td class="col-2"><%= link_to t('show'), san_semester %> | <%= link_to t('edit_text'), edit_san_semester_path(san_semester) %> | <%= link_to t('delete_text'), san_semester, :confirm => 'Είστε σίγουρος;', :method => :delete %></td>
   </tr>
 <% end %>

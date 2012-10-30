@@ -1,5 +1,6 @@
 ActionController::Routing::Routes.draw do |map|
 
+  map.resources :academic_years
   map.resources :san_semesters
   map.resources :san_subjects
   map.resources :semester_subjects

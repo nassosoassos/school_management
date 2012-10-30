@@ -35,6 +35,7 @@ class SanSemestersController < ApplicationController
   # GET /san_semesters/new.xml
   def new
     @san_semester = SanSemester.new
+    @academic_years = AcademicYear.all
 
     @uni_subjects = SanSubject.find_all_by_kind("University")
     @mil_subjects = SanSubject.find_all_by_kind("Military")
@@ -48,6 +49,7 @@ class SanSemestersController < ApplicationController
   # GET /san_semesters/1/edit
   def edit
     @san_semester = SanSemester.find(params[:id])
+    @academic_years = AcademicYear.all
     @uni_subjects = SanSubject.find_all_by_kind("University")
     @mil_subjects = SanSubject.find_all_by_kind("Military")
     @compulsory_semester_subjects = SanSubject.find(SemesterSubjects.find_all_by_semester_id_and_optional(@san_semester.id, false).map(&:subject_id))

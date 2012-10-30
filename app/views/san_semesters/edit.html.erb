@@ -155,7 +155,7 @@ function RemoveFromListbox(IsCompulsory)
       <div class="label-field-pair">
         <label for="semester_year"><%= t('academic_year') %><span class="necessary-field">*</span></label>
         <div class="text-input-bg">
-          <%= s.text_field :year %>	    
+            <%= s.select :academic_year_id, @academic_years.map {|a| [a.name, a.id]} %>	    
         </div>
       </div>
       <hr class="label-underline"></hr>

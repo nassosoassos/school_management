@@ -105,7 +105,7 @@ class Student < ActiveRecord::Base
   end
 
   def gpa_for_year(year, kind)
-    student_semesters = SanSemester.find_all_by_year_and_group_id(year, self.group_id)
+    student_semesters = SanSemester.find_all_by_academic_year_id_and_group_id(year.map(&:id), self.group_id)
 
     uni_sum = 0
     mil_sum = 0

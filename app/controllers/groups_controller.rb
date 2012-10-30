@@ -66,7 +66,7 @@ class GroupsController < ApplicationController
       if sem.id == @group.active_semester_id
         is_active = true
       end
-      sem_info = {:number=>sem.number, :year=>sem.year, :id=>sem.id, :is_active=>is_active }
+      sem_info = {:number=>sem.number, :year=>sem.academic_year.name, :id=>sem.id, :is_active=>is_active }
       @active_semesters.push(sem_info)
     end
   end
@@ -226,7 +226,7 @@ class GroupsController < ApplicationController
   def show
     @group = Group.find(params[:id])
     group_students = Student.find_all_by_group_id(@group.id)
-    @students = group_students.paginate :page=>params[:page], :per_page=>3
+    @students = group_students.paginate :page=>params[:page], :per_page=>15
     @semesters = SanSemester.find_all_by_group_id(@group.id)
 
 
@@ -251,16 +251,20 @@ class GroupsController < ApplicationController
   # GET /groups/1/edit
   def edit
     @group = Group.find(params[:id])
+    respond_to do |format|
+      format.html { }
+      format.js {render :action => 'edit' }
+    end
   end
 
   # POST /groups
   # POST /groups.xml
   def create
     @group = Group.new(params[:group])
-    @groups = Group.all
 
     if @group.save
-      flash[:notice] = 'Group was successfully created.'
+      flash[:notice] = t('flash_msg46')
+      @groups = Group.all
     else
       @error = true
     end
@@ -271,16 +275,15 @@ class GroupsController < ApplicationController
   def update
     @group = Group.find(params[:id])
 
-    respond_to do |format|
       if @group.update_attributes(params[:group])
-        flash[:notice] = 'Group was successfully updated.'
-        format.html { redirect_to(@group) }
-        format.xml  { head :ok }
+        flash[:notice] = t('flash_msg47')
+        @groups = Group.all
+       # format.html { redirect_to(@group) }
+       # format.xml  { head :ok }
       else
-        format.html { render :action => "edit" }
-        format.xml  { render :xml => @group.errors, :status => :unprocessable_entity }
+       # format.html { render :action => "edit" }
+       # format.xml  { render :xml => @group.errors, :status => :unprocessable_entity }
       end
-    end
   end
 
   # DELETE /groups/1

@@ -266,24 +266,30 @@ class StudentController < ApplicationController
 
   def year_grades
     @student = Student.find(params[:id])
-    @year = params[:year]
-    @semester_ids = SanSemester.find_all_by_year(@year)
-    student_subjects = StudentsSubject.find_all_by_student_id_and_san_semester_id(params[:id], @semester_ids)
-    @university_student_subjects = Array.new
-    @military_student_subjects = Array.new
-    student_subjects.each do |subject|
-      if SanSubject.find(subject.subject_id).kind=='University'
-        @university_student_subjects.push(subject)
-      else
-        @military_student_subjects.push(subject)
-      end
+    if params[:year_id].blank?
+      @year = nil
+    else 
+      @year = AcademicYear.find(params[:year_id])
     end
-    @student_mil_perf = StudentMilitaryPerformance.find_all_by_student_id_and_san_semester_id(params[:id], @semester_ids)
+    unless @year.blank?
+      @semester_ids = SanSemester.find_all_by_academic_year_id(@year.id)
+      student_subjects = StudentsSubject.find_all_by_student_id_and_san_semester_id(params[:id], @semester_ids)
+      @university_student_subjects = Array.new
+      @military_student_subjects = Array.new
+      student_subjects.each do |subject|
+        if SanSubject.find(subject.subject_id).kind=='University'
+          @university_student_subjects.push(subject)
+        else
+          @military_student_subjects.push(subject)
+        end
+      end
+      @student_mil_perf = StudentMilitaryPerformance.find_all_by_student_id_and_san_semester_id(params[:id], @semester_ids)
     
-    # Find all the academic years to which the student has been subscribed
-    group_id = @student.group_id
+      # Find all the academic years to which the student has been subscribed
+      group_id = @student.group_id
 
-    @total_gpa, @global_sum, @uni_gpa, @mil_gpa, @mil_p_gpa, @n_unfinished_subjects = @student.gpa_for_year(@year,'all')
+      @total_gpa, @global_sum, @uni_gpa, @mil_gpa, @mil_p_gpa, @n_unfinished_subjects = @student.gpa_for_year([@year],'all')
+    end
     render :update do |page|
       page.replace_html 'year_grades', :partial => 'year_grades'
     end
@@ -291,7 +297,7 @@ class StudentController < ApplicationController
 
   def grades
     @student = Student.find(params[:id])
-    @years = SanSemester.find_all_by_group_id(@student.group_id).map(&:year).uniq
+    @years = SanSemester.find_all_by_group_id(@student.group_id).map(&:academic_year).uniq
     student_subjects = StudentsSubject.find_all_by_student_id(params[:id])
      
     # Find all the academic years to which the student has been subscribed
@@ -302,12 +308,12 @@ class StudentController < ApplicationController
 
   def grades_pdf
     @student = Student.find(params[:id])
-    @years = SanSemester.find_all_by_group_id(@student.group_id).map(&:year).uniq
+    @years = SanSemester.find_all_by_group_id(@student.group_id).map(&:academic_year).uniq
 
     @total_gpa, @global_sum, @uni_gpa, @mil_gpa, @mil_p_gpa, @n_unfinished_subjects = @student.gpa_for_year(@years,'all')
     @grades_info = {}
     @years.each do |y|
-      semester_ids = SanSemester.find_all_by_year(y)
+      semester_ids = SanSemester.find_all_by_academic_year_id(y.id)
       student_subjects = StudentsSubject.find_all_by_student_id_and_san_semester_id(params[:id], semester_ids)
       university_student_subjects = Array.new
       military_student_subjects = Array.new

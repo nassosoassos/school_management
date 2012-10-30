@@ -20,6 +20,7 @@
 <% arrow_dir = rtl? ? "◀" : "▶" %>
 <ul id="main-menu">
   <li class="a"><%= link_to t('dashboard_text'), :controller => "user", :action => "dashboard" %></li>
+  <li class="a"><%= link_to t('academic_years'), :controller => "academic_years", :action => "index" %></li>
   <li class="a"><%= link_to t('san_subjects'), :controller => "san_subjects", :action => "index" %></li>
   <li class="a"><%= link_to t('san_semesters'), :controller => "san_semesters", :action => "index" %></li>
   <li class="a"><%= link_to t('groups'), :controller => "groups", :action => "index" %></li>
