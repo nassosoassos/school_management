@@ -19,8 +19,8 @@
 
 <div id="content-header">
      <%= image_tag("/images/show_settings.png") %>
-  <h1>Μαθήματα</h1>
-  <h3>Διαχείριση</h3>
+  <h1>t('san_subjects')</h1>
+  <h3>t('control')</h3>
   <div id="app-back-button">
     <%= link_to_function image_tag("/images/buttons/back.png",:border => 0), "history.back()" %>
   </div>
@@ -45,7 +45,7 @@
 	<div id="subjects">
       <table width="100%" id="listing">
         <tr class="tr-head">
-          <td colspan="3" align="center"> Πανεπιστημιακά Μαθήματα </td>
+          <td colspan="3" align="center"> t('university_subjects')</td>
         </tr>
 	 <tr class="tr-head">
        <td><%= t('title') %></td>
@@ -56,7 +56,7 @@
     <tr class="tr-<%= cycle('odd', 'even') %>">
       <td class="col-2"><%=h san_subject.title %></td>
       <td class="col-5"> <%= link_to_remote image_tag("/images/buttons/edit_small.png"), :url=>{:action=>'edit', :id=>san_subject.id}, :method=>:get %></td>
-      <td class="col-5"> <%= link_to image_tag("/images/buttons/tt_delete.png"), san_subject, :confirm => 'Είστε σίγουρος;', :method => :delete %></td>
+      <td class="col-5"> <%= link_to image_tag("/images/buttons/tt_delete.png"), san_subject, :confirm => t('are_you_absolutely_sure'), :method => :delete %></td>
   </tr>
 <% end %>
 </table>
@@ -65,7 +65,7 @@
 	<div id="subjects">
       <table width="100%" id="listing">
         <tr class="tr-head">
-          <td colspan="3" align="center"> Στρατιωτικά Μαθήματα </td>
+          <td colspan="3" align="center"> t('military_subjects') </td>
         </tr>
 	 <tr class="tr-head">
        <td><%= t('title') %></td>
@@ -76,7 +76,7 @@
     <tr class="tr-<%= cycle('odd', 'even') %>">
       <td class="col-2"><%=h san_subject.title %></td>
       <td class="col-5"> <%= link_to_remote image_tag("/images/buttons/edit_small.png"), :url=>{:action=>'edit', :id=>san_subject.id}, :method=>:get %></td>
-      <td class="col-5"> <%= link_to image_tag("/images/buttons/tt_delete.png"), san_subject, :confirm => 'Είστε σίγουρος;', :method => :delete %></td>
+      <td class="col-5"> <%= link_to image_tag("/images/buttons/tt_delete.png"), san_subject, :confirm => t('are_you_absolutely_sure'), :method => :delete %></td>
   </tr>
 <% end %>
 </table>

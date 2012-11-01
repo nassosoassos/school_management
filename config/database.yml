@@ -2,6 +2,7 @@ development:
       host: localhost
       adapter: mysql
       database: sandb
+      encoding: utf8
       port: 3306
       username: root
       password: san
@@ -18,6 +19,7 @@ production:
       host: localhost
       adapter: mysql
       database: sandb
+      encoding: utf8
       port: 3306
       username: root
       password: san

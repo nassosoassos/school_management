@@ -1,0 +1,33 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  StudentSemesterId: MyString
+  SemesterId: MyString
+  StudentId: MyString
+  Qualifications: 1.5
+  MeavAvgUniv: 1.5
+  UniversityUnits: 1.5
+  MeanAvgMil: 1.5
+  MilitaryUnits: 1.5
+  Seniority: 1.5
+  StudentSemLessonAssociateId: MyString
+  LessonSemesterAssociateId: MyString
+  GradeA: 1.5
+  GradeB: 1.5
+  GradeC: 1.5
+
+two:
+  StudentSemesterId: MyString
+  SemesterId: MyString
+  StudentId: MyString
+  Qualifications: 1.5
+  MeavAvgUniv: 1.5
+  UniversityUnits: 1.5
+  MeanAvgMil: 1.5
+  MilitaryUnits: 1.5
+  Seniority: 1.5
+  StudentSemLessonAssociateId: MyString
+  LessonSemesterAssociateId: MyString
+  GradeA: 1.5
+  GradeB: 1.5
+  GradeC: 1.5
