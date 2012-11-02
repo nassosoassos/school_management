@@ -52,7 +52,7 @@
        <td></td>
     </tr>
      <% unless @academic_years.blank? %>
-    <% @academic_years.sort!{|a, b| a.start_year <=> b.start_year}.each do |ac_year| %>
+    <% @academic_years.sort!{|a, b| a.start_date <=> b.start_date}.each do |ac_year| %>
     <tr class="tr-<%= cycle('odd', 'even') %>">
       <td class="col-2"><%=h ac_year.name %></td>
       <td class="col-5"> <%= link_to_remote image_tag("/images/buttons/edit_small.png"), :url=>{:action=>'edit', :id=>ac_year.id}, :method=>:get %></td>

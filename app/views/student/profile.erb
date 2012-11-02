@@ -142,7 +142,7 @@
       <% end  %>
       <tr class="even left"><td><%= t('contact_message') %></td><td class="right">
           <%= link_to @immediate_contact.full_name, :controller => "student", :action => "guardians", :id => @student.id \
-            unless @immediate_contact.nil? %><%= "(" + @immediate_contact.mobile_phone + ")" if @immediate_contact and !@immediate_contact.mobile_phone.empty? %>
+            unless @immediate_contact.nil? %><%= "(" + @immediate_contact.mobile_phone + ")" if @immediate_contact and @immediate_contact.mobile_phone and !@immediate_contact.mobile_phone.empty? %>
           <% if @current_user.admin? %>
             <% unless @immediate_contact.nil? %>
               <br/><span>(<%= link_to "#{t('change_contact')}", :controller => 'student', :action => 'admission3_1', :id => @student.id %>)</span>

@@ -165,7 +165,7 @@ class Student < ActiveRecord::Base
         mil_p_weight = semester.mil_p_weight
         # Estimate average military performance
         student_mil_performance = StudentMilitaryPerformance.find_by_san_semester_id_and_student_id(semester.id, self.id)
-        if student_mil_performance.grade != nil
+        if student_mil_performance and student_mil_performance.grade
           n_mil_p_semesters += 1
           mil_p_sum += student_mil_performance.grade
           mil_p_weights_sum += mil_p_weight

@@ -26,7 +26,7 @@
             <td>
              <%= t('first_name') %>
             </td>
-            <td> <%= t('batch') %></td>
+            <td> <%= t('group') %></td>
             <td> <%= t('adm_no') %></td>
 
           </tr>
@@ -35,7 +35,7 @@
             <tr class="tr-<%= cycle('odd', 'even') %>">
               <td class="col-1"><%= i+1 %></td>
               <td class="col-4"><%=  link_to student.full_name, :controller => 'student', :action => 'profile', :id => student.id%></td>
-              <td class="col-4"><%= student.batch.full_name %></td>
+              <td class="col-4"><%= student.group.name %></td>
               <td class="col-1"><%= student.admission_no %></td>
             </tr>
           <% end %>

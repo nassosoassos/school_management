@@ -46,7 +46,7 @@
     <div class="profile_info_text"> <%= @san_semester.number %> </div>
 
     <div class="profile_info_label2"><%= t('academic_year') %></div>
-    <div class="profile_info_text2"> <%= @san_semester.year %> </div>
+    <div class="profile_info_text2"> <%= @san_semester.academic_year.name %> </div>
 
     <div class="profile_info_label2"><%= t('factor')+' '+t('of_university_subjects') %></div>
     <div class="profile_info_text2"> <%= @san_semester.uni_weight %> </div>
