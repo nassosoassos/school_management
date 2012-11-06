@@ -93,11 +93,11 @@
 
 
       <div class="section" align="center">
-        <h4>Βαθμολογία Σπουδαστή ανά Ακαδημαϊκό Έτος</h4>
-      </div>
-  <% @years.each do |y| %>
-
-    <div class="section" align="center"> <h5>Ακαδημαικό Έτος <%= y %></h5></div>
+        <h4>Βαθμολογία Σπουδαστή ανά Ακαδημαϊκό Έτος</h4></div>
+        <% @years.sort!{|a, b| a.start_date <=> b.start_date}.each do |y| %>
+        <div class="section" align="center">
+          <h5>Ακαδημαικό Έτος <%= y.name %></h5>
+        </div>
       <% university_student_subjects = @grades_info[y][:uni_subs] %>
       <% military_student_subjects = @grades_info[y][:mil_subs] %>
       <% uni_gpa = @grades_info[y][:uni_gpa] %>
@@ -117,7 +117,7 @@
       <td align="center">Εξέταση Γ</td>
   </tr>
 
-  <% university_student_subjects.each do |grade_set| %>
+  <% university_student_subjects.sort!{|a, b| a.san_semester.number == b.san_semester.number ? (a.san_subject.title <=> b.san_subject.title ) : a.san_semester.number <=> b.san_semester.number }.each do |grade_set| %>
       <% subject_id = grade_set.subject_id %>
       <tr class="<%= cycle('odd', 'even') %>">
         <td class="col-2">
@@ -167,7 +167,7 @@
         <% end %>
         <td align="center"><%= university_gpa_string %></td>
       </tr>
-  </table>
+    </table>
 
   <table width="100%" id="pdf-table" class="section">
     <tr class="table-header">
@@ -181,14 +181,14 @@
       <td>Εξέταση Γ</td>
   </tr>
 
-  <% military_student_subjects.each do |grade_set| %>
+  <% military_student_subjects.sort!{|a, b| a.san_semester.number == b.san_semester.number ? (a.san_subject.title <=> b.san_subject.title ) : a.san_semester.number <=> b.san_semester.number }.each do |grade_set| %>
       <% subject_id = grade_set.subject_id %>
       <tr class="<%= cycle('odd', 'even') %>">
         <td class="col-2">
           <%= SanSubject.find(subject_id).title %>
         </td>
         <td class="col-5" align="center">
-          <%= SanSemester.find_by_id(StudentsSubject.find_by_subject_id_and_group_id(subject_id, @student.group_id).san_semester_id ).number %>
+          <%= grade_set.san_semester.number %>
         </td>
         <td class="col-5" align="center"><div class="label-field-pair2">
                 <div class="text-input-bg2">
@@ -237,43 +237,23 @@
 
 <table width="35%" id="pdf-table" class="section">
     <tr class="table-header">
-      <td colspan=6>Στρατιωτικά Προσόντα/Διαγωγή</td>
+      <td colspan=2>Στρατιωτικά Προσόντα/Διαγωγή</td>
     </tr>
     <tr class="table-header">
-      <td>Εξάμηνο</td>
       <td>Βαθμός</td>
-  </tr>
-
-  <% student_mil_perf.each do |semester_grade| %>
-      <tr class="<%= cycle('odd', 'even') %>">
-        <td class="col-5" align="center">
-          <% san_semester_id = semester_grade.san_semester_id %>
-          <%= SanSemester.find(san_semester_id).number %>
-        </td>
         <td class="col-5" align="center"><div class="label-field-pair2">
                 <div class="text-input-bg2">
-                    <% if semester_grade.grade.blank? %>
+                    <% if student_mil_perf.blank? or student_mil_perf.grade.blank? %>
                     <% else %>
-                        <%= semester_grade.grade%>
+                        <%= student_mil_perf.grade%>
                     <% end %>
             </div>
           </div>
         </td>
-    </tr>
-  <% end %>
-      <tr class="table-header">
-        <td>Μέσος Όρος Έτους</td>
-        <% if mil_p_gpa != nil %>
-          <% military_p_gpa_string = sprintf( "%.02f" , mil_p_gpa ) %>
-        <% else %>
-          <% military_p_gpa_string = "" %>
-        <% end %>
-        <td align="center"><%= military_p_gpa_string %></td>
-      </tr>
-  
+  </tr>
 
     </table>
-<p/>
+    <p/>
 
 
 <% end %>

@@ -226,7 +226,7 @@ class GroupsController < ApplicationController
   def show
     @group = Group.find(params[:id])
     group_students = Student.find_all_by_group_id(@group.id)
-    @students = group_students.paginate :page=>params[:page], :per_page=>15
+    @students = group_students.sort!{|a, b| a.last_name<=> b.last_name}.paginate :page=>params[:page], :per_page=>15
     @semesters = SanSemester.find_all_by_group_id(@group.id)
 
 

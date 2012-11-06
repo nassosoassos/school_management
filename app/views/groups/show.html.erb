@@ -72,10 +72,9 @@
       <td></td>
     </tr>
 
-    <% @students.sort!{|a, b| a.last_name <=> b.last_name}.each_with_index do |r, i| %>
+    <% @students.each do |r| %>
       <tr class="tr-<%= cycle('odd', 'even') %>">
         <td class="col-1">
-          <%= i+1 %>
         </td>
 
         <td class="col-2">

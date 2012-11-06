@@ -35,7 +35,7 @@
   </tr>
 
   <% index = 0 %>
-  <% @compulsory_subjects_info.each do |c_info| %>
+  <% @compulsory_subjects_info.sort!{|a, b| a[:kind]==b[:kind] ? (a[:title] <=> b[:title]) : b[:kind]<=>a[:kind]}.each do |c_info| %>
     <% index += 1 %>
     <tr class="tr-<%= cycle('odd', 'even') %>">
       <td class="col-1">
@@ -53,7 +53,7 @@
 </div>
 
 <div class="optional">
-  <% if @optional_subjects_info.length>0 %>
+  <% if @optional_subjects_info.sort!{|a, b| a[:title] <=> b[:title]}.length>0 %>
     <% form_tag(:action=>"update_subjects", :method=>:post, :id=>@student.id) do %>
   <table width="100%" id="listing">
   <tr class="tr-head">

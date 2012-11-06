@@ -19,6 +19,10 @@
 class StudentsSubject < ActiveRecord::Base
   belongs_to :student
   belongs_to :subject
+  belongs_to :san_subject, :foreign_key => :subject_id
+  belongs_to :san_semester
+  belongs_to :academic_year
+  belongs_to :semester_subject
 
   def student_assigned(student,subject)
     StudentsSubject.find_by_student_id_and_subject_id(student,subject)

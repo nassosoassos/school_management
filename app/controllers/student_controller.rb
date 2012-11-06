@@ -66,7 +66,7 @@ class StudentController < ApplicationController
         # to a semester and this won't be necessary
         semesters = SanSemester.find_all_by_group_id(@student.group_id)
         semesters.each do |sem|
-          stu_perf = StudentMilitaryPerformance.find_or_create_by_student_id_and_san_semester_id(@student.id, sem.id)
+          stu_perf = StudentMilitaryPerformance.find_or_create_by_student_id_and_academic_year_id(@student.id, sem.academic_year.id)
           subjects = SemesterSubjects.find_all_by_semester_id_and_optional(sem.id, false)
           subjects.each do |sub|
             stu_sub = StudentsSubject.find_or_create_by_student_id_and_subject_id_and_group_id_and_san_semester_id(@student.id, sub.subject_id, @student.group_id, sem.id)
@@ -283,7 +283,7 @@ class StudentController < ApplicationController
           @military_student_subjects.push(subject)
         end
       end
-      @student_mil_perf = StudentMilitaryPerformance.find_all_by_student_id_and_san_semester_id(params[:id], @semester_ids)
+      @student_mil_perf = StudentMilitaryPerformance.find_by_student_id_and_academic_year_id(params[:id], SanSemester.find(@semester_ids[0]).academic_year.id)
     
       # Find all the academic years to which the student has been subscribed
       group_id = @student.group_id
@@ -326,9 +326,9 @@ class StudentController < ApplicationController
           military_student_subjects.push(subject)
         end
       end
-      student_mil_perf = StudentMilitaryPerformance.find_all_by_student_id_and_san_semester_id(params[:id], semester_ids)
+      student_mil_perf = StudentMilitaryPerformance.find_by_student_id_and_academic_year_id(params[:id], SanSemester.find(semester_ids[0]).academic_year.id)
 
-      total_gpa, global_sum, uni_gpa, mil_gpa, mil_p_gpa = @student.gpa_for_year(y,'all')
+      total_gpa, global_sum, uni_gpa, mil_gpa, mil_p_gpa = @student.gpa_for_year([y],'all')
 
       year_info = {:uni_subs=>university_student_subjects, :mil_subs=>military_student_subjects,
                     :student_mil_perf=>student_mil_perf, :total_gpa=>total_gpa,
@@ -354,8 +354,8 @@ class StudentController < ApplicationController
     end
     @student_mil_perf = StudentMilitaryPerformance.find_all_by_student_id(params[:id])
     @student_mil_perf.each do |performance| 
-      if params[:student_military_performances][:grade].has_key?(performance.san_semester_id.to_s)
-        grade = params[:student_military_performances][:grade][performance.san_semester_id.to_s]
+      if params[:student_military_performances][:grade].has_key?(performance.academic_year_id.to_s)
+        grade = params[:student_military_performances][:grade][performance.academic_year_id.to_s]
         performance.update_attributes({:grade=>grade})
       end
     end

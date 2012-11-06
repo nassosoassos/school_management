@@ -181,6 +181,10 @@ a.user_button:hover{
    background:  #373B3F;
 }
 
+select.year_selector {
+  width: 200px;
+}
+
 
 .user_button  {
     padding: 7px 10px;

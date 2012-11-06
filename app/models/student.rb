@@ -104,7 +104,13 @@ class Student < ActiveRecord::Base
     return grades
   end
 
+  def total_gpa
+    semesters = SanSemester.find_all_by_group_id(self.group.id)
+    academic_years = semesters.map(&:academic_year).uniq
+  end
+
   def gpa_for_year(year, kind)
+
     student_semesters = SanSemester.find_all_by_academic_year_id_and_group_id(year.map(&:id), self.group_id)
 
     uni_sum = 0
@@ -161,10 +167,12 @@ class Student < ActiveRecord::Base
         mil_weights_sum += mil_weight*n_mil_subs
         tot_mil_subs += n_mil_subs
       end
+    end
+    year.each do |y|
       if kind=='all' or kind=='MilitaryPerformance'
-        mil_p_weight = semester.mil_p_weight
+        mil_p_weight = SanSemester.find_by_group_id_and_academic_year_id(self.group.id, y.id).mil_p_weight
         # Estimate average military performance
-        student_mil_performance = StudentMilitaryPerformance.find_by_san_semester_id_and_student_id(semester.id, self.id)
+        student_mil_performance = StudentMilitaryPerformance.find_by_academic_year_id_and_student_id(y.id, self.id)
         if student_mil_performance and student_mil_performance.grade
           n_mil_p_semesters += 1
           mil_p_sum += student_mil_performance.grade
@@ -173,6 +181,7 @@ class Student < ActiveRecord::Base
         end
       end
     end
+
     if kind=='University'
 
       if tot_uni_subs>0

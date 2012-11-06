@@ -38,8 +38,6 @@
 
   <% unless flash[:notice].nil? %><p class="flash-msg"> <%= flash[:notice] %> </p><% end %>
   <div class="all-user">
-    <%= submit_tag "", :value => 'Εκτύπωση', :class => "button", :type => "button", :onclick => "#{remote_function(:url => {:controller=> "student", :action => "grades_pdf", :id=>@student.id}, :method => :get, :with => "'group_year='+$('group_year').value+'&list_type='+$('list_type').value")}" %>
-
 
     <table width="100%" id="listing">
       <tr class="tr-head">
@@ -109,9 +107,9 @@
     <p/>
     <h4 align="center"> Αναλυτική Βαθμολογία Σπουδαστή </h4>
 
-      <div align="center">
+      <div id="year_selector">
         Ακαδημαϊκό έτος
-        <%= select :san_semester, :year, @years.map {|s| [s.name, s.id]},
+        <%= select :san_semester, :year, @years.sort!{|a, b| a.start_date<=>b.start_date}.map {|s| [s.name, s.id]},
           {:prompt => "Επιλέξτε ακαδημαϊκό έτος"},
           {:onChange => "#{remote_function(:url => {:action => "year_grades", :id => @student.id},
           :with => "'year_id='+value",
