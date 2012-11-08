@@ -272,39 +272,33 @@ class StudentController < ApplicationController
       @year = AcademicYear.find(params[:year_id])
     end
     unless @year.blank?
-      @semester_ids = SanSemester.find_all_by_academic_year_id(@year.id)
-      student_subjects = StudentsSubject.find_all_by_student_id_and_san_semester_id(params[:id], @semester_ids)
-      @university_student_subjects = Array.new
-      @military_student_subjects = Array.new
-      student_subjects.each do |subject|
-        if SanSubject.find(subject.subject_id).kind=='University'
-          @university_student_subjects.push(subject)
-        else
-          @military_student_subjects.push(subject)
-        end
-      end
-      @student_mil_perf = StudentMilitaryPerformance.find_by_student_id_and_academic_year_id(params[:id], SanSemester.find(@semester_ids[0]).academic_year.id)
-    
-      # Find all the academic years to which the student has been subscribed
-      group_id = @student.group_id
+      total_gpa, total_points, uni_gpa, mil_gpa, mil_p_gpa, uni_points, mil_points, mil_p_points = @student.get_gpa_and_points_for_year(@year)
+      to_be_transferred_subjects = @student.get_to_be_transferred_subjects_for_year(@year)
+      @grades_info = {:total_gpa=>total_gpa, :total_points=>total_points, :uni_gpa=>uni_gpa, :mil_gpa=>mil_gpa, :mil_p_gpa=>mil_p_gpa, :year=>@year.name, :year_id=>@year.id, :n_transfer_subjects=>to_be_transferred_subjects.length, :uni_points=>uni_points, :mil_points=>mil_points, :mil_p_points=>mil_p_points}
 
-      @total_gpa, @global_sum, @uni_gpa, @mil_gpa, @mil_p_gpa, @n_unfinished_subjects = @student.gpa_for_year([@year],'all')
-    end
-    render :update do |page|
-      page.replace_html 'year_grades', :partial => 'year_grades'
+      @standard_student_subjects = @student.get_standard_subjects_for_year(@year)
+      @transferred_student_subjects = @student.get_transferred_subjects_for_year(@year)
+      @compulsory_university_student_subjects = @standard_student_subjects.select{|a| a.semester_subjects.optional==false and a.san_subject.kind=='University'}
+      @optional_university_student_subjects = @standard_student_subjects.select{|a| a.semester_subjects.optional==true and a.san_subject.kind=='University'}
+      @transferred_university_student_subjects = @transferred_student_subjects.select{|a| a.san_subject.kind=='University'}
+      @standard_military_student_subjects = @standard_student_subjects.select{|a| a.san_subject.kind=='Military'}
+      @transferred_military_student_subjects = @transferred_student_subjects.select{|a| a.san_subject.kind=='Military'}
+
+      @student_mil_perf = StudentMilitaryPerformance.find_by_student_id_and_academic_year_id(params[:id], @year.id)
+    
     end
   end
 
   def grades
     @student = Student.find(params[:id])
     @years = SanSemester.find_all_by_group_id(@student.group_id).map(&:academic_year).uniq
-    student_subjects = StudentsSubject.find_all_by_student_id(params[:id])
-     
-    # Find all the academic years to which the student has been subscribed
-    group_id = @student.group_id
 
-    unless student_subjects.empty?
-      @total_gpa, @global_sum, @uni_gpa, @mil_gpa, @mil_p_gpa, @n_unfinished_subjects = @student.gpa_for_year(@years,'all')
+    @grades_info = Array.new
+    @years.sort!{|a, b| a.start_date<=>b.start_date}.each do |y|
+      total_gpa, total_points, uni_gpa, mil_gpa, mil_p_gpa = @student.get_gpa_and_points_for_year(y)
+      to_be_transferred_subjects = @student.get_to_be_transferred_subjects_for_year(y)
+      info = {:total_gpa=>total_gpa, :total_points=>total_points, :uni_gpa=>uni_gpa, :mil_gpa=>mil_gpa, :mil_p_gpa=>mil_p_gpa, :year=>y.name, :year_id=>y.id, :n_transfer_subjects=>to_be_transferred_subjects.length}
+      @grades_info.push(info)
     end
   end
 

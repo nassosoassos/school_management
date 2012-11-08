@@ -779,6 +779,14 @@ table#listing .tr-even{
     font-weight:600;
     font-size:14px;
 }
+table#listing .tr-separate{
+    background:#F5BCA9;
+    text-align:left;
+    padding:50px;
+    color:#27292b;
+    font-weight:600;
+    font-size:14px;
+}
 table#listing .tr-read-odd{
     background: #fff;
     text-align:left;

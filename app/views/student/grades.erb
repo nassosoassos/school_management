@@ -41,58 +41,58 @@
 
     <table width="100%" id="listing">
       <tr class="tr-head">
-        <td colspan="2"></td>
+        <td colspan="1"></td>
         <td colspan="3" align="center">ΒΑΘΜΟΛΟΓΙΑ</td>
         <td colspan="3"></td>
+        <td/>
       <tr class="tr-head">
-        <td>Ονοματεπώνυμο</td>
-        <td>Όνομα Πατρός</td>
+        <td>Ακαδημαϊκό Έτος</td>
         <td>Παν/μίου</td>
         <td>Σχολής Μαθημάτων</td>
         <td>Προσόντων Διαγωγής</td>
         <td>Μόρια</td>
         <td>Τελική Βαθμολογία</td>
         <td>Παρατηρήσεις</td>
+        <td/>
       </tr>
-      <tr class="tr-odd">
-        <td class="col-2"> <%= @student.full_name %></td>
-        <% parent_id = @student.immediate_contact_id %>
-        <td class="col-2"> <%= (parent_id.blank?) ? '' : Guardian.find(parent_id).first_name %></td>
-        <% if @uni_gpa.blank? %>
+      <% @grades_info.each do |g_i| %>
+      <tr class="tr-<%= cycle('odd','even') %>">
+        <td class="col-5"> <%= link_to g_i[:year], :controller=>'student', :action=>'year_grades', :id=>@student.id, :params=>{:year_id=>g_i[:year_id]} %></td>
+        <% if g_i[:uni_gpa].blank? %>
           <% uni_gpa_string = "" %>
         <% else %>
-          <% uni_gpa_string = sprintf( "%.02f" , @uni_gpa ) %>
+          <% uni_gpa_string = sprintf( "%.02f" , g_i[:uni_gpa] ) %>
         <% end %>
         <td class="col-5" align="center"> <%= uni_gpa_string %></td>
-        <% if @mil_gpa.blank? %>
+        <% if g_i[:mil_gpa].blank? %>
           <% mil_gpa_string = "" %>
         <% else %>
-          <% mil_gpa_string = sprintf( "%.02f" , @mil_gpa ) %>
+          <% mil_gpa_string = sprintf( "%.02f" , g_i[:mil_gpa] ) %>
         <%end%>
         <td class="col-5" align="center"> <%= mil_gpa_string %></td>
-        <% if @mil_p_gpa != nil %>
-          <% mil_p_gpa_string = sprintf( "%.02f" , @mil_p_gpa) %>
+        <% if g_i[:mil_p_gpa] != nil %>
+          <% mil_p_gpa_string = sprintf( "%.02f" , g_i[:mil_p_gpa]) %>
         <% else %>
           <% mil_p_gpa_string = "" %>
         <% end %>
 
         <td class="col-5" align="center"> <%= mil_p_gpa_string %></td>
-        <% if @global_sum.blank? %>
+        <% if g_i[:total_points].blank? %>
           <% global_sum_string = "" %>
         <% else %>
-          <% global_sum_string = sprintf( "%.02f" , @global_sum) %>
+          <% global_sum_string = sprintf( "%.02f" , g_i[:total_points]) %>
         <% end %>
         <td class="col-5" align="center"> <%= global_sum_string %></td>
-        <% if @total_gpa.blank? %>
+        <% if g_i[:total_gpa].blank? %>
           <% total_gpa_string = "" %>
         <% else %>
-          <% total_gpa_string = sprintf( "%.02f" , @total_gpa) %>
+          <% total_gpa_string = sprintf( "%.02f" , g_i[:total_gpa]) %>
         <% end %>
         <td class="col-5" align="center"> <%= total_gpa_string %></td>
 
-        <% if @n_unfinished_subjects!=nil and @n_unfinished_subjects>0 %>
-          <%  notes = @n_unfinished_subjects.to_s + " Μεταφερόμενα" %>
-        <%elsif @n_unfinished_subjects.blank? %>
+        <% if g_i[:n_transfer_subjects]!=nil and g_i[:n_transfer_subjects]>0 %>
+          <%  notes = g_i[:n_transfer_subjects].to_s + " Μεταφερόμενα" %>
+        <%elsif g_i[:n_transfer_subjects].blank? %>
           <% notes = "" %>
         <% else %>
           <% if @student.gender == "m" %>
@@ -102,29 +102,10 @@
           <% end %>
         <% end %>
         <td class="col-5"> <%= notes %></td>
+        <td class="col-5"> <%= link_to_remote image_tag("/images/buttons/edit_small.png"), :url=>{:action=>'year_grades', :id=>@student.id, :year_id=>g_i[:year_id]}, :method=>:get %></td>
       </tr>
+  <% end %>
     </table>
-    <p/>
-    <h4 align="center"> Αναλυτική Βαθμολογία Σπουδαστή </h4>
-
-      <div id="year_selector">
-        Ακαδημαϊκό έτος
-        <%= select :san_semester, :year, @years.sort!{|a, b| a.start_date<=>b.start_date}.map {|s| [s.name, s.id]},
-          {:prompt => "Επιλέξτε ακαδημαϊκό έτος"},
-          {:onChange => "#{remote_function(:url => {:action => "year_grades", :id => @student.id},
-          :with => "'year_id='+value",
-          :before => "Element.show('loader')",
-          :success => "Element.hide('loader')"
-          )}"} %>
-          <%= image_tag("loader.gif",
-        :align => "absmiddle",
-        :border => 0,
-        :id => "loader",
-        :style =>"display: none;" ) %>
-
-
-      </div>
-
       <div id='year_grades'>
       </div>
   </div>
