@@ -9,30 +9,96 @@ class GroupsController < ApplicationController
   end
   def show_lists
     group = Group.find(params[:id])
-    type = Integer(params[:list_type])
-    year = params[:group_year]
-    if year == 'all'
-      year = SanSemester.find_all_by_group_id(group.id).map(&:year).uniq
+    @type = Integer(params[:list_type])
+    @exam_period = params[:exam_period]
+    year_id = params[:group_year]
+    year = AcademicYear.find(year_id)
+    if @type != 3
+      if @exam_period=='all'
+        @successful_students, @successful_september_students, @unsuccessful_students, @undef_students = group.get_seniority_list_for_year(year, 'c')
+      else
+        @successful_students, @successful_september_students, @unsuccessful_students, @undef_students = group.get_seniority_list_for_year(year, @exam_period)
+      end
+      if @type==0
+        if @exam_period=='c'
+          @all_students = @successful_september_students + @unsuccessful_students
+        elsif @exam_period=='b'
+          @all_students = @successful_students + @unsuccessful_students
+        else
+          @all_students = @successful_students + @successful_september_students + @unsuccessful_students
+        end
+      elsif @type==1
+        if @exam_period=='b'
+          @all_students = @successful_students
+        elsif @exam_period=='c'
+          @all_students = @successful_september_students
+        else
+          @all_students = @successful_students + @successful_september_students
+        end
+      elsif @type==2
+        @all_students = @unsuccessful_students
+      end
+    else
+      @successful_students, @undef_students = group.get_overall_seniority_list
+      @all_students = @successful_students
     end
-    @sorted_students, @undef_students = group.get_hierarchy_list_for_year(year)
+    index = 0
+    @all_students.each do |stu|
+      index += 1
+      stu[:index] = index
+    end
+
     render(:update) do |page|
         page.replace_html 'list', :partial=>'hierarchy_list'
     end
   end
   def lists
     @group = Group.find(params[:id])
-    @all_years = SanSemester.find_all_by_group_id(@group.id).map(&:year).uniq
+    @all_years = SanSemester.find_all_by_group_id(@group.id).map{|a| a.academic_year}.uniq
   end
 
   def print_lists
     group = Group.find(params[:id])
-    type = Integer(params[:list_type])
-    @year = params[:group_year]
-    if @year == 'all'
-      @year = SanSemester.find_all_by_group_id(group.id).map(&:year).uniq
+    @type = Integer(params[:list_type])
+    @exam_period = params[:exam_period]
+    year_id = params[:group_year]
+    @year = AcademicYear.find(year_id)
+    if @type != 3
+      if @exam_period=='all'
+        @successful_students, @successful_september_students, @unsuccessful_students, @undef_students = group.get_seniority_list_for_year(@year, 'c')
+      else
+        @successful_students, @successful_september_students, @unsuccessful_students, @undef_students = group.get_seniority_list_for_year(@year, @exam_period)
+      end
+      if @type==0
+        if @exam_period=='c'
+          @all_students = @successful_september_students + @unsuccessful_students
+        elsif @exam_period=='b'
+          @all_students = @successful_students + @unsuccessful_students
+        else
+          @all_students = @successful_students + @successful_september_students + @unsuccessful_students
+        end
+      elsif @type==1
+        if @exam_period=='b'
+          @all_students = @successful_students
+        elsif @exam_period=='c'
+          @all_students = @successful_september_students
+        else
+          @all_students = @successful_students + @successful_september_students
+        end
+      elsif @type==2
+        @all_students = @unsuccessful_students
+      end
+    else
+      @successful_students, @undef_students = group.get_overall_seniority_list
+      @all_students = @successful_students
     end
-    @sorted_students, @undef_students = group.get_hierarchy_list_for_year(@year)
-    if type ==0
+    index = 0
+    @all_students.each do |stu|
+      index += 1
+      stu[:index] = index
+    end
+
+    if @type==0
       render :pdf=>'hierarchy_list', :template=>'groups/hierarchy_list_pdf.erb', :orientation=>'Landscape' 
     end
   end
@@ -133,21 +199,7 @@ class GroupsController < ApplicationController
   def add_semester
     @group = Group.find(params[:id])
     semester = SanSemester.find(params[:san_semester][:id])
-    semester.update_attributes({:group_id=>@group.id}) 
-    @group.update_attributes({:active_semester_id=>semester.id})
-
-    # Subscribe all group students to the semester subjects
-    group_students = Student.find_all_by_group_id(@group.id)
-    semester_subjects = SemesterSubjects.find_all_by_semester_id_and_optional(semester.id,false)
-
-    group_students.each do |student|
-      student_performance = StudentMilitaryPerformance.find_or_create_by_student_id_and_san_semester_id(student.id, semester.id)
-	  semester_subjects.each do |subject|
-	   student_subject = StudentsSubject.find_or_create_by_student_id_and_subject_id(student.id, subject.subject_id)
-       student_subject.update_attributes({:group_id=>@group.id, :san_semester_id=>semester.id})
-	  end
-    end
-
+    @group.subscribe_to_semester(semester)
     flash[:notice] = "Η τάξη εγγράφτηκε στο εξάμηνο κανονικά." 
 
     semesters= SanSemester.find_all_by_group_id(@group.id)
@@ -166,19 +218,9 @@ class GroupsController < ApplicationController
   def delete_semester
     @group = Group.find(params[:id])
     semester = SanSemester.find(params[:semester_id])
-    semester.update_attributes({:group_id=>nil}) 
-    if @group.active_semester_id == semester.id
-      @group.update_attributes({:active_semester_id=>nil})
-    end
 
-    # Unsubscribe all group students from the semester subjects
-    group_students = Student.find_all_by_group_id(@group.id)
-    semester_subjects = SemesterSubjects.find_all_by_semester_id_and_optional(semester.id,false)
+    @group.unsubscribe_from_semester(semester)
 
-    group_students.each do |student|
-      student_performance = StudentMilitaryPerformance.delete(:student_id=>student.id, :san_semester_id=>semester.id)
-      StudentsSubject.delete_all(:student_id=>student.id, :san_semester_id=>semester.id)
-    end
 
     respond_to do |format|
       format.html { redirect_to :action=> "edit_semesters" }

@@ -34,7 +34,7 @@
     <td align="center">Ενέργειες</td>
   </tr>
   <% index = 0 %>
-<% @groups.each do |group| %>
+  <% @groups.sort!{|a, b| b.first_year<=>a.first_year}.each do |group| %>
    <tr class="tr-<%= cycle('odd', 'even') %>">
     <% index += 1 %>
     <td align="center"><%= index %></td>

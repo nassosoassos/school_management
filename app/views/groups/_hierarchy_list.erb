@@ -25,26 +25,35 @@
 <div class="hierarchy">
 <table width="100%" id="listing">
   <tr class="tr-head">
-    <td colspan="8" align="center"> Λίστα Αρχαιότητας Σπουδαστών </td>
+    <% if @type=='0' %>
+      <td colspan="8" align="center"> Λίστα Αρχαιότητας Σπουδαστών </td>
+    <% elsif @type=='1' %>
+      <td colspan="8" align="center"> Λίστα Περατωσάντων Σπουδαστών </td>
+    <% elsif @type=='2' %>
+      <td colspan="8" align="center"> Λίστα Μη Περατωσάντων Σπουδαστών </td>
+    <% end %>
   </tr>
   <tr class="tr-head">
     <td colspan="2"></td>
     <td colspan="3" align="center">ΒΑΘΜΟΛΟΓΙΑ</td>
-    <td colspan="3"></td>
-  <tr class="tr-head">
-    <td>Ονοματεπώνυμο</td>
-    <td>Όνομα Πατρός</td>
-    <td>Παν/μίου</td>
-    <td>Σχολής Μαθημάτων</td>
-    <td>Προσόντων Διαγωγής</td>
-    <td>Μόρια</td>
-    <td>Τελική Βαθμολογία</td>
-    <td>Παρατηρήσεις</td>
+    <td colspan="4"></td>
   </tr>
-
-  <% if @sorted_students.length>0 %>
-  <% @sorted_students.each do |student| %>
-    <tr class="tr-<%= cycle('odd', 'even') %>">
+  <tr class="tr-head">
+      <td>Α/Α</td>
+      <td>Ονοματεπώνυμο</td>
+      <td>Όνομα Πατρός</td>
+      <td>Παν/μίου</td>
+      <td>Σχολής Μαθημάτων</td>
+      <td>Προσόντων Διαγωγής</td>
+      <td>Μόρια</td>
+      <td>Τελική Βαθμολογία</td>
+      <td>Παρατηρήσεις</td>
+  </tr>
+  
+  <% if @all_students.length>0 %>
+    <% @all_students.each do |student| %>
+      <tr class="tr-<%= cycle('odd', 'even') %>">
+        <td class="col-1"><%= student[:index] %></td>
         <td class="col-2">
           <%= link_to student[:full_name],:controller => "student", :action => "grades", :id => student[:id] %>
         </td>
@@ -82,14 +91,22 @@
         <td class="col-5" align="center"> <%= total_gpa_string %></td>
 
         <% if student[:n_unfinished_subjects]>0 %>
-          <%  notes = student[:n_unfinished_subjects].to_s + " Μεταφερόμενα" %>
-        <% else %>
+          <% if student[:n_unfinished_subjects]>1 %>
+           <%  notes = student[:n_unfinished_subjects].to_s + " Μεταφερόμενα" %>
+         <% else %>
+           <%  notes = student[:n_unfinished_subjects].to_s + " Μεταφερόμενο" %>
+         <% end %>
+       <% else %>
+         <% if student[:index]==1 and (@type==0 or @type==1) and (@exam_period=='all' or @exam_period=='b') %>
+           <% notes = "Αρχηγός Τάξης" %>
+         <% else %>
           <% if student[:gender] == "m" %>
             <% notes = "Περατώσας" %>
           <% else %>
             <% notes = "Περατώσασα" %>
           <% end %>
         <% end %>
+      <% end %>
         <td class="col-5"> <%= notes %></td>
       </tr>
   <% end %>

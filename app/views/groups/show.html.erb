@@ -66,7 +66,6 @@
        <td colspan=4 align="center">Εγγεγραμμένοι Σπουδαστές </td>
     </tr>
     <tr class="tr-head">
-      <td>Α/Α</td>
       <td>Ονοματεπώνυμο</td>
       <td>Α.Μ.</td>
       <td></td>
@@ -74,8 +73,6 @@
 
     <% @students.each do |r| %>
       <tr class="tr-<%= cycle('odd', 'even') %>">
-        <td class="col-1">
-        </td>
 
         <td class="col-2">
           <%= link_to r.full_name,:controller => "student", :action => "profile", :id => r.id %>

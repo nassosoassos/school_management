@@ -46,7 +46,7 @@
       <td>Περατωθέν</td>
       <td>Ενέργειες</td>
     </tr>
-    <% @active_semesters.each do |sem| %>
+    <% @active_semesters.sort!{|a,b| b[:number]<=>a[:number]}.each do |sem| %>
       <tr class="tr-<%= cycle('odd', 'even') %>">
         <td align="center"><%= sem[:number] %></td>
         <td><%= sem[:year] %></td>

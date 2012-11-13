@@ -17,7 +17,7 @@
 #limitations under the License.
 class SchoolDetail < ActiveRecord::Base
   has_attached_file :logo,
-  :styles => { :original=> "150x110#"},
+  :styles => { :original=> "579x600#"},
   :url => "/system/:class/:attachment/:id_partition/:style/:basename.:extension",
   :path => ":rails_root/public/system/:class/:attachment/:id_partition/:style/:basename.:extension",
   :default_url  => 'application/app_fedena_logo.png',

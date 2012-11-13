@@ -21,7 +21,7 @@
   <div class="hor_line"></div>
   <div id="student_profile_heading" class="section">
     <div id ="student_main_info" align="center">
-      <h2>Λίστα Αρχαιότητας Σπουδαστών για το έτος <br/> <%= @year %></h2>
+      <h2>Λίστα Αρχαιότητας Σπουδαστών για το έτος <br/> <%= @year.name %></h2>
     </div>
   </div>
     <table width="100%" id="pdf-table" class="section">
@@ -39,7 +39,7 @@
         <td align="center">Τελική</td>
         <td>Παρατηρήσεις</td>
       </tr>
-      <% @sorted_students.each do |student| %>
+      <% @all_students.each do |student| %>
       <tr class="even">
         <td class="col-2"> <%= student[:full_name] %></td>
         <td class="col-2"> <%= student[:father] %></td>

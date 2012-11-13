@@ -5,29 +5,154 @@ class Group < ActiveRecord::Base
 
     validates_presence_of :name, :first_year, :graduation_year 
 
-    def get_hierarchy_list_for_year(year)
+    def unsubscribe_from_semester(semester)
+      semester.update_attributes({:group_id=>nil}) 
+      if self.active_semester_id == semester.id
+        self.update_attributes({:active_semester_id=>nil})
+      end
+
+      # Unsubscribe all group students from the semester subjects
+      group_students = Student.find_all_by_group_id(self.id)
+
+      # Find if this is the only semester the group has subscribed to for the particular academic year
+      semesters = SanSemester.find_by_group_id(self.id)
+      delete_mil_performance = false
+      if semesters.select{|a| a.academic_year_id == semester.academic_year_id}.empty?
+        delete_mil_performance = true
+      end
+
+      group_students.each do |student|
+        if delete_mil_performance
+          student_performance = StudentMilitaryPerformance.delete(:student_id=>student.id, :academic_year_id=>semester.id)
+        end
+        StudentsSubject.delete_all(:student_id=>student.id, :san_semester_id=>semester.id)
+      end
+    end
+
+    def subscribe_to_semester(semester)
+      semester.update_attributes({:group_id=>self.id}) 
+      self.update_attributes({:active_semester_id=>semester.id})
+
+      # Subscribe all group students to the semester subjects
+      group_students = Student.find_all_by_group_id(@group.id)
+      semester_subjects = SemesterSubjects.find_by_semester_id_and_optional(semester.id, false)
+      ac_year = semester.academic_year
+      previous_year = ac_year.previous
+
+      group_students.each do |student|
+        # Subscribe to the new classes
+        semester_subjects.each do |sem_sub|
+          stu_sub = find_or_create_by_student_id_and_san_semester_id_and_semester_subjects_id(student.id, semester.id, sem_sub.id)
+          stu_sub.update_attributes({group_id=>self.id, academic_year_id=>ac_year.id})
+        end
+        # Subscribe to classes that are transferred from previous years
+        transferred_student_subjects = student.find_to_be_transferred_subjects_for_year(previous_year)
+        unless transferred_student_subjects.empty?
+          transferred_student_subjects.each do |t_stu_sub|
+            # Check if the subject to be transferred is taught in the same period
+            sem_num_sum = t_stu_sub.semester_subjects.san_semester.number+semester.number 
+            if sem_num_sum%2 == 0
+              stu_sub = find_or_create_by_student_id_and_san_semester_id_and_semester_subjects_id(student.id, semester.id, t_stu_sub.semester_subjects_id)
+              stu_sub.update_attributes({group_id=>self.id, academic_year_id=>ac_year.id})
+            end
+          end
+        end
+      end
+        student_performance = StudentMilitaryPerformance.find_or_create_by_student_id_and_academic_year_id(student.id, semester.academic_year.id)
+    end
+
+    def get_successful_students_for_year(year, exam_period='c')
       students = Student.find_all_by_group_id(self.id)
-      unsorted_students = Array.new
+      successful_students = students.select{|a| a.get_to_be_transferred_subjects_for_year(year, exam_period).length==0}
+      unsuccessful_students = students-successful_students
+      return successful_students, unsuccessful_students
+    end
+
+    def get_students_to_graduate
+      students = Student.find_all_by_group_id(self.id)
+      successful_students = students.select{|a| a.get_to_be_transferred_subjects_for_year(self.last_year, 'c').length==0}
+      unsuccessful_students = students-successful_students
+      return successful_students, unsuccessful_students
+    end
+
+    def last_year
+      all_years = SanSemester.find_all_by_group_id(self.id).map(&:academic_year).uniq
+      all_years.sort!{|a,b| a.start_date<=>b.start_date}
+      return all_years.last
+    end
+
+    def get_overall_seniority_list
+      successful_students, unsuccessful_students = get_students_to_graduate
+      unsorted_successful_students = Array.new
+      unsorted_unsuccessful_students = Array.new
       undef_students = Array.new
-      students.each do |stu|
-        total_gpa, total_sum, uni_gpa, mil_gpa, mil_p_gpa, n_unfinished_subjects = stu.gpa_for_year(year, 'all')      
+      successful_students.each do |stu|
+        n_unfinished_subjects = stu.get_total_number_of_transferred_subjects('b')
+        total_gpa, total_sum, uni_gpa, mil_gpa, mil_p_gpa = stu.get_total_gpa_and_points('c')      
         stu_info = {:gpa=>total_gpa, :total_sum=>total_sum, :uni_gpa=>uni_gpa, :full_name=>stu.full_name,
           :mil_gpa=>mil_gpa,:mil_p_gpa=>mil_p_gpa, :n_unfinished_subjects=>n_unfinished_subjects, 
           :father=>stu.fathers_first_name, :gender=>stu.gender, :id=>stu.id}
         if total_gpa!=nil and uni_gpa!=nil
-          unsorted_students.push(stu_info)
+          unsorted_successful_students.push(stu_info)
+        else
+          undef_students.push(stu_info)
+        end
+      end
+      # Sort by unfinished subjects and then gpa and then uni_gpa
+      sorted_students = unsorted_successful_students.sort {|a,b| a[:n_unfinished_subjects]==b[:n_unfinished_subjects]? (b[:gpa] == a[:gpa]? b[:uni_gpa] <=> a[:uni_gpa] : b[:gpa] <=> a[:gpa]) : a[:n_unfinished_subjects] <=> b[:n_unfinished_subjects]}
+      if undef_students.length>0
+        undef_students.sort! {|a,b| a[:full_name] <=> b[:full_name]}
+      end
+
+      return sorted_students, undef_students
+    end
+
+    def get_seniority_list_for_year(year, exam_period='c')
+      successful_students, unsuccessful_students = get_successful_students_for_year(year,'b')
+
+      unsorted_successful_students = Array.new
+      unsorted_successful_september_students = Array.new
+      unsorted_unsuccessful_students = Array.new
+      undef_students = Array.new
+      successful_students.each do |stu|
+        n_unfinished_subjects = stu.get_to_be_transferred_subjects_for_year(year, exam_period).length
+        total_gpa, total_sum, uni_gpa, mil_gpa, mil_p_gpa = stu.get_gpa_and_points_for_year(year, exam_period)      
+        stu_info = {:gpa=>total_gpa, :total_sum=>total_sum, :uni_gpa=>uni_gpa, :full_name=>stu.full_name,
+          :mil_gpa=>mil_gpa,:mil_p_gpa=>mil_p_gpa, :n_unfinished_subjects=>n_unfinished_subjects, 
+          :father=>stu.fathers_first_name, :gender=>stu.gender, :id=>stu.id}
+        if total_gpa!=nil and uni_gpa!=nil
+          unsorted_successful_students.push(stu_info)
+        else
+          undef_students.push(stu_info)
+        end
+      end
+
+      unsuccessful_students.each do |stu|
+        n_unfinished_subjects = stu.get_to_be_transferred_subjects_for_year(year, exam_period).length
+        total_gpa, total_sum, uni_gpa, mil_gpa, mil_p_gpa = stu.get_gpa_and_points_for_year(year, exam_period)      
+        stu_info = {:gpa=>total_gpa, :total_sum=>total_sum, :uni_gpa=>uni_gpa, :full_name=>stu.full_name,
+          :mil_gpa=>mil_gpa,:mil_p_gpa=>mil_p_gpa, :n_unfinished_subjects=>n_unfinished_subjects, 
+          :father=>stu.fathers_first_name, :gender=>stu.gender, :id=>stu.id}
+        if total_gpa!=nil and uni_gpa!=nil
+          if n_unfinished_subjects==0
+            unsorted_successful_september_students.push(stu_info)
+          else
+            unsorted_unsuccessful_students.push(stu_info)
+          end
         else
           undef_students.push(stu_info)
         end
       end
 
       # Sort by unfinished subjects and then gpa and then uni_gpa
-      sorted_students = unsorted_students.sort {|a,b| a[:n_unfinished_subjects]==b[:n_unfinished_subjects]? (b[:gpa] == a[:gpa]? b[:uni_gpa] <=> a[:uni_gpa] : b[:gpa] <=> a[:gpa]) : a[:n_unfinished_subjects] <=> b[:n_unfinished_subjects]}
+      sorted_successful_students = unsorted_successful_students.sort {|a,b| a[:n_unfinished_subjects]==b[:n_unfinished_subjects]? (b[:gpa] == a[:gpa]? b[:uni_gpa] <=> a[:uni_gpa] : b[:gpa] <=> a[:gpa]) : a[:n_unfinished_subjects] <=> b[:n_unfinished_subjects]}
+      sorted_successful_september_students = unsorted_successful_september_students.sort {|a,b| a[:n_unfinished_subjects]==b[:n_unfinished_subjects]? (b[:gpa] == a[:gpa]? b[:uni_gpa] <=> a[:uni_gpa] : b[:gpa] <=> a[:gpa]) : a[:n_unfinished_subjects] <=> b[:n_unfinished_subjects]}
+      sorted_unsuccessful_students = unsorted_unsuccessful_students.sort {|a,b| a[:n_unfinished_subjects]==b[:n_unfinished_subjects]? (b[:gpa] == a[:gpa]? b[:uni_gpa] <=> a[:uni_gpa] : b[:gpa] <=> a[:gpa]) : a[:n_unfinished_subjects] <=> b[:n_unfinished_subjects]}
 
       if undef_students.length>0
         undef_students.sort! {|a,b| a[:full_name] <=> b[:full_name]}
       end
 
-      return sorted_students, undef_students
+      return sorted_successful_students, sorted_successful_september_students, sorted_unsuccessful_students, undef_students
     end
 end

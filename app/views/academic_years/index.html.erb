@@ -44,17 +44,19 @@
     <div id="years">
       <table width="100%" id="listing">
         <tr class="tr-head">
-          <td colspan="3" align="center"> Λίστα ακαδημαϊκών ετών </td>
+          <td colspan="4" align="center"> Λίστα ακαδημαϊκών ετών </td>
         </tr>
 	 <tr class="tr-head">
        <td><%= t('title') %></td>
+       <td>Εγγεγραμμένοι Σπουδαστές</td>
        <td></td>
        <td></td>
     </tr>
      <% unless @academic_years.blank? %>
-    <% @academic_years.sort!{|a, b| a.start_date <=> b.start_date}.each do |ac_year| %>
+    <% @academic_years.sort!{|a, b| b.start_date <=> a.start_date}.each do |ac_year| %>
     <tr class="tr-<%= cycle('odd', 'even') %>">
       <td class="col-2"><%=h ac_year.name %></td>
+      <td class="col-5"><%= ac_year.n_subscribed_students %></td>
       <td class="col-5"> <%= link_to_remote image_tag("/images/buttons/edit_small.png"), :url=>{:action=>'edit', :id=>ac_year.id}, :method=>:get %></td>
       <td class="col-5"> <%= link_to image_tag("/images/buttons/tt_delete.png"), ac_year, :confirm => 'Είστε σίγουρος;', :method => :delete %></td>
   </tr>

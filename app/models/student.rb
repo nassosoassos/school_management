@@ -88,7 +88,7 @@ class Student < ActiveRecord::Base
     errors.add(:admission_no, "#{t('should_not_be_admin')}") if self.admission_no.to_s.downcase== 'admin'
   end
 
-  def finalize_grade_set(grade_set_array)
+  def finalize_grade_set(grade_set_array, exam_period='c')
     grades = Array.new
     grade_set_array.each do |grade_set| 
       if grade_set.a_grade != nil
@@ -96,8 +96,10 @@ class Student < ActiveRecord::Base
       elsif grade_set.b_grade != nil
         final_grade = grade_set.b_grade
       end
-      if grade_set.c_grade != nil
-        final_grade = grade_set.c_grade
+      if exam_period=='c'
+        if grade_set.c_grade != nil
+          final_grade = grade_set.c_grade
+        end
       end
       grades.push(final_grade)
     end
@@ -155,72 +157,163 @@ class Student < ActiveRecord::Base
   def get_standard_subjects_for_year(year)
     # Get the set of students_subjects that have not been
     # transferred from previous years
-    year_semesters = SanSemester.find_all_by_academic_year_id_and_group_id(year.id, self.group.id)
     all_subject_grades = StudentsSubject.find(:all, :conditions=>['student_id=? and academic_year_id=?',self.id, year.id])
     return all_subject_grades - self.get_transferred_subjects_for_year(year)
   end
 
-  def get_to_be_transferred_subjects_for_year(year)
-    ungraded_subjects = StudentsSubject.find(:all, :conditions=>['student_id=? and academic_year_id=? and a_grade IS NULL and b_grade IS NULL and c_grade IS NULL', self.id, year.id])
-    graded_subjects = StudentsSubject.find(:all, :conditions=>['student_id=? and academic_year_id=? and (a_grade IS NOT NULL or b_grade IS NOT NULL or c_grade IS NOT NULL)', self.id, year.id])
+  def get_to_be_transferred_subjects_for_year(year, exam_period='c')
+    ungraded_subjects = get_ungraded_subjects_for_year(year, exam_period)
+    graded_subjects = get_graded_subjects_for_year(year, exam_period)
     failed_subjects = Array.new
     graded_subjects.each do |g_s|
-      f_gs = finalize_grade_set([g_s])
+      f_gs = finalize_grade_set([g_s], exam_period)
       if f_gs[0]<5
-        failed_subjects.push(graded_subjects)
+        failed_subjects.push(g_s)
       end
     end
     to_be_transferred_subjects = ungraded_subjects + failed_subjects
+    return to_be_transferred_subjects
   end
 
-  def get_ungraded_subjects_for_year(year)
+  def get_total_number_of_transferred_subjects(exam_period='b')
+    all_years = SanSemester.find_all_by_group_id(self.group.id).map(&:academic_year).uniq
+    n_transferred_subjects = 0
+    all_years.each do |ac|
+      n_transferred_subjects += get_to_be_transferred_subjects_for_year(ac, exam_period).length
+    end
+    return n_transferred_subjects
+  end
+
+  def get_passed_subjects_for_year(year, exam_period='c')
+    all_subject_grades = StudentsSubject.find(:all, :conditions=>['student_id=? and academic_year_id=?',self.id, year.id])
+    return all_subject_grades - self.get_to_be_transferred_subjects_for_year(year, exam_period)
+  end
+
+  def get_all_passed_subjects(exam_period='c')
+    all_years = SanSemester.find_all_by_group_id(self.group.id).map(&:academic_year).uniq
+   
+    all_passed_subject_grades = Array.new
+    all_years.each do |year|
+      year_subject_grades = StudentsSubject.find(:all, :conditions=>['student_id=? and academic_year_id=?',self.id, year.id])
+      passed_year_subject_grades = year_subject_grades - self.get_to_be_transferred_subjects_for_year(year, exam_period)
+      all_passed_subject_grades += passed_year_subject_grades
+    end
+    return all_passed_subject_grades
+  end
+
+  def get_ungraded_subjects_for_year(year, exam_period='c')
     # Find all subject for which all three possible grades are null
-    ungraded_subjects = StudentsSubject.find(:all, :conditions=>['student_id=? and academic_year_id=? and a_grade IS NULL and b_grade IS NULL and c_grade IS NULL', self.id, year.id])
+    if exam_period=='c'
+      ungraded_subjects = StudentsSubject.find(:all, :conditions=>['student_id=? and academic_year_id=? and a_grade IS NULL and b_grade IS NULL and c_grade IS NULL', self.id, year.id])
+    elsif exam_period=='b'
+      ungraded_subjects = StudentsSubject.find(:all, :conditions=>['student_id=? and academic_year_id=? and a_grade IS NULL and b_grade IS NULL', self.id, year.id])
+    end
     return ungraded_subjects
   end
 
-  def get_graded_subjects_for_year(year)
-    graded_subjects = StudentsSubject.find(:all, :conditions=>['student_id=? and academic_year_id=? and (a_grade IS NOT NULL or b_grade IS NOT NULL or c_grade IS NOT NULL)', self.id, year.id])
+  def get_graded_subjects_for_year(year, exam_period='c')
+    if exam_period=='c'
+      graded_subjects = StudentsSubject.find(:all, :conditions=>['student_id=? and academic_year_id=? and (a_grade IS NOT NULL or b_grade IS NOT NULL or c_grade IS NOT NULL)', self.id, year.id])
+    elsif exam_period=='b'
+      graded_subjects = StudentsSubject.find(:all, :conditions=>['student_id=? and academic_year_id=? and (a_grade IS NOT NULL or b_grade IS NOT NULL)', self.id, year.id])
+    end
     return graded_subjects
   end
-  
-  def get_univ_gpa_and_points_for_year(year)
-    standard_student_subjects = get_graded_subjects_for_year(year)
-    univ_subjects = standard_student_subjects.select{|a| a.san_subject.kind=='University'}
-    grades = finalize_grade_set(univ_subjects)
 
-    if grades.size > 0
+  def get_total_univ_gpa_and_points(exam_period='c')
+    passed_student_subjects = get_all_passed_subjects(exam_period)
+    univ_subjects = passed_student_subjects.select{|a| a.san_subject.kind=='University'}
+    
+    grades = finalize_grade_set(univ_subjects, exam_period)
+    if grades.size>0
       univ_gpa = grades.inject(0.0) { |sum, el| sum + el } / grades.size 
-      univ_points = SanSemester.find_by_academic_year_id(year.id).uni_weight  * univ_gpa
-      return univ_gpa, univ_points
+      univ_points = SanSemester.find_by_academic_year_id_and_group_id(self.group.last_year.id, self.group.id).uni_weight
     else 
-      return nil, nil
+      univ_gpa = nil
+      univ_points = nil
     end
+    return univ_gpa, univ_points
   end
 
-  def get_mil_gpa_and_points_for_year(year)
-    standard_student_subjects = get_graded_subjects_for_year(year)
-    mil_subjects = standard_student_subjects.select{|a| a.san_subject.kind=='Military'}
-    grades = finalize_grade_set(mil_subjects)
-    if grades.size > 0
+  def get_total_mil_gpa_and_points(exam_period='c')
+    passed_student_subjects = get_all_passed_subjects(exam_period)
+    mil_subjects = passed_student_subjects.select{|a| a.san_subject.kind=='Military'}
+    
+    grades = finalize_grade_set(mil_subjects, exam_period)
+    if grades.size>0
       mil_gpa = grades.inject(0.0) { |sum, el| sum + el } / grades.size 
-      mil_points = SanSemester.find_by_academic_year_id(year.id).mil_weight * mil_gpa
-      return mil_gpa, mil_points
+      # Assume that the most recent weights are the valid ones
+      mil_points = SanSemester.find_by_academic_year_id_and_group_id(self.group.last_year.id, self.group.id).mil_weight
     else 
-      return nil, nil
+      mil_gpa = nil
+      mil_points = nil
     end
+    return mil_gpa, mil_points
   end
 
-  def get_gpa_and_points_for_year(year)
-    uni_gpa, uni_points = get_univ_gpa_and_points_for_year(year)
-    mil_gpa, mil_points = get_mil_gpa_and_points_for_year(year)
+  def get_total_gpa_and_points(exam_period='c')
+    uni_gpa, uni_points = get_total_univ_gpa_and_points(exam_period)
+    mil_gpa, mil_points = get_total_mil_gpa_and_points(exam_period)
 
     if uni_gpa.nil? or mil_gpa.nil? 
       return nil, nil, nil, nil, nil, nil
     end
     # Only use the weights specified for the first semester of the 
     # academic year
-    first_semester = SanSemester.find_by_academic_year_id(year.id)
+    last_semester = SanSemester.find_by_academic_year_id_and_group_id(self.group.last_year.id, self.group_id)
+    mil_p_weight = last_semester.mil_p_weight.to_f
+    mil_p_grades = StudentMilitaryPerformance.find_all_by_student_id(self.id).map(&:grade)
+    mil_p_grade = mil_p_grades.inject(0.0) { |sum, el| sum + el } / mil_p_grades.size
+    mil_performance_points = mil_p_weight * mil_p_grade
+
+    sum_of_weights = 0
+    sum_of_weights += last_semester.uni_weight.to_f
+    sum_of_weights += last_semester.mil_weight.to_f
+    sum_of_weights += mil_p_weight
+
+    points = uni_points + mil_points + mil_performance_points
+    gpa = points.to_f / sum_of_weights
+
+    return [gpa, points, uni_gpa, mil_gpa, mil_p_grade, uni_points, mil_points, mil_performance_points]
+  end
+  
+  def get_univ_gpa_and_points_for_year(year, exam_period='c')
+    passed_student_subjects = get_passed_subjects_for_year(year, exam_period)
+    univ_subjects = passed_student_subjects.select{|a| a.san_subject.kind=='University'}
+    grades = finalize_grade_set(univ_subjects, exam_period)
+
+    if grades.size > 0
+      univ_gpa = grades.inject(0.0) { |sum, el| sum + el } / grades.size 
+      univ_points = SanSemester.find_by_academic_year_id_and_group_id(year.id, self.group.id).uni_weight  * univ_gpa
+      return univ_gpa, univ_points
+    else 
+      return nil, nil
+    end
+  end
+
+  def get_mil_gpa_and_points_for_year(year, exam_period='c')
+    passed_student_subjects = get_passed_subjects_for_year(year, exam_period)
+    mil_subjects = passed_student_subjects.select{|a| a.san_subject.kind=='Military'}
+    grades = finalize_grade_set(mil_subjects, exam_period)
+    if grades.size > 0
+      mil_gpa = grades.inject(0.0) { |sum, el| sum + el } / grades.size 
+      mil_points = SanSemester.find_by_academic_year_id_and_group_id(year.id, self.group.id).mil_weight * mil_gpa
+      return mil_gpa, mil_points
+    else 
+      return nil, nil
+    end
+  end
+
+  def get_gpa_and_points_for_year(year, exam_period='c')
+    uni_gpa, uni_points = get_univ_gpa_and_points_for_year(year, exam_period)
+    mil_gpa, mil_points = get_mil_gpa_and_points_for_year(year, exam_period)
+
+    if uni_gpa.nil? or mil_gpa.nil? 
+      return nil, nil, nil, nil, nil, nil
+    end
+    # Only use the weights specified for the first semester of the 
+    # academic year
+    first_semester = SanSemester.find_by_academic_year_id_and_group_id(year.id, self.group_id)
     mil_p_weight = first_semester.mil_p_weight.to_f
     mil_p_grade = StudentMilitaryPerformance.find_by_student_id_and_academic_year_id(self.id, year.id).grade
     mil_performance_points = mil_p_weight * mil_p_grade
@@ -369,8 +462,12 @@ class Student < ActiveRecord::Base
     end
   end
 
+  def subscribe_to_semester(semester)
+   
+  end
+
   def create_user_and_validate
-    if self.new_record?
+    if self.new_record? or self.user_id.nil?
       user_record = self.build_user
       user_record.first_name = self.first_name
       user_record.last_name = self.last_name

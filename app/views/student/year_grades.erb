@@ -107,23 +107,27 @@
 
   <%= g_form.error_messages %>
 
+  <% subject_index = 0 %>
 <% fields_for :students_subjects do |s_form| %>
   <table width="100%" id="listing">
     <tr class="tr-head">
-      <td colspan=6>Πανεπιστημιακά Μαθήματα</td>
+      <td colspan=7>Πανεπιστημιακά Μαθήματα</td>
     </tr>
     <tr class="tr-head">
+      <td>Α/Α</td>
       <td>Τίτλος</td>
       <td>Εξάμηνο</td>
       <td>Εξέταση Α</td>
       <td>Εξέταση Β</td>
       <td>Εξέταση Γ</td>
   </tr>
-    <tr class="tr-head">
+  <tr class="tr-head">
+    <td/>
       <td colspan=6 align="center">Υποχρεωτικά</td>
     </tr>
 
-  <% @compulsory_university_student_subjects.sort!{|a, b| a.san_semester.number == b.san_semester.number ? (a.san_subject.title <=> b.san_subject.title ) : a.san_semester.number <=> b.san_semester.number }.each do |grade_set| %>
+    <% @compulsory_university_student_subjects.sort!{|a, b| a.san_semester.number == b.san_semester.number ? (a.san_subject.title <=> b.san_subject.title ) : a.san_semester.number <=> b.san_semester.number }.each do |grade_set| %>
+      <% subject_index += 1 %>
     <% subject_id = grade_set.subject_id %>
     <% final_grade = nil %>
     <% if grade_set.a_grade %>
@@ -139,6 +143,7 @@
     <% else %>
         <tr class="tr-separate">
     <% end %>
+        <td class="col-5"><%= subject_index %></td>
 
         <td class="col-2">
           <%= link_to SanSubject.find(subject_id).title,:controller => "san_subjects", :action => 'show', :id => subject_id %>
@@ -181,9 +186,11 @@
       </tr>
     <% end %>
     <tr class="tr-head">
+      <td/>
       <td colspan=6 align="center">Επιλογής</td>
     </tr>
   <% @optional_university_student_subjects.sort!{|a, b| a.san_semester.number == b.san_semester.number ? (a.san_subject.title <=> b.san_subject.title ) : a.san_semester.number <=> b.san_semester.number }.each do |grade_set| %>
+      <% subject_index += 1 %>
     <% subject_id = grade_set.subject_id %>
     <% final_grade = nil %>
     <% if grade_set.a_grade %>
@@ -199,6 +206,7 @@
     <% else %>
         <tr class="tr-separate">
     <% end %>
+        <td class="col-5"><%= subject_index %></td>
         <td class="col-2">
           <%= link_to SanSubject.find(subject_id).title,:controller => "san_subjects", :action => 'show', :id => subject_id %>
         </td>
@@ -240,9 +248,11 @@
       </tr>
     <% end %>
     <tr class="tr-head">
+      <td/>
       <td colspan=6 align="center">Μεταφερόμενα</td>
     </tr>
   <% @transferred_university_student_subjects.sort!{|a, b| a.san_semester.number == b.san_semester.number ? (a.san_subject.title <=> b.san_subject.title ) : a.san_semester.number <=> b.san_semester.number }.each do |grade_set| %>
+      <% subject_index += 1 %>
       <% subject_id = grade_set.subject_id %>
     <% final_grade = nil %>
     <% if grade_set.a_grade %>
@@ -257,7 +267,8 @@
       <tr class="tr-<%= cycle('odd', 'even') %>">
     <% else %>
         <tr class="tr-separate">
-    <% end %>
+        <% end %>
+        <td class="col-5"><%= subject_index %></td>
         <td class="col-2">
           <%= link_to SanSubject.find(subject_id).title,:controller => "san_subjects", :action => 'show', :id => subject_id %>
         </td>
@@ -299,9 +310,21 @@
       </tr>
     <% end %>
 
+      <tr class="tr-head">
+        <td></td>
+        <td/>
+        <td colspan="3">Μαθήματα με Προβιβάσιμο Βαθμό</td>
+        <% if @grades_info[:n_uni_passed].blank? %>
+          <% university_gpa_string = "" %>
+        <% else %>
+          <% university_gpa_string = sprintf( "%d" , @grades_info[:n_uni_passed] ) %>
+        <% end %>
+        <td align="center"><%= university_gpa_string %></td>
+      </tr>
 
       <tr class="tr-head">
         <td></td>
+        <td/>
         <td colspan="3">Μέσος Όρος Πανεπιστημιακών</td>
         <% if @grades_info[:uni_gpa].blank? %>
           <% university_gpa_string = "" %>
@@ -312,6 +335,7 @@
       </tr>
       <tr class="tr-head">
         <td></td>
+        <td/>
         <td colspan="3">Μόρια Πανεπιστημιακών</td>
         <% if @grades_info[:uni_points].blank? %>
           <% university_gpa_string = "" %>
@@ -328,14 +352,17 @@
       <td colspan=6>Στρατιωτικά Μαθήματα</td>
     </tr>
     <tr class="tr-head">
+      <td>Α/Α</td>
       <td>Τίτλος</td>
       <td>Εξάμηνο</td>
       <td>Εξέταση Α</td>
       <td>Εξέταση Β</td>
       <td>Εξέταση Γ</td>
   </tr>
+  <% subject_index = 0 %>
 
   <% @standard_military_student_subjects.sort!{|a, b| a.san_semester.number == b.san_semester.number ? (a.san_subject.title <=> b.san_subject.title ) : a.san_semester.number <=> b.san_semester.number }.each do |grade_set| %>
+    <% subject_index += 1 %>
     <% subject_id = grade_set.subject_id %>
     <% final_grade = nil %>
     <% if grade_set.a_grade %>
@@ -351,6 +378,7 @@
     <% else %>
         <tr class="tr-separate">
     <% end %>
+        <td class="col-5"><%= subject_index %></td>
         <td class="col-2">
           <%= link_to SanSubject.find(subject_id).title,:controller => "san_subjects", :action => 'show', :id => subject_id %>
         </td>
@@ -391,11 +419,13 @@
         </td>
     </tr>
   <% end %>
-    <tr class="tr-head">
+  <tr class="tr-head">
+  <td/>
       <td colspan=6 align="center">Μεταφερόμενα</td>
     </tr>
   <% @transferred_military_student_subjects.sort!{|a, b| a.san_semester.number == b.san_semester.number ? (a.san_subject.title <=> b.san_subject.title ) : a.san_semester.number <=> b.san_semester.number }.each do |grade_set| %>
       <% subject_id = grade_set.subject_id %>
+    <% subject_index += 1%>
     <% final_grade = nil %>
     <% if grade_set.a_grade %>
       <%final_grade = grade_set.a_grade%>
@@ -410,6 +440,7 @@
     <% else %>
         <tr class="tr-separate">
     <% end %>
+        <td class="col-5"><%= subject_index %></td>
         <td class="col-2">
           <%= link_to SanSubject.find(subject_id).title,:controller => "san_subjects", :action => 'show', :id => subject_id %>
         </td>
@@ -452,11 +483,23 @@
     <% end %>
 
 
+      <tr class="tr-head">
+        <td></td>
+        <td/>
+        <td colspan="3">Μαθήματα με Προβιβάσιμο Βαθμό</td>
+        <% if @grades_info[:n_uni_passed].blank? %>
+          <% mil__string = "" %>
+        <% else %>
+          <% mil_string = sprintf( "%d" , @grades_info[:n_mil_passed] ) %>
+        <% end %>
+        <td align="center"><%= mil_string %></td>
+      </tr>
+
 
       <tr class="tr-head">
         <td></td>
-        <td></td>
-        <td colspan="2">Μέσος Όρος Στρατιωτικών</td>
+        <td/>
+        <td colspan="3">Μέσος Όρος Στρατιωτικών</td>
         <% if @grades_info[:mil_gpa].blank? %>
           <% military_gpa_string = "" %>
         <% else %>
@@ -465,9 +508,9 @@
         <td align="center"><%= military_gpa_string %></td>
       </tr>
        <tr class="tr-head">
+        <td/>
         <td></td>
-        <td></td>
-        <td colspan="2">Μόρια Στρατιωτικών</td>
+        <td colspan="3">Μόρια Στρατιωτικών</td>
         <% if @grades_info[:mil_points].blank? %>
           <% military_gpa_string = "" %>
         <% else %>

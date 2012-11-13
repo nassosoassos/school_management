@@ -28,6 +28,9 @@
 
 <div id="nav">
   <ul>
+      <li><%= link_to "#{t('profile_text')}", :controller => "student",
+          :action => "profile", :id => @student.id %></li>
+
     <li><%= link_to "Εκτύπωση",
           {:controller => "student", :action => "grades_pdf", :id => @student.id} %>
 </li>

@@ -69,7 +69,8 @@ class StudentController < ApplicationController
           stu_perf = StudentMilitaryPerformance.find_or_create_by_student_id_and_academic_year_id(@student.id, sem.academic_year.id)
           subjects = SemesterSubjects.find_all_by_semester_id_and_optional(sem.id, false)
           subjects.each do |sub|
-            stu_sub = StudentsSubject.find_or_create_by_student_id_and_subject_id_and_group_id_and_san_semester_id(@student.id, sub.subject_id, @student.group_id, sem.id)
+            stu_sub = StudentsSubject.find_or_create_by_student_id_and_subject_id_and_group_id_and_semester_subject_id(@student.id, sub.subject_id, @student.group_id, sub.id)
+            stu_sub.update_attributes({:san_semester_id=>sem.id, :academic_year_id=>sem.academic_year.id})
           end
         end
 
@@ -240,19 +241,23 @@ class StudentController < ApplicationController
     optional_subjects = SanSubject.find_all_by_id(optional_semester_subjects.map(&:subject_id))
 
     subjects = params[:subjects]
-    optional_subjects.each do |sub|
+
+    optional_semester_subjects.each do |sem_sub|
       if subjects.blank?
         selected_sub = nil
       else
-        selected_sub = params[:subjects].select {|v| v==sub.id.to_s}
+        selected_sub = params[:subjects].select {|v| v==sem_sub.san_subject.id.to_s}
       end
       if selected_sub.blank?
-        stu_su = StudentsSubject.find_by_subject_id_and_student_id_and_group_id_and_san_semester_id(sub.id, student_id, group_id, semester_id) 
-        if stu_su != nil
-          stu_su.destroy
+        stu_su = StudentsSubject.find_all_by_subject_id_and_student_id_and_semester_subjects_id(sub.id, student_id, sem_sub.id) 
+        unless stu_su.empty? 
+          stu_su.each do |st|
+            st.destroy
+          end
         end
       else
-        stu_su = StudentsSubject.find_or_create_by_subject_id_and_student_id_and_group_id_and_san_semester_id(sub.id, student_id, group_id, semester_id) 
+        stu_su = StudentsSubject.find_or_create_by_subject_id_and_student_id_and_semester_subjects_id(sub.id, student_id, sem_sub.id)
+        stu_su.update_attributes({:san_semester_id=>semester_id, :group_id=>group_id, :academic_year_id=>SanSemester.find(semester_id).academic_year.id})
       end
     end
     redirect_to :action => 'subscribe_subjects',:id=>params[:id]
@@ -274,7 +279,10 @@ class StudentController < ApplicationController
     unless @year.blank?
       total_gpa, total_points, uni_gpa, mil_gpa, mil_p_gpa, uni_points, mil_points, mil_p_points = @student.get_gpa_and_points_for_year(@year)
       to_be_transferred_subjects = @student.get_to_be_transferred_subjects_for_year(@year)
-      @grades_info = {:total_gpa=>total_gpa, :total_points=>total_points, :uni_gpa=>uni_gpa, :mil_gpa=>mil_gpa, :mil_p_gpa=>mil_p_gpa, :year=>@year.name, :year_id=>@year.id, :n_transfer_subjects=>to_be_transferred_subjects.length, :uni_points=>uni_points, :mil_points=>mil_points, :mil_p_points=>mil_p_points}
+      passed_student_subjects = @student.get_passed_subjects_for_year(@year)
+      n_passed_university_student_subjects = passed_student_subjects.select{|a| a.san_subject.kind=='University'}.length
+      n_passed_military_student_subjects = passed_student_subjects.length - n_passed_university_student_subjects
+      @grades_info = {:total_gpa=>total_gpa, :total_points=>total_points, :uni_gpa=>uni_gpa, :mil_gpa=>mil_gpa, :mil_p_gpa=>mil_p_gpa, :year=>@year.name, :year_id=>@year.id, :n_transfer_subjects=>to_be_transferred_subjects.length, :uni_points=>uni_points, :mil_points=>mil_points, :mil_p_points=>mil_p_points, :n_uni_passed=>n_passed_university_student_subjects, :n_mil_passed=>n_passed_military_student_subjects}
 
       @standard_student_subjects = @student.get_standard_subjects_for_year(@year)
       @transferred_student_subjects = @student.get_transferred_subjects_for_year(@year)
@@ -491,6 +499,9 @@ class StudentController < ApplicationController
 
   def edit
     @student = Student.find(params[:id])
+    if @student.user_id.nil?
+      @student.create_user_and_validate
+    end
     @student_user = @student.user
     @student_categories = StudentCategory.active
     @batches = Batch.active

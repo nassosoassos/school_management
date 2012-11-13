@@ -2266,7 +2266,7 @@ gr: # locale
   student:
     flash1: "Additional field created"
     flash2: "Additional details updated"
-    flash3: "Student Record updated successfully!"
+    flash3: "Η καρτέλα του φοιτητή ενημερώθηκε επιτυχώς!"
     flash4: "Parent Record updated!"
     flash5: "Αποθηκεύτηκαν οι πληροφορίες του σχετιζόμενου ατόμου για"
     flash6: "Guardian has been deleted"
