@@ -48,6 +48,28 @@
           <%= text_field :configuration, :institution_address, :value => @config[:institution_address] %>
         </div>
       </div>
+      <div class="label-three-fields-pair">
+        <label for="configuration_currency_type"><%= t('school_director') %></label>
+        <div class="short-text-input-bg">
+          <%= text_field :configuration, :directors_rank, :value => @config[:directors_rank] %>
+          <%= text_field :configuration, :directors_arms, :value => @config[:directors_arms] %>
+          <%= text_field :configuration, :directors_full_name, :value => @config[:directors_full_name] %>
+        </div>
+      </div>
+      <div class="label-three-fields-pair">
+        <label for="configuration_currency_type"><%= t('school_education_director') %></label>
+        <div class="short-text-input-bg">
+          <%= text_field :configuration, :edu_directors_rank, :value => @config[:edu_directors_rank], :width=>'100px' %>
+          <%= text_field :configuration, :edu_directors_arms, :value => @config[:edu_directors_arms], :width=>'50px' %>
+          <%= text_field :configuration, :edu_directors_full_name, :value => @config[:edu_directors_full_name] %>
+        </div>
+      </div>
+      <div class="label-field-pair">
+        <label for="configuration_currency_type"><%= t('school_college_address') %></label>
+        <div class="text-input-bg">
+          <%= text_field :configuration, :institution_address, :value => @config[:institution_address] %>
+        </div>
+      </div>
       <div class="label-field-pair">
         <label for="configuration_currency_type"><%= t('school_college_phone') %></label>
         <div class="text-input-bg">

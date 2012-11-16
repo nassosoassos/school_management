@@ -38,20 +38,29 @@
     <div id="admission1-form">
       <div id="necessary-field-notification"><%= t('legend1') %><span class="necessary-field">*</span> <%= t('legend2') %></div>
 
-      <div id="autofill_area">
+      <div id="autofill-area">
 
-        <div class="label-field-pair-edit">
-          <label for="master_student_admission_no"><%= t('admission_no') %><span class="necessary-field">*</span></label>
-          <div class="text-input-bg"><%= s.text_field :admission_no %></div>
-        </div>
-
-        <div class="label-field-pair-edit">
-          <label for="master_student_admission_date"><%= t('admission_date') %> <span class="necessary-field">*</span></label>
-          <div class="text-input-bg">
-            <%= calendar_date_select_tag 'student[admission_date]', I18n.l(@student.admission_date,:format=>:default),
-              :year_range => 15.years.ago..5.years.from_now,:popup => "force" %>
+        <div class="student_admission_date">
+          <label for="student_admission_no"><%= t('admission_number') %> <span class="necessary-field">*</span> </label>
+          <div class="text-input-bg-admission">
+              <%= s.text_field :admission_no %>
+          </div>
+          <br/>
+          <label for="student_uni_admission_no"><%= t('uni_admission_number') %> <span class="necessary-field">*</span> </label>
+          <div class="text-input-bg-admission">
+              <%= s.text_field :uni_admission_no %>
           </div>
         </div>
+
+        <div class="student_admission_date">
+          <label for="student_admission_date"><%= t('admission_date') %> <span class="necessary-field">*</span> </label>
+          <div class="text-input-bg-admission">
+            <%= calendar_date_select_tag 'student[admission_date]', I18n.l(@student.admission_date,:format=>:default),
+              :year_range => 15.years.ago..5.years.from_now, :readonly=>true, :popup=>"force" %>
+          </div>
+        </div>
+
+      </div>
 
         <div class="extender"></div>
 
@@ -84,11 +93,11 @@
 
       <div id="admission1_form_vertical_block_left">
 
-        <div class="label-field-pair">
-          <label for="master_student_grade"><%= t('course_and_batch') %><span class="necessary-field">*</span></label>
-          <div class="text-input-bg"><%= s.select :batch_id, @batches.map {|b| [b.full_name, b.id]} %></div>
+	  <div class="label-field-pair">
+          <label for="student_grade"><%= t('group') %><span class="necessary-field">*</span> </label>
+          <div class="text-input-bg"><%= select :student, :group_id, Group.all.map {|g| [g.name, g.id]} %></div>
         </div>
-
+   
         <hr class="label-underline"></hr>
 
         <div class="label-field-pair">
@@ -150,13 +159,14 @@
           <label for="master_student_religion"><%= t('religion') %></label>
           <div class="text-input-bg"><%= s.text_field :religion, :value =>@student.religion %></div>
         </div>
-
+        <%- #FIXME: Left out for school -%>
+        <% if false %>
         <hr class="label-underline"></hr>
-
         <div class="label-field-pair">
           <label for="master_student_category"><%= t('category') %></label>
           <div class="text-input-bg"><%= select :student, :student_category_id, @student_categories.map {|c| [c.name, c.id]}, { :prompt => 'Select category' } %></div>
         </div>
+      <% end%>
       </div>
       <br/>
 

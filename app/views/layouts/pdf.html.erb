@@ -21,6 +21,20 @@
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html dir="<%= (rtl?) ? 'rtl' : 'ltr' %>">
   <head>
+  <script>
+     function number_pages() {
+        var vars={};
+        var x=document.location.search.substring(1).split('&');
+        for(var i in x) {var z=x[i].split('=',2);vars[z[0]] = unescape(z[1]);}
+        var x=['frompage','topage','page','webpage','section','subsection','subsubsection'];
+        for(var i in x) {
+          var y = document.getElementsByClassName(x[i]);
+          for(var j=0; j<y.length; ++j) y[j].textContent = vars[x[i]];
+        }
+    }
+  </script>
+
+
     <% @direction = (rtl?) ? 'rtl/' : '' %>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/> 
     <%= stylesheet_link_tag([@direction+'application', @direction+'_styles/ui.all'])%>
@@ -46,7 +60,7 @@
     </script>
 
   </head>
-  <body>
+  <body onload="number_pages()">
 
     <%= yield %>
     <script type="text/javascript">

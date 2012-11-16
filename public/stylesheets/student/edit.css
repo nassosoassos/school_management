@@ -1,6 +1,6 @@
 
 #admission1-form {
-    padding-left:50px;
+    padding-left:0px;
 }
 #necessary-field-notification {
     font-weight : bold;
@@ -73,6 +73,75 @@ input#student_image_file{
     float:left;
     height:80px;
     width:450px;
+}
+.label-field-pair-edit-admission{
+    float:left;
+    height:140px;
+    width:450px;
+}
+.label-field-pair-edit-admission label{
+    color:#444444;
+    display:block;
+    float:left;
+    font-size:14px;
+    font-weight:600;
+    margin:0 0 10px;
+    padding-top:10px;
+}
+
+.student_admission_date {
+    float:left;
+    height:140px;
+    width:450px;
+}
+.student_admission_date label {
+    color:#444444;
+    display:block;
+    float:left;
+    margin:0 0 10px;
+    padding-top: 10px;
+    font-weight: 600;
+    font-size: 14px;
+    width: 200px;
+}
+.text-input-bg-admission input  {
+    -moz-border-radius:10px 10px 10px 10px;
+    -webkit-border-radius:10px;
+    background:none repeat scroll 0 0 #EEEEEE;
+    border:1px solid #C6C6C6;
+    height:17px;
+    margin:5px 0 0 10px;
+    padding:5px;
+    width:205px;
+    text-align: left;
+}
+
+.text-input-bg-admission input  {
+    -moz-border-radius:10px 10px 10px 10px;
+    -webkit-border-radius:10px;
+    background:none repeat scroll 0 0 #EEEEEE;
+    border:1px solid #C6C6C6;
+    height:17px;
+    margin:5px 0 0 10px;
+    padding:5px;
+    width:205px;
+    text-align: left;
+}
+.label-field-pair-edit-admission input{
+    -moz-background-clip:border;
+-moz-background-inline-policy:continuous;
+-moz-background-origin:padding;
+-moz-border-radius-bottomleft:10px;
+-moz-border-radius-bottomright:10px;
+-moz-border-radius-topleft:10px;
+-moz-border-radius-topright:10px;
+-webkit-border-radius:10px;
+background:#EEEEEE none repeat scroll 0 0;
+border:1px solid #C6C6C6;
+height:17px;
+margin:5px 0 0 10px;
+padding:5px;
+width:205px;
 }
 .label-field-pair-edit label{
     color:#444444;

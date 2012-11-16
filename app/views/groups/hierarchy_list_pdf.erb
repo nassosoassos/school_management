@@ -18,74 +18,185 @@
 #under the License. -%>
 
  <div id="page-yield" class="available_sections">
-  <div class="hor_line"></div>
-  <div id="student_profile_heading" class="section">
-    <div id ="student_main_info" align="center">
-      <h2>Λίστα Αρχαιότητας Σπουδαστών για το έτος <br/> <%= @year.name %></h2>
+   <div id="student_profile_heading" class="section">
+     <div id="list_main_info">
+       <h4><%=@group.name %></h4>
+       <h4>Ακαδημαϊκό Έτος: <%= @year.name %> (<%=@group_year_number%>ο έτος)</h4>
+       <% if @type!=3 %>
+         <h4>Εξεταστικές Περίοδοι:  
+         <% if @exam_period=='all' %>
+           Ιανουαρίου/Ιουλίου/Σεπτεμβρίου
+         <% elsif @exam_period=='b' %>
+             Ιανουαρίου/Ιουλίου
+         <% elsif @exam_period=='c' %>
+             Σεπτεμβρίου
+         <% end%></h4>
+       <% end %>
+     </div>
+     <div id ="student_main_info" align="center">
+       <h3><%= @list_title %></h3>
     </div>
   </div>
-    <table width="100%" id="pdf-table" class="section">
+  <table width="100%" id="pdf-table" class="section">
+    <% if @show_all_grades %>
       <tr class="table-header">
-        <td class="col-pdf" colspan="2"></td>
-        <td class="col-pdf" colspan="5" align="center">ΒΑΘΜΟΛΟΓΙΑ</td>
-        <td class="col-pdf" colspan="1"></td>
-      <tr class="table-header">
-        <td>Ονοματεπώνυμο</td>
-        <td>Όν. Πατρός</td>
+        <td colspan="4"></td>
+        <td colspan="5" align="center">ΒΑΘΜΟΛΟΓΙΑ</td>
+        <% if @show_notes %>
+          <td colspan="1"></td>
+        <%end%>
+      </tr>
+    <% end %>
+    <tr class="table-header">
+      <td> Σειρά </td>
+      <td>Α.Μ.</td>
+      <td>Ονοματεπώνυμο</td>
+      <td>Όν. Πατρός</td>
+      <% if @show_all_grades %>
         <td align="center">Παν/μίου</td>
         <td align="center">Σχ. Μαθημ.</td>
         <td align="center">Προσ. Διαγωγής</td>
         <td align="center">Μόρια</td>
         <td align="center">Τελική</td>
+      <% elsif @show_final_grade %>
+        <td align="center">Τελική Βαθμολογία</td>
+      <% end %>
+      <% if @show_notes %>
         <td>Παρατηρήσεις</td>
-      </tr>
-      <% @all_students.each do |student| %>
-      <tr class="even">
-        <td class="col-2"> <%= student[:full_name] %></td>
-        <td class="col-2"> <%= student[:father] %></td>
-        <% if student[:uni_gpa].blank? %>
-          <% uni_gpa_string = "" %>
-        <% else %>
-          <% uni_gpa_string = sprintf( "%.02f" , student[:uni_gpa] ) %>
-        <% end %>
-        <td class="col-5" align="center"> <%= uni_gpa_string %></td>
-        <% if student[:mil_gpa].blank? %>
-          <% mil_gpa_string = "" %>
-        <% else %>
-          <% mil_gpa_string = sprintf( "%.02f" , student[:mil_gpa] ) %>
-        <%end%>
-        <td class="col-5" align="center"> <%= mil_gpa_string %></td>
-        <% if student[:mil_p_gpa] != nil %>
-          <% mil_p_gpa_string = sprintf( "%.02f" , student[:mil_p_gpa]) %>
-        <% else %>
-          <% mil_p_gpa_string = "" %>
-        <% end %>
+      <% end %>
+    </tr>
 
-        <td class="col-5" align="center"> <%= mil_p_gpa_string %></td>
-        <% if student[:total_sum].blank? %>
-          <% global_sum_string = "" %>
-        <% else %>
-          <% global_sum_string = sprintf( "%.02f" , student[:total_sum]) %>
-        <% end %>
-        <td class="col-5" align="center"> <%= global_sum_string %></td>
-        <% if student[:gpa].blank? %>
-          <% total_gpa_string = "" %>
-        <% else %>
-          <% total_gpa_string = sprintf( "%.02f" , student[:gpa]) %>
-        <% end %>
-        <td class="col-5" align="center"> <%= total_gpa_string %></td>
-        <% if student[:n_unfinished_subjects]>0 %>
-          <%  notes = student[:n_unfinished_subjects].to_s + " Μεταφερόμενα" %>
-        <% else %>
-          <% if student[:gender] == "m" %>
-            <% notes = "Περατώσας" %>
-          <% else %>
-            <% notes = "Περατώσασα" %>
+      <% index = 0 %>
+      <% @all_students.each do |student| %>
+        <% index += 1 %>
+        <% if index%(@students_per_page+1)==0 %>
+          </table>
+          <div id="student_profile_heading" class="section">
+          </div>
+          <table width="100%" id="pdf-table" class="section">
+            <% if @show_all_grades %>
+              <tr class="table-header">
+                <td colspan="4"></td>
+                <td colspan="5" align="center">ΒΑΘΜΟΛΟΓΙΑ</td>
+                <% if @show_notes %>
+                  <td colspan="1"></td>
+                <%end%>
+              </tr>
+            <% end %>
+            <tr class="table-header">
+              <td> Σειρά </td>
+              <td>Α.Μ.</td>
+              <td>Ονοματεπώνυμο</td>
+              <td>Όν. Πατρός</td>
+              <% if @show_all_grades %>
+                <td align="center">Παν/μίου</td>
+                <td align="center">Σχ. Μαθημ.</td>
+                <td align="center">Προσ. Διαγωγής</td>
+                <td align="center">Μόρια</td>
+                <td align="center">Τελική</td>
+              <% elsif @show_final_grade %>
+                <td align="center">Τελική Βαθμολογία</td>
+              <% end %>
+              <% if @show_notes %>
+                <td>Παρατηρήσεις</td>
+              <% end %>
+            </tr>
+       <% end %>
+        <tr>
+          <td align="center"> <%= index %> </td>
+          <td align="center"> <%= student[:id] %> </td>
+          <td> <%= student[:full_name] %></td>
+          <td> <%= student[:father] %></td>
+          <% if @show_all_grades %>
+            <% if student[:uni_gpa].blank? %>
+              <% uni_gpa_string = "" %>
+            <% else %>
+              <% uni_gpa_string = sprintf( "%.02f" , student[:uni_gpa] ) %>
+            <% end %>
+            <td align="center"> <%= uni_gpa_string %></td>
+            <% if student[:mil_gpa].blank? %>
+              <% mil_gpa_string = "" %>
+            <% else %>
+              <% mil_gpa_string = sprintf( "%.02f" , student[:mil_gpa] ) %>
+            <%end%>
+            <td align="center"> <%= mil_gpa_string %></td>
+            <% if student[:mil_p_gpa] != nil %>
+              <% mil_p_gpa_string = sprintf( "%.02f" , student[:mil_p_gpa]) %>
+            <% else %>
+              <% mil_p_gpa_string = "" %>
+            <% end %>
+            <td align="center"> <%= mil_p_gpa_string %></td>
+            <% if student[:total_sum].blank? %>
+              <% global_sum_string = "" %>
+            <% else %>
+              <% global_sum_string = sprintf( "%.02f" , student[:total_sum]) %>
+            <% end %>
+            <td align="center"> <%= global_sum_string %></td>
           <% end %>
+          <% if @show_all_grades or @show_final_grade %>
+            <% if student[:gpa].blank? %>
+              <% total_gpa_string = "" %>
+            <% else %>
+              <% total_gpa_string = sprintf( "%.02f" , student[:gpa]) %>
+            <% end %>
+            <td align="center"> <%= total_gpa_string %></td>
+          <% end %>
+        <% if @show_notes %>
+          <% if student[:n_unfinished_subjects]>0 %>
+            <% if student[:n_unfinished_subjects]==1 %>
+              <%  notes = student[:n_unfinished_subjects].to_s + " Μεταφερόμενο" %>
+            <% else %>
+              <%  notes = student[:n_unfinished_subjects].to_s + " Μεταφερόμενα" %>
+            <% end %>
+          <% else %>
+            <% if (@exam_period=='b' or @exam_period=='all')%>
+              <% notes = "Αρχηγός Τάξης" %>
+            <% else %>
+              <% if student[:gender] == "m" %>
+                <% notes = "Περατώσας" %>
+              <% else %>
+                <% notes = "Περατώσασα" %>
+              <% end %>
+            <% end%>
+          <% end %>
+          <td> <%= notes %></td>
         <% end %>
-        <td class="col-5"> <%= notes %></td>
       </tr>
     <% end %>
-    </table>
-    <p/>
+  </table>
+
+  <% if @layout=='Portrait' and @all_students.length%20==0 %>
+    <div id='signatures' class='section' height='5%'>
+  <% else %>
+    <div id='signatures' class='section'>
+  <% end %>
+    <div id='signatures-header'>
+      ΘΕΩΡΗΘΗΚΕ <br/>
+      <span class='signature-date'>Αθήνα, .........................................</span>
+    </div>
+    <div id='first-signee' class='signee'>
+      <div class='signee-title'>
+         <% if @directors_gender=='m' %>
+           Ο ΔΙΟΙΚΗΤΗΣ
+         <% else %>
+           Η ΔΙΟΙΚΗΤΗΣ
+         <% end %>
+      </div>
+      <div class='signee-name'>
+         <%= @directors_full_rank_and_name %>
+      </div>
+    </div>
+    <div id='second-signee' class='signee'>
+      <div class='signee-title'>
+         <% if @edu_directors_gender=='m' %>
+           Ο ΔΙΕΥΘΥΝΤΗΣ ΕΚΠΑΙΔΕΥΣΗΣ
+         <% else %>
+           Η ΔΙΕΥΘΥΝΤΡΙΑ ΕΚΠΑΙΔΕΥΣΗΣ
+         <% end %>
+      </div>
+      <div class='signee-name'>
+         <%= @edu_directors_full_rank_and_name %>
+      </div>
+    </div>
+  </div>
   </div>

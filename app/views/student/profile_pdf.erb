@@ -75,7 +75,7 @@
     <% end %>
 
     <tr class="even"><td><%= t('immediate_contact') %></td><td class="right">
-        <%= @immediate_contact.full_name unless @immediate_contact.nil? %> <%= "(" + @immediate_contact.mobile_phone + ")" if @immediate_contact and !@immediate_contact.mobile_phone.empty? %>
+        <%= @immediate_contact.full_name unless @immediate_contact.nil? %> <%= "(" + @immediate_contact.mobile_phone + ")" if @immediate_contact and @immediate_contact.mobile_phone and !@immediate_contact.mobile_phone.empty? %>
       </td></tr>
     <% c = 'odd'  %>
   </table>

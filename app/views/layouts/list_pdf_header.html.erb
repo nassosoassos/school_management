@@ -16,10 +16,9 @@
 #KIND, either express or implied.  See the License for the
 #specific language governing permissions and limitations
 #under the License. -%>
-<div id="pdf-header">
 
-  <div class="school_logo">
-    <div class="header-content">
+<div id="pdf-header">
+  <div class="header-content">
 
     <p><%=Configuration.get_config_value('InstitutionName'); %></p>
     <p>Διεύθυνση Εκπαίδευσης</p>
@@ -27,5 +26,4 @@
     <div class="logo">
       <%= wicked_pdf_image_tag "/"+(current_school_detail.logo.path||"#{Rails.root}/public/images/application/app_fedena_logo.jpg"), {:height=>"95%"} %>
     </div>
-  </div>
 </div>

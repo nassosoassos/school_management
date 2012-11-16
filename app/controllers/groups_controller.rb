@@ -58,18 +58,25 @@ class GroupsController < ApplicationController
   end
 
   def print_lists
-    group = Group.find(params[:id])
+    @group = Group.find(params[:id])
     @type = Integer(params[:list_type])
     @exam_period = params[:exam_period]
     year_id = params[:group_year]
     @year = AcademicYear.find(year_id)
+    @group_year_number = @group.find_year_number(@year).to_s
     if @type != 3
       if @exam_period=='all'
-        @successful_students, @successful_september_students, @unsuccessful_students, @undef_students = group.get_seniority_list_for_year(@year, 'c')
+        @successful_students, @successful_september_students, @unsuccessful_students, @undef_students = @group.get_seniority_list_for_year(@year, 'c')
       else
-        @successful_students, @successful_september_students, @unsuccessful_students, @undef_students = group.get_seniority_list_for_year(@year, @exam_period)
+        @successful_students, @successful_september_students, @unsuccessful_students, @undef_students = @group.get_seniority_list_for_year(@year, @exam_period)
       end
       if @type==0
+        @layout = 'Portrait'
+        @students_per_page = 55
+        @show_all_grades = false
+        @show_final_grade = false
+        @show_notes = false
+        @list_title = 'Λίστα Αρχαιότητας Σπουδαστών'
         if @exam_period=='c'
           @all_students = @successful_september_students + @unsuccessful_students
         elsif @exam_period=='b'
@@ -78,6 +85,12 @@ class GroupsController < ApplicationController
           @all_students = @successful_students + @successful_september_students + @unsuccessful_students
         end
       elsif @type==1
+        @list_title = 'Πίνακας Περατωσάντων Σπουδαστών'
+        @show_notes = true
+        @layout = 'Landscape'
+        @show_all_grades = false
+        @show_final_grade = false
+        @students_per_page = 20
         if @exam_period=='b'
           @all_students = @successful_students
         elsif @exam_period=='c'
@@ -86,10 +99,21 @@ class GroupsController < ApplicationController
           @all_students = @successful_students + @successful_september_students
         end
       elsif @type==2
+        @list_title = 'Πίνακας Μη Περατωσάντων Σπουδαστών'
+        @show_all_grades = false
+        @show_final_grade = false
+        @show_notes = true
+        @layout = 'Landscape'
+        @students_per_page = 20
         @all_students = @unsuccessful_students
       end
     else
-      @successful_students, @undef_students = group.get_overall_seniority_list
+      @layout = 'Portrait'
+      @show_notes = true
+      @list_title = 'Πίνακας Αποφοιτώντων Σπουδαστών'
+      @show_all_grades = false
+      @show_final_grade = false
+      @successful_students, @undef_students = @group.get_overall_seniority_list
       @all_students = @successful_students
     end
     index = 0
@@ -98,8 +122,34 @@ class GroupsController < ApplicationController
       stu[:index] = index
     end
 
+    directors_full_name = Configuration.find_by_config_key('DirectorsFullName').config_value
+    directors_rank = Configuration.find_by_config_key('DirectorsRank').config_value
+    directors_arms = Configuration.find_by_config_key('DirectorsArms').config_value
+
+    edu_directors_full_name = Configuration.find_by_config_key('EduDirectorsFullName').config_value
+    edu_directors_rank = Configuration.find_by_config_key('EduDirectorsRank').config_value
+    edu_directors_arms = Configuration.find_by_config_key('EduDirectorsArms').config_value
+  
+    directors_full_name_last_char = directors_full_name.split('').last
+   if directors_full_name_last_char=='Σ' or directors_full_name_last_char=='ς' 
+     @directors_gender = 'm'
+   else
+     @directors_gender = 'f'
+   end
+   @directors_full_rank_and_name = "%s (%s) %s" % [directors_rank, directors_arms, directors_full_name]
+
+    edu_directors_full_name_last_char = edu_directors_full_name.split('').last
+   if edu_directors_full_name_last_char=='Σ' or edu_directors_full_name_last_char=='ς' 
+     @edu_directors_gender = 'm'
+   else
+     @edu_directors_gender = 'f'
+   end
+   @edu_directors_full_rank_and_name = "%s (%s) %s" % [edu_directors_rank, edu_directors_arms, edu_directors_full_name]
     if @type==0
-      render :pdf=>'hierarchy_list', :template=>'groups/hierarchy_list_pdf.erb', :orientation=>'Landscape' 
+      render :pdf=>'hierarchy_list', :template=>'groups/hierarchy_list_pdf.erb', :orientation=>@layout
+    elsif @type != 3
+      render :pdf=>'hierarchy_list', :template=>'groups/hierarchy_list_pdf.erb', :orientation=>@layout
+    else 
     end
   end
 

@@ -24,11 +24,59 @@ form{
 }
 .box{
     margin: 0 auto;
-    width: 560px;
+    width: 700px;
 }
 .label-field-pair label{
     width: 240px !important;
 }
+
+.label-three-fields-pair {
+    width: 600px !important;
+    height: 40px;
+}
+
+.label-three-fields-pair label{
+    color : #444;
+    display : block;
+    font-size: 14px;
+    margin : 0 0 0px 0;
+    float:left;
+    padding-top: 10px;
+    font-weight: 600;
+    width: 240px !important;
+}
+
+.short-text-input-bg {
+    background : transparent;
+    height : 28px;
+    width : 350px;
+    float:left;
+}
+
+.label-three-fields-pair input {
+    background : #eee;
+    border : 1px solid #c6c6c6;
+    margin : 5px 0 0 10px;
+    width : 90px;
+    height:17px;
+    -moz-border-radius:10px;
+    -webkit-border-radius:10px;
+    padding: 5px;
+}
+
+#configuration_directors_arms {
+  width: 30px;
+}
+#configuration_edu_directors_arms {
+  width: 30px;
+}
+#configuration_edu_directors_full_name {
+  width: 150px;
+}
+#configuration_directors_full_name {
+  width: 150px;
+}
+
 .fee_category_scroll {
 -moz-background-inline-policy:continuous;
 -moz-border-radius:10px 10px 10px 10px;

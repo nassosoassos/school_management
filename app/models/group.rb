@@ -29,6 +29,12 @@ class Group < ActiveRecord::Base
       end
     end
 
+    def find_year_number(year)
+      academic_years = SanSemester.find_all_by_group_id(self.id).map(&:academic_year).uniq
+      academic_years.sort!{|a, b| a.start_date<=>b.start_date}
+      return academic_years.index{|a| a.id==year.id} + 1
+    end
+
     def subscribe_to_semester(semester)
       semester.update_attributes({:group_id=>self.id}) 
       self.update_attributes({:active_semester_id=>semester.id})
@@ -119,7 +125,7 @@ class Group < ActiveRecord::Base
         total_gpa, total_sum, uni_gpa, mil_gpa, mil_p_gpa = stu.get_gpa_and_points_for_year(year, exam_period)      
         stu_info = {:gpa=>total_gpa, :total_sum=>total_sum, :uni_gpa=>uni_gpa, :full_name=>stu.full_name,
           :mil_gpa=>mil_gpa,:mil_p_gpa=>mil_p_gpa, :n_unfinished_subjects=>n_unfinished_subjects, 
-          :father=>stu.fathers_first_name, :gender=>stu.gender, :id=>stu.id}
+          :father=>stu.fathers_first_name, :gender=>stu.gender, :id=>stu.admission_no}
         if total_gpa!=nil and uni_gpa!=nil
           unsorted_successful_students.push(stu_info)
         else
@@ -132,7 +138,7 @@ class Group < ActiveRecord::Base
         total_gpa, total_sum, uni_gpa, mil_gpa, mil_p_gpa = stu.get_gpa_and_points_for_year(year, exam_period)      
         stu_info = {:gpa=>total_gpa, :total_sum=>total_sum, :uni_gpa=>uni_gpa, :full_name=>stu.full_name,
           :mil_gpa=>mil_gpa,:mil_p_gpa=>mil_p_gpa, :n_unfinished_subjects=>n_unfinished_subjects, 
-          :father=>stu.fathers_first_name, :gender=>stu.gender, :id=>stu.id}
+          :father=>stu.fathers_first_name, :gender=>stu.gender, :id=>stu.admission_no}
         if total_gpa!=nil and uni_gpa!=nil
           if n_unfinished_subjects==0
             unsorted_successful_september_students.push(stu_info)

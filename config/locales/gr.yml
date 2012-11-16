@@ -1508,6 +1508,8 @@ gr: # locale
   examination_wise_performance: "Examination - wise performance"
   cumulative_performance: "Cumulative Performance"
   examination_Name: "Examination Name"
+  school_director: "Διεθυντής Σχολής"
+  school_education_director: "Διευθυντής Εκπαίδευσης"
   edit_details: "Τροποποίηση Στοιχείων"
   necessary_field: "necessary-field"
   additional: "Additional"
