@@ -145,12 +145,30 @@ class GroupsController < ApplicationController
      @edu_directors_gender = 'f'
    end
    @edu_directors_full_rank_and_name = "%s (%s) %s" % [edu_directors_rank, edu_directors_arms, edu_directors_full_name]
-    if @type==0
-      render :pdf=>'hierarchy_list', :template=>'groups/hierarchy_list_pdf.erb', :orientation=>@layout
-    elsif @type != 3
-      render :pdf=>'hierarchy_list', :template=>'groups/hierarchy_list_pdf.erb', :orientation=>@layout
-    else 
-    end
+   respond_to do |format|
+     if params[:commit]=='Εκτύπωση (pdf)'
+       format.pdf do
+         render :pdf=>'hierarchy_list', :template=>'groups/hierarchy_list_pdf.erb', :orientation=>@layout
+       end
+     elsif params[:commit]=='Εξαγωγή (xls)'
+       format.xls {
+         require 'spreadsheet'
+         students = Spreadsheet::Workbook.new
+         list = students.create_worksheet :name=>@list_title
+         list.row(0).concat %w{Α/Α ΑΜ Ονοματεπώνυμο Πατρώνυμο Πανεπ. Σχολή Προσόντα Μόρια Βαθμός Μεταφερόμενα}
+         @all_students.each_with_index { |student, i|
+           list.row(i+1).push student[:index],student[:admission_no],student[:full_name],student[:father], student[:uni_gpa], student[:mil_gpa], student[:mil_p_gpa], student[:total_sum], student[:gpa], student[:n_unfinished_subjects]
+         }
+         header_format = Spreadsheet::Format.new :color=>:green, :weight=>:bold
+         list.row(0).default_format = header_format
+         #output to blob object
+         blob = StringIO.new('')
+         students.write blob
+         #respond with blob object as a file
+        send_data blob.string, :type=>:xls, :filename=>'list.xls'
+       }
+     end
+   end
   end
 
   def grades
