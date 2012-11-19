@@ -149,7 +149,7 @@
               <%  notes = student[:n_unfinished_subjects].to_s + " Μεταφερόμενα" %>
             <% end %>
           <% else %>
-            <% if (@exam_period=='b' or @exam_period=='all')%>
+            <% if (@exam_period=='b' or @exam_period=='all' and index==1)%>
               <% notes = "Αρχηγός Τάξης" %>
             <% else %>
               <% if student[:gender] == "m" %>

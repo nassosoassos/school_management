@@ -88,7 +88,7 @@ class GroupsController < ApplicationController
         @list_title = 'Πίνακας Περατωσάντων Σπουδαστών'
         @show_notes = true
         @layout = 'Landscape'
-        @show_all_grades = false
+        @show_all_grades = true
         @show_final_grade = false
         @students_per_page = 20
         if @exam_period=='b'

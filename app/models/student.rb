@@ -264,14 +264,22 @@ class Student < ActiveRecord::Base
     mil_p_weight = last_semester.mil_p_weight.to_f
     mil_p_grades = StudentMilitaryPerformance.find_all_by_student_id(self.id).map(&:grade)
     mil_p_grade = mil_p_grades.inject(0.0) { |sum, el| sum + el } / mil_p_grades.size
-    mil_performance_points = mil_p_weight * mil_p_grade
+    if mil_p_grade
+      mil_performance_points = mil_p_weight * mil_p_grade
+    else
+      mil_performance_points = nil
+    end
 
     sum_of_weights = 0
     sum_of_weights += last_semester.uni_weight.to_f
     sum_of_weights += last_semester.mil_weight.to_f
     sum_of_weights += mil_p_weight
 
-    points = uni_points + mil_points + mil_performance_points
+    if mil_performance_points
+      points = uni_points + mil_points + mil_performance_points
+    else
+      points = uni_points + mil_points
+    end
     gpa = points.to_f / sum_of_weights
 
     return [gpa, points, uni_gpa, mil_gpa, mil_p_grade, uni_points, mil_points, mil_performance_points]
@@ -316,14 +324,22 @@ class Student < ActiveRecord::Base
     first_semester = SanSemester.find_by_academic_year_id_and_group_id(year.id, self.group_id)
     mil_p_weight = first_semester.mil_p_weight.to_f
     mil_p_grade = StudentMilitaryPerformance.find_by_student_id_and_academic_year_id(self.id, year.id).grade
-    mil_performance_points = mil_p_weight * mil_p_grade
+    if mil_p_grade
+      mil_performance_points = mil_p_weight * mil_p_grade
+    else
+      mil_performance_points = nil
+    end
 
     sum_of_weights = 0
     sum_of_weights += first_semester.uni_weight.to_f
     sum_of_weights += first_semester.mil_weight.to_f
     sum_of_weights += mil_p_weight
 
-    points = uni_points + mil_points + mil_performance_points
+    if mil_performance_points
+      points = uni_points + mil_points + mil_performance_points
+    else
+      points = uni_points + mil_points
+    end
     gpa = points.to_f / sum_of_weights
 
     return [gpa, points, uni_gpa, mil_gpa, mil_p_grade, uni_points, mil_points, mil_performance_points]
