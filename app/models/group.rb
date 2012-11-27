@@ -105,7 +105,7 @@ class Group < ActiveRecord::Base
         end
       end
       # Sort by unfinished subjects and then gpa and then uni_gpa
-      sorted_students = unsorted_successful_students.sort {|a,b| a[:n_unfinished_subjects]==b[:n_unfinished_subjects]? (b[:gpa] == a[:gpa]? b[:uni_gpa] <=> a[:uni_gpa] : b[:gpa] <=> a[:gpa]) : a[:n_unfinished_subjects] <=> b[:n_unfinished_subjects]}
+      sorted_students = unsorted_successful_students.sort {|a,b| a[:n_unfinished_subjects]==b[:n_unfinished_subjects]? ((b[:total_sum] - a[:total_sum]).abs < 0.01? b[:uni_gpa] <=> a[:uni_gpa] : b[:total_sum] <=> a[:total_sum]) : a[:n_unfinished_subjects] <=> b[:n_unfinished_subjects]}
       if undef_students.length>0
         undef_students.sort! {|a,b| a[:full_name] <=> b[:full_name]}
       end
@@ -151,9 +151,9 @@ class Group < ActiveRecord::Base
       end
 
       # Sort by unfinished subjects and then gpa and then uni_gpa
-      sorted_successful_students = unsorted_successful_students.sort {|a,b| a[:n_unfinished_subjects]==b[:n_unfinished_subjects]? (b[:gpa] == a[:gpa]? b[:uni_gpa] <=> a[:uni_gpa] : b[:gpa] <=> a[:gpa]) : a[:n_unfinished_subjects] <=> b[:n_unfinished_subjects]}
-      sorted_successful_september_students = unsorted_successful_september_students.sort {|a,b| a[:n_unfinished_subjects]==b[:n_unfinished_subjects]? (b[:gpa] == a[:gpa]? b[:uni_gpa] <=> a[:uni_gpa] : b[:gpa] <=> a[:gpa]) : a[:n_unfinished_subjects] <=> b[:n_unfinished_subjects]}
-      sorted_unsuccessful_students = unsorted_unsuccessful_students.sort {|a,b| a[:n_unfinished_subjects]==b[:n_unfinished_subjects]? (b[:gpa] == a[:gpa]? b[:uni_gpa] <=> a[:uni_gpa] : b[:gpa] <=> a[:gpa]) : a[:n_unfinished_subjects] <=> b[:n_unfinished_subjects]}
+      sorted_successful_students = unsorted_successful_students.sort {|a,b| a[:n_unfinished_subjects]==b[:n_unfinished_subjects]? ((b[:total_sum] - a[:total_sum]).abs < 0.01 ? b[:uni_gpa] <=> a[:uni_gpa] : b[:total_sum] <=> a[:total_sum]) : a[:n_unfinished_subjects] <=> b[:n_unfinished_subjects]}
+      sorted_successful_september_students = unsorted_successful_september_students.sort {|a,b| a[:n_unfinished_subjects]==b[:n_unfinished_subjects]? ((b[:total_sum] - a[:total_sum]).abs < 0.01 ? b[:uni_gpa] <=> a[:uni_gpa] : b[:total_sum] <=> a[:total_sum]) : a[:n_unfinished_subjects] <=> b[:n_unfinished_subjects]}
+      sorted_unsuccessful_students = unsorted_unsuccessful_students.sort {|a,b| a[:n_unfinished_subjects]==b[:n_unfinished_subjects]? ((b[:gpa] - a[:gpa]).abs < 0.01 ? b[:uni_gpa] <=> a[:uni_gpa] : b[:total_sum] <=> a[:total_sum]) : a[:n_unfinished_subjects] <=> b[:n_unfinished_subjects]}
 
       if undef_students.length>0
         undef_students.sort! {|a,b| a[:full_name] <=> b[:full_name]}

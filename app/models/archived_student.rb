@@ -22,6 +22,7 @@ class ArchivedStudent < ActiveRecord::Base
   
   belongs_to :country
   belongs_to :batch
+  belongs_to :group
   belongs_to :student_category
   belongs_to :nationality, :class_name => 'Country'
   has_many :archived_guardians, :foreign_key => 'ward_id', :dependent => :destroy

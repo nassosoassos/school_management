@@ -20,7 +20,7 @@
 <div id="content-header">
  <%= image_tag("/images/student_details/student_details_logo.jpg") %>
   <h1><%= t('students') %></h1>
-  <h3><%= t('remove_student') %></h3>
+  <h3><%= t('student_status') %></h3>
   <div id="app-back-button">
      <%= link_to_function image_tag("/images/buttons/back.png",:border => 0), "history.back()" %>
   </div>
@@ -33,7 +33,7 @@
   <div id="student-details">
     <h3><%= @student.full_name %></h3>
     <h4><%= t('adm_no') %> : <%= @student.admission_no %></h4>
-    <h4><%= t('class') %>: <%= @student.batch.course_name %></h4>
+    <h4><%= t('class') %>: <%= @student.group.name %></h4>
   </div>
 
   <div class="extender"> </div>

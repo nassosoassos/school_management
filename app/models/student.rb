@@ -34,7 +34,7 @@ class Student < ActiveRecord::Base
   has_many   :attendances
   has_many   :finance_fees
   has_many   :fee_category ,:class_name => "FinanceFeeCategory"
-  has_many   :students_subjects, :foreign_key => 'student_id', :dependent => :destroy
+  has_many   :students_subjects, :foreign_key => 'student_id'
   has_many   :san_subjects ,:through => :students_subjects
   has_many   :student_additional_details
   has_many   :batch_students
@@ -227,7 +227,7 @@ class Student < ActiveRecord::Base
     grades = finalize_grade_set(univ_subjects, exam_period)
     if grades.size>0
       univ_gpa = grades.inject(0.0) { |sum, el| sum + el } / grades.size 
-      univ_points = SanSemester.find_by_academic_year_id_and_group_id(self.group.last_year.id, self.group.id).uni_weight
+      univ_points = univ_gpa*SanSemester.find_by_academic_year_id_and_group_id(self.group.last_year.id, self.group.id).uni_weight
     else 
       univ_gpa = nil
       univ_points = nil
@@ -243,7 +243,7 @@ class Student < ActiveRecord::Base
     if grades.size>0
       mil_gpa = grades.inject(0.0) { |sum, el| sum + el } / grades.size 
       # Assume that the most recent weights are the valid ones
-      mil_points = SanSemester.find_by_academic_year_id_and_group_id(self.group.last_year.id, self.group.id).mil_weight
+      mil_points = mil_gpa*SanSemester.find_by_academic_year_id_and_group_id(self.group.last_year.id, self.group.id).mil_weight
     else 
       mil_gpa = nil
       mil_points = nil
@@ -700,7 +700,7 @@ class Student < ActiveRecord::Base
     return false
   end
 
-  def former_dependency
+ def former_dependency
     plugin_dependencies = FedenaPlugin.check_dependency(self,"former")
   end
 

@@ -222,9 +222,20 @@ class StudentController < ApplicationController
       end
       @optional_subjects_info.push(op_info)
     end
-    compulsory_subjects.each do |o|
-      cmp_info = { :id => o.id, :title => o.title, :kind => o.kind } 
-      stu = StudentsSubject.find_or_create_by_student_id_and_subject_id_and_group_id_and_san_semester_id(@student.id, o.id, @group.id, @semester_id).blank?
+    academic_year_id = SanSemester.find(@semester_id).academic_year.id
+    compulsory_semester_subjects.each do |o|
+      cmp_info = { :id => o.san_subject.id, :title => o.san_subject.title, :kind => o.san_subject.kind } 
+      stu = StudentsSubject.find_by_student_id_and_semester_subjects_id(@student.id, o.id)
+      if stu.blank?
+        # This should not be the case. It is only to take care of problematic cases coming from 
+        # the previous information system.
+        stu = StudentsSubject.new({:student_id=>@student.id, :group_id=>@group.id, :semester_subjects_id=>o.id,
+                                    :san_semester_id=>@semester_id, :subject_id=>o.san_subject.id,
+                                    :academic_year_id=>academic_year_id})
+        stu.save
+      elsif stu.academic_year_id.nil?
+        stu.update_attributes({:academic_year_id=>academic_year_id})
+      end
       @compulsory_subjects_info.push(cmp_info)
     end
 
