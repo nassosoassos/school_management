@@ -44,6 +44,7 @@ class Student < ActiveRecord::Base
   has_many   :assessment_scores
   has_many   :exam_scores
   has_many   :previous_exam_scores
+  has_many   :student_military_performances
   
 
   named_scope :active, :conditions => { :is_active => true }
@@ -310,6 +311,64 @@ class Student < ActiveRecord::Base
     else 
       return nil, nil
     end
+  end
+
+  def find_next_student(year)
+    smp = StudentMilitaryPerformance.find_by_student_id_and_academic_year_id(self.id, year.id)
+    if smp.nil? or smp.seniority.nil?
+      self.estimate_performance_scores(year)
+      smp = StudentMilitaryPerformance.find_by_student_id_and_academic_year_id(self.id, year.id)
+    end
+    if smp.seniority==self.group.n_students(year)
+      smp_next = smp
+    else
+      smp_next = StudentMilitaryPerformance.find_by_seniority_and_group_id_and_academic_year_id_and_is_active(smp.seniority+1, self.group.id, year.id, true)
+    end
+    if smp_next
+      stu = smp_next.student
+    else
+      stu = self
+    end
+    return stu
+  end
+
+  def find_previous_student(year)
+    smp = StudentMilitaryPerformance.find_by_student_id_and_academic_year_id(self.id, year.id)
+    if smp.nil? or smp.seniority.nil?
+      self.estimate_performance_scores(year)
+      smp = StudentMilitaryPerformance.find_by_student_id_and_academic_year_id(self.id, year.id)
+    end
+    if smp.seniority==1
+      smp_prev = smp
+    else
+      smp_prev = StudentMilitaryPerformance.find_by_seniority_and_group_id_and_academic_year_id_and_is_active(smp.seniority-1, self.group.id, year.id, true)
+    end
+    if smp_prev
+      stu = smp_prev.student
+    else
+      stu = self
+    end
+    return stu
+  end
+
+
+  def estimate_performance_scores(year)
+    gpa, points, uni_gpa, mil_gpa, mil_p_grade, uni_points, mil_points, mil_performance_points = get_gpa_and_points_for_year(year)
+    n_unfinished_subjects = get_to_be_transferred_subjects_for_year(year).length
+    if n_unfinished_subjects>0 
+      success_type = 0
+    else
+      if get_to_be_transferred_subjects_for_year(year,'b').length==0
+        success_type = 2
+      else
+        success_type = 1
+      end
+    end
+    smp = StudentMilitaryPerformance.find_or_create_by_student_id_and_academic_year_id(self.id, year.id)
+    smp.update_attributes({:group_id => self.group.id, :gpa=>gpa, :grade=>mil_p_grade, :univ_gpa=>uni_gpa, :mil_gpa=>mil_gpa, 
+                          :points=>points, :univ_points=>uni_points, :mil_points=>mil_points, :mil_p_points=>mil_performance_points, 
+                          :n_unfinished_subjects=>n_unfinished_subjects, :success_type=>success_type})
+    self.group.estimate_seniority(year, self.id)
   end
 
   def get_gpa_and_points_for_year(year, exam_period='c')

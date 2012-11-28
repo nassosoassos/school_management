@@ -66,24 +66,42 @@
        <td colspan=4 align="center">Εγγεγραμμένοι Σπουδαστές </td>
     </tr>
     <tr class="tr-head">
+      <td align="center">Σειρά</td>
       <td>Ονοματεπώνυμο</td>
-      <td>Α.Μ.</td>
+      <td align="center">Α.Μ.</td>
       <td></td>
     </tr>
 
-    <% @students.each do |r| %>
+      <% @students.each do |r| %>
       <tr class="tr-<%= cycle('odd', 'even') %>">
 
+        <td class="col-1" align="center">
+          <% if r.instance_of?(StudentMilitaryPerformance) %>
+            <%= r.seniority %>
+          <%end%>
+        </td>
         <td class="col-2">
-          <%= link_to r.full_name,:controller => "student", :action => "profile", :id => r.id %>
+          <% if r.instance_of?(StudentMilitaryPerformance) %>
+            <%= link_to r.student.full_name,:controller => "student", :action => "profile", :id => r.student.id %>
+          <% else %>
+            <%= link_to r.full_name,:controller => "student", :action => "profile", :id => r.id %>
+          <% end %>
         </td>
 
-        <td class="col-1">
-          <%= r.admission_no %>
+        <td class="col-1" align="center">
+          <% if r.instance_of?(StudentMilitaryPerformance) %>
+            <%= r.student.admission_no %>
+          <% else %>
+            <%= r.admission_no %>
+          <% end %>
         </td>
 
         <td class="col-7">
-          <%=  link_to  "#{t('view_profile')}", :controller => "student", :action => "profile", :id => r.id %>
+          <% if r.instance_of?(StudentMilitaryPerformance) %>
+            <%=  link_to  "#{t('view_profile')}", :controller => "student", :action => "profile", :id => r.student.id %>
+          <% else %>
+            <%=  link_to  "#{t('view_profile')}", :controller => "student", :action => "profile", :id => r.id %>
+          <% end %>
         </td>
       </tr>
     <% end %>

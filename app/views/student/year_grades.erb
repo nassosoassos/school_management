@@ -27,6 +27,10 @@
 
 <div id="nav">
   <ul>
+    <li><%= link_to "Προηγούμενος",
+          {:controller => "student", :action => "year_grades", :id => @previous_student_id, :params=>{:year_id=>@year.id}} %>
+    <li><%= link_to "Επόμενος",
+          {:controller => "student", :action => "year_grades", :id => @next_student_id, :params=>{:year_id=>@year.id}} %>
     <li><%= link_to "Εκτύπωση",
           {:controller => "student", :action => "grades_pdf", :id => @student.id} %>
 </li>
@@ -103,7 +107,7 @@
     </table>
 
 
-<% remote_form_for @student, :url=>{ :action=>'update_grades', :id=>@student.id, :year=>@year}, :html=>{:multipart=>true, :method=>:post} do |g_form| %>
+<% remote_form_for @student, :url=>{ :action=>'update_grades', :id=>@student.id, :year_id=>@year.id}, :html=>{:multipart=>true, :method=>:post} do |g_form| %>
 
   <%= g_form.error_messages %>
 

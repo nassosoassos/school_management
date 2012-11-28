@@ -55,6 +55,7 @@
         <td>Προσόντων Διαγωγής</td>
         <td>Μόρια</td>
         <td>Τελική Βαθμολογία</td>
+        <td>Σειρά</td>
         <td>Παρατηρήσεις</td>
         <td/>
       </tr>
@@ -92,6 +93,7 @@
           <% total_gpa_string = sprintf( "%.02f" , g_i[:total_gpa]) %>
         <% end %>
         <td class="col-5" align="center"> <%= total_gpa_string %></td>
+        <td class="col-5" align="center"> <%= g_i[:seniority] %></td>
 
         <% if g_i[:n_transfer_subjects]!=nil and g_i[:n_transfer_subjects]>0 %>
           <%  notes = g_i[:n_transfer_subjects].to_s + " Μεταφερόμενα" %>
@@ -111,5 +113,5 @@
     </table>
       <div id='year_grades'>
       </div>
-  </div>
+    </div>
 </div>

@@ -5,6 +5,83 @@ class Group < ActiveRecord::Base
 
     validates_presence_of :name, :first_year, :graduation_year 
 
+    def n_students(year=nil)
+      if year.nil?
+        g_students = Student.find_all_by_group_id_and_is_active(self.id)
+        if g_students.empty?
+          return 0
+        else
+          return g_students.length
+        end
+      else
+        g_students = Student.find_all_by_group_id(self.id)
+        num = 0
+        g_students.each do |s|
+          if StudentMilitaryPerformance.find_by_student_id_and_academic_year_id_and_is_active(s.id, year.id, true)
+            num += 1
+          end
+        end
+        return num
+      end
+    end
+
+    def estimate_seniority_batch(year)
+      all_students = Student.find_all_by_group_id_and_is_active(self.id, true)
+      all_students.each do |stu|
+        stu.estimate_performance_scores(year)
+        self.estimate_seniority(year, stu.id)
+      end
+    end
+
+    def estimate_seniority(year, student_id)
+        # In case we know that a specific student has been updated
+        # we can save the full sorting
+        stu_smp = StudentMilitaryPerformance.find_by_student_id_and_academic_year_id(student_id, year.id)
+        if stu_smp.seniority.nil?
+          #if year.previous
+          #  stu_smp_prev = StudentMilitaryPerformance.find_by_student_id_and_academic_year_id(student_id, year.id)
+          #  if stu_smp_prev.seniority
+          #    stu_smp.update_attributes({:seniority=>stu_smp_prev.seniority})
+          #  else
+              smps = StudentMilitaryPerformance.find(:all, :conditions=>{:academic_year_id=>year.id, :group_id=>self.id, :seniority=>1..200})
+              stu_smp.update_attributes({:seniority=>smps.length+1})
+          #  end
+          #end
+        end
+        stu_smp_higher = StudentMilitaryPerformance.find_by_academic_year_id_and_group_id_and_seniority(year.id, self.id, stu_smp.seniority-1)
+        pos = 0
+        unless stu_smp_higher.nil?
+          while stu_smp_higher and stu_smp_higher.points and stu_smp.points and (stu_smp_higher.success_type<=stu_smp.success_type) and
+            (stu_smp_higher.n_unfinished_subjects>=stu_smp.n_unfinished_subjects) and 
+            ((stu_smp.points-stu_smp_higher.points > 0.001) or 
+             ((stu_smp.points-stu_smp_higher.points).abs<0.001 and stu_smp.univ_gpa>stu_smp_higher.univ_gpa))  
+            stu_smp.update_attributes({:seniority=>stu_smp_higher.seniority})
+            stu_smp_higher.update_attributes({:seniority=>stu_smp.seniority+1})
+            stu_smp_higher = StudentMilitaryPerformance.find_by_academic_year_id_and_group_id_and_seniority(
+              year.id, self.id, stu_smp.seniority-1)
+            pos += 1
+          end
+        end
+
+        if pos==0
+          stu_smp_lower = StudentMilitaryPerformance.find_by_academic_year_id_and_group_id_and_seniority(
+            year.id, self.id, stu_smp.seniority+1)
+          pos = 0
+          unless stu_smp_lower.nil?
+            while stu_smp_lower and stu_smp_lower.points and stu_smp.points and (stu_smp_lower.success_type>=stu_smp.success_type) and 
+              (stu_smp_lower.n_unfinished_subjects<=stu_smp.n_unfinished_subjects) and 
+              ((stu_smp_lower.points-stu_smp.points > 0.001) or 
+                ((stu_smp.points-stu_smp_lower.points).abs<0.001 and stu_smp_lower.univ_gpa>stu_smp.univ_gpa))  
+              stu_smp.update_attributes({:seniority=>stu_smp_lower.seniority})
+              stu_smp_lower.update_attributes({:seniority=>stu_smp.seniority-1})
+              stu_smp_lower = StudentMilitaryPerformance.find_by_academic_year_id_and_group_id_and_seniority(
+                year.id, self.id, stu_smp.seniority+1)
+              pos += 1
+            end
+          end
+        end
+    end
+
     def unsubscribe_from_semester(semester)
       semester.update_attributes({:group_id=>nil}) 
       if self.active_semester_id == semester.id
@@ -105,12 +182,18 @@ class Group < ActiveRecord::Base
         end
       end
       # Sort by unfinished subjects and then gpa and then uni_gpa
-      sorted_students = unsorted_successful_students.sort {|a,b| a[:n_unfinished_subjects]==b[:n_unfinished_subjects]? ((b[:total_sum] - a[:total_sum]).abs < 0.01? b[:uni_gpa] <=> a[:uni_gpa] : b[:total_sum] <=> a[:total_sum]) : a[:n_unfinished_subjects] <=> b[:n_unfinished_subjects]}
+      sorted_students = unsorted_successful_students.sort {|a,b| a[:n_unfinished_subjects]==b[:n_unfinished_subjects]? ((b[:total_sum] - a[:total_sum]).abs < 0.001? b[:uni_gpa] <=> a[:uni_gpa] : b[:total_sum] <=> a[:total_sum]) : a[:n_unfinished_subjects] <=> b[:n_unfinished_subjects]}
       if undef_students.length>0
         undef_students.sort! {|a,b| a[:full_name] <=> b[:full_name]}
       end
 
       return sorted_students, undef_students
+    end
+
+    def seniority_list_for_year(year, exam_period='c', student_id=nil)
+
+      # Sort by unfinished subjects and then gpa and then uni_gpa
+
     end
 
     def get_seniority_list_for_year(year, exam_period='c')
@@ -151,9 +234,9 @@ class Group < ActiveRecord::Base
       end
 
       # Sort by unfinished subjects and then gpa and then uni_gpa
-      sorted_successful_students = unsorted_successful_students.sort {|a,b| a[:n_unfinished_subjects]==b[:n_unfinished_subjects]? ((b[:total_sum] - a[:total_sum]).abs < 0.01 ? b[:uni_gpa] <=> a[:uni_gpa] : b[:total_sum] <=> a[:total_sum]) : a[:n_unfinished_subjects] <=> b[:n_unfinished_subjects]}
-      sorted_successful_september_students = unsorted_successful_september_students.sort {|a,b| a[:n_unfinished_subjects]==b[:n_unfinished_subjects]? ((b[:total_sum] - a[:total_sum]).abs < 0.01 ? b[:uni_gpa] <=> a[:uni_gpa] : b[:total_sum] <=> a[:total_sum]) : a[:n_unfinished_subjects] <=> b[:n_unfinished_subjects]}
-      sorted_unsuccessful_students = unsorted_unsuccessful_students.sort {|a,b| a[:n_unfinished_subjects]==b[:n_unfinished_subjects]? ((b[:gpa] - a[:gpa]).abs < 0.01 ? b[:uni_gpa] <=> a[:uni_gpa] : b[:total_sum] <=> a[:total_sum]) : a[:n_unfinished_subjects] <=> b[:n_unfinished_subjects]}
+      sorted_successful_students = unsorted_successful_students.sort {|a,b| a[:n_unfinished_subjects]==b[:n_unfinished_subjects]? ((b[:total_sum] - a[:total_sum]).abs < 0.001 ? b[:uni_gpa] <=> a[:uni_gpa] : b[:total_sum] <=> a[:total_sum]) : a[:n_unfinished_subjects] <=> b[:n_unfinished_subjects]}
+      sorted_successful_september_students = unsorted_successful_september_students.sort {|a,b| a[:n_unfinished_subjects]==b[:n_unfinished_subjects]? ((b[:total_sum] - a[:total_sum]).abs < 0.001 ? b[:uni_gpa] <=> a[:uni_gpa] : b[:total_sum] <=> a[:total_sum]) : a[:n_unfinished_subjects] <=> b[:n_unfinished_subjects]}
+      sorted_unsuccessful_students = unsorted_unsuccessful_students.sort {|a,b| a[:n_unfinished_subjects]==b[:n_unfinished_subjects]? ((b[:total_sum] - a[:total_sum]).abs < 0.001 ? b[:uni_gpa] <=> a[:uni_gpa] : b[:total_sum] <=> a[:total_sum]) : a[:n_unfinished_subjects] <=> b[:n_unfinished_subjects]}
 
       if undef_students.length>0
         undef_students.sort! {|a,b| a[:full_name] <=> b[:full_name]}

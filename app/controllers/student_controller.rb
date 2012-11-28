@@ -305,6 +305,8 @@ class StudentController < ApplicationController
 
       @student_mil_perf = StudentMilitaryPerformance.find_by_student_id_and_academic_year_id(params[:id], @year.id)
     
+      @next_student_id = @student.find_next_student(@year).id
+      @previous_student_id = @student.find_previous_student(@year).id
     end
   end
 
@@ -314,9 +316,22 @@ class StudentController < ApplicationController
 
     @grades_info = Array.new
     @years.sort!{|a, b| a.start_date<=>b.start_date}.each do |y|
-      total_gpa, total_points, uni_gpa, mil_gpa, mil_p_gpa = @student.get_gpa_and_points_for_year(y)
-      to_be_transferred_subjects = @student.get_to_be_transferred_subjects_for_year(y)
-      info = {:total_gpa=>total_gpa, :total_points=>total_points, :uni_gpa=>uni_gpa, :mil_gpa=>mil_gpa, :mil_p_gpa=>mil_p_gpa, :year=>y.name, :year_id=>y.id, :n_transfer_subjects=>to_be_transferred_subjects.length}
+      smp = StudentMilitaryPerformance.find_by_student_id_and_academic_year_id(@student.id, y.id)
+      if smp.nil? or smp.gpa.nil?
+        n_to_be_transferred_subjects = @student.get_to_be_transferred_subjects_for_year(y).length
+        total_gpa, total_points, uni_gpa, mil_gpa, mil_p_gpa = @student.get_gpa_and_points_for_year(y)
+        seniority = nil
+      else
+        total_gpa = smp.gpa
+        total_points = smp.points
+        uni_gpa = smp.univ_gpa
+        mil_gpa = smp.mil_gpa
+        mil_p_gpa = smp.grade
+        n_to_be_transferred_subjects = smp.n_unfinished_subjects
+        seniority = smp.seniority
+      end
+      n_to_be_transferred_subjects = @student.get_to_be_transferred_subjects_for_year(y).length
+      info = {:total_gpa=>total_gpa, :total_points=>total_points, :uni_gpa=>uni_gpa, :mil_gpa=>mil_gpa, :mil_p_gpa=>mil_p_gpa, :year=>y.name, :year_id=>y.id, :n_transfer_subjects=>n_to_be_transferred_subjects, :seniority=>seniority}
       @grades_info.push(info)
     end
   end
@@ -355,7 +370,8 @@ class StudentController < ApplicationController
   end
 
   def update_grades 
-    @student_subjects_grades = StudentsSubject.find_all_by_student_id(params[:id])
+    @student_subjects_grades = StudentsSubject.find_all_by_student_id_and_academic_year_id(params[:id], params[:year_id])
+    grades_updated = false
     @student_subjects_grades.each do |grade_set|
       subject_id = grade_set.subject_id
       if params[:students_subjects][:a_grade].has_key?(subject_id.to_s)
@@ -363,6 +379,7 @@ class StudentController < ApplicationController
         b_grade = params[:students_subjects][:b_grade][subject_id.to_s]
         c_grade = params[:students_subjects][:c_grade][subject_id.to_s]
         grade_set.update_attributes({:a_grade=>a_grade, :b_grade=>b_grade, :c_grade=>c_grade})
+        grades_updated = true
       end
     end
     @student_mil_perf = StudentMilitaryPerformance.find_all_by_student_id(params[:id])
@@ -371,6 +388,10 @@ class StudentController < ApplicationController
         grade = params[:student_military_performances][:grade][performance.academic_year_id.to_s]
         performance.update_attributes({:grade=>grade})
       end
+    end
+    # Update the overall performance scores
+    if grades_updated
+      Student.find(params[:id]).estimate_performance_scores(AcademicYear.find(params[:year_id]))
     end
     render :update do |page|
       flash[:notice] = "Οι βαθμοί ενημερώθηκαv."
