@@ -338,13 +338,7 @@ class GroupsController < ApplicationController
     last_group_year = @group.last_year
     group_smps = StudentMilitaryPerformance.find(:all, :conditions=>{:group_id=>@group.id, :academic_year_id=>last_group_year.id},
                                                  :order=>"case when seniority is null then -1 else seniority end asc")
-    if group_smps.length < @group.n_students(last_group_year)
-      # This should happen very rarely. It is very slow.
-      @group.estimate_seniority_batch(last_group_year)
-      group_smps = StudentMilitaryPerformance.find(:all, :conditions=>{:group_id=>@group.id, :academic_year_id=>last_group_year.id},
-                                                   :order=>"case when seniority is null then -1 else seniority end asc")
-    end
-    if group_smps.length < @group.n_students(last_group_year)
+    if group_smps.length < @group.n_students(last_group_year) or  group_smps.select {|a| a.seniority.nil?}.length > 0
       all_students = Student.find_all_by_group_id_and_is_active(@group.id, true).sort {|a, b| a.last_name<=>b.last_name}
       @students = all_students.paginate :page=>params[:page], :per_page=>15
     else
