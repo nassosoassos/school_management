@@ -95,7 +95,13 @@ class SanSemestersController < ApplicationController
   def update
     @san_semester = SanSemester.find(params[:id])
 
+    update_grades = false
     respond_to do |format|
+      if @san_semester.group and (@san_semester.uni_weight != params[:san_semester][:uni_weight] or 
+        @san_semester.mil_weight != params[:san_semester][:mil_weight] or
+        @san_semester.mil_p_weight != params[:san_semester][:mil_p_weight])
+        update_grades = true
+      end
       if @san_semester.update_attributes(params[:san_semester])
         if params[:compulsory_subjects] != nil
           compulsory_subject_ids = params[:compulsory_subjects].map {|s| Integer(s)}
@@ -109,6 +115,9 @@ class SanSemestersController < ApplicationController
         end
         @san_semester.update_subjects(compulsory_subject_ids, false)
         @san_semester.update_subjects(optional_subject_ids, true)
+        if update_grades
+          @san_semester.group.estimate_seniority_batch(@san_semester.academic_year)
+        end
 
         flash[:notice] = t('flash_msg43')
 

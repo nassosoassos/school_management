@@ -288,12 +288,28 @@ class StudentController < ApplicationController
       @year = AcademicYear.find(params[:year_id])
     end
     unless @year.blank?
-      total_gpa, total_points, uni_gpa, mil_gpa, mil_p_gpa, uni_points, mil_points, mil_p_points = @student.get_gpa_and_points_for_year(@year)
+      smp = StudentMilitaryPerformance.find_by_student_id_and_academic_year_id(@student.id, @year.id)
+      if smp.nil? or smp.gpa.nil?
+        @student.estimate_performance_scores(@year)
+        smp = StudentMilitaryPerformance.find_by_student_id_and_academic_year_id(@student.id, @year.id)
+      end
+      total_gpa = smp.gpa
+      total_points = smp.points
+      uni_gpa = smp.univ_gpa
+      mil_gpa = smp.mil_gpa
+      mil_p_gpa = smp.grade
+      mil_points = smp.mil_points
+      uni_points = smp.univ_points
+      mil_p_points = smp.mil_p_points
+      n_to_be_transferred_subjects = smp.n_unfinished_subjects
+      seniority = smp.seniority
+
+      # total_gpa, total_points, uni_gpa, mil_gpa, mil_p_gpa, uni_points, mil_points, mil_p_points = @student.get_gpa_and_points_for_year(@year)
       to_be_transferred_subjects = @student.get_to_be_transferred_subjects_for_year(@year)
       passed_student_subjects = @student.get_passed_subjects_for_year(@year)
       n_passed_university_student_subjects = passed_student_subjects.select{|a| a.san_subject.kind=='University'}.length
       n_passed_military_student_subjects = passed_student_subjects.length - n_passed_university_student_subjects
-      @grades_info = {:total_gpa=>total_gpa, :total_points=>total_points, :uni_gpa=>uni_gpa, :mil_gpa=>mil_gpa, :mil_p_gpa=>mil_p_gpa, :year=>@year.name, :year_id=>@year.id, :n_transfer_subjects=>to_be_transferred_subjects.length, :uni_points=>uni_points, :mil_points=>mil_points, :mil_p_points=>mil_p_points, :n_uni_passed=>n_passed_university_student_subjects, :n_mil_passed=>n_passed_military_student_subjects}
+      @grades_info = {:total_gpa=>total_gpa, :total_points=>total_points, :uni_gpa=>uni_gpa, :mil_gpa=>mil_gpa, :mil_p_gpa=>mil_p_gpa, :year=>@year.name, :year_id=>@year.id, :n_transfer_subjects=>n_to_be_transferred_subjects, :uni_points=>uni_points, :mil_points=>mil_points, :mil_p_points=>mil_p_points, :n_uni_passed=>n_passed_university_student_subjects, :n_mil_passed=>n_passed_military_student_subjects, :seniority=>seniority}
 
       @standard_student_subjects = @student.get_standard_subjects_for_year(@year)
       @transferred_student_subjects = @student.get_transferred_subjects_for_year(@year)
@@ -387,6 +403,7 @@ class StudentController < ApplicationController
       if params[:student_military_performances][:grade].has_key?(performance.academic_year_id.to_s)
         grade = params[:student_military_performances][:grade][performance.academic_year_id.to_s]
         performance.update_attributes({:grade=>grade})
+        grades_updated = true
       end
     end
     # Update the overall performance scores
@@ -395,7 +412,7 @@ class StudentController < ApplicationController
     end
     render :update do |page|
       flash[:notice] = "Οι βαθμοί ενημερώθηκαv."
-      page.redirect_to :action => 'grades',:id=>params[:id]
+      page.redirect_to :action => 'year_grades',:id=>params[:id],:params=>{:year_id=>params[:year_id]}
     end
   end
 

@@ -246,7 +246,7 @@ function RemoveFromListbox(IsCompulsory)
 						                     
    <%=select_tag 'compulsory_subjects[]', options_for_select(@compulsory_semester_subjects.map {|s| [s.title, s.id]}, @compulsory_semester_subjects.map(&:id)), :multiple => true, :size => "1", :style => "visibility:hidden;height:0%"  %>
    <%=select_tag 'optional_subjects[]', options_for_select(@optional_semester_subjects.map {|s| [s.title, s.id]}, @optional_semester_subjects.map(&:id)), :multiple => true, :size => "1", :style => "visibility:hidden;height:0%;"  %>
-
+    <p/>
    <%= submit_tag "", :value => "#{t('save_changes')}", :class => "submit_button" %>
   <% end %>
 </div>

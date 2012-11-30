@@ -58,7 +58,7 @@ class Student < ActiveRecord::Base
   validates_presence_of :gender, :fathers_first_name
   validates_format_of     :email, :with => /^[A-Z0-9._%-]+@([A-Z0-9-]+\.)+[A-Z]{2,4}$/i,   :allow_blank=>true,
     :message => "#{t('must_be_a_valid_email_address')}"
-  validates_format_of     :admission_no, :with => /^[A-Z0-9_-]*$/i,
+  validates_format_of     :admission_no, :with => %r"^[A-ZΑ-Ω0-9/_-]*$"i,
     :message => "#{t('must_contain_only_letters')}"
   validates_numericality_of :height, :only_integer=>true, :greater_than=>100, :less_than=>250, :allow_nil=>true, 
     :message => "#{t('must_be_height')}"
@@ -546,8 +546,8 @@ class Student < ActiveRecord::Base
       user_record = self.build_user
       user_record.first_name = self.first_name
       user_record.last_name = self.last_name
-      user_record.username = self.admission_no.to_s
-      user_record.password = self.admission_no.to_s + "123"
+      user_record.username = self.admission_no.to_s.gsub(/[^a-zA-Z0-9]+/,'')
+      user_record.password = user_record.username + "123"
       user_record.role = 'Student'
       user_record.email = self.email.blank? ? "" : self.email.to_s
       check_user_errors(user_record)
