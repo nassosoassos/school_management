@@ -61,7 +61,7 @@ class AcademicYearsController < ApplicationController
     @academic_year.destroy
 
     respond_to do |format|
-      format.html { redirect_to(academics_subjects_url) }
+      format.html { redirect_to(academic_years_url) }
       format.xml  { head :ok }
     end
   end

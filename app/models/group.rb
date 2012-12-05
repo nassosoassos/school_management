@@ -7,7 +7,7 @@ class Group < ActiveRecord::Base
 
     def n_students(year=nil)
       if year.nil?
-        g_students = Student.find_all_by_group_id_and_is_active(self.id)
+        g_students = Student.find_all_by_group_id_and_is_active(self.id, true)
         if g_students.empty?
           return 0
         else

@@ -46,12 +46,23 @@
 
       <% remote_form_for :remove do |f| %>
         <div class="label-field-pair">
-          <label for="remove_descr"><%= t('reason_for_leaving') %></label>
+          <label for="remove_reason"><%= t('reason_for_leaving') %></label>
+          <div class="text-input-bg"><%= f.select :leave_reason, options_for_select([['Παραίτηση', 'left'],['Αποφοίτηση', 'graduated'], ['Διαγραφή', 'deleted']]) %></div>
+        </div>
+        <div class="label-field-pair">
+          <label for="remove_descr"><%= t('details') %></label>
           <div class="text-input-bg"><%= f.text_field :status_description %></div>
+        </div>
+        <div class="label-field-pair">
+          <label for="remove_date"><%= t('date_of_leave') %></label>
+          <div class="text-input-bg-admission">
+            <%= calendar_date_select_tag :date_of_leave, I18n.l(Date.today ,:format=>:default),
+              :year_range => 15.years.ago..5.years.from_now, :readonly=>true, :popup=>"force" %>
+            </div>
         </div>
 
         <div id="submit-button">
-          <%= submit_tag "► #{t('delete_text')}" %>
+          <%= submit_tag "► #{t('student_deactivate_text')}" %>
         </div>
 
       <% end %>

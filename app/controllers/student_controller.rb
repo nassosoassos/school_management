@@ -332,23 +332,25 @@ class StudentController < ApplicationController
 
     @grades_info = Array.new
     @years.sort!{|a, b| a.start_date<=>b.start_date}.each do |y|
-      smp = StudentMilitaryPerformance.find_by_student_id_and_academic_year_id(@student.id, y.id)
-      if smp.nil? or smp.gpa.nil?
+      if @student.is_active_for_year(y)
+        smp = StudentMilitaryPerformance.find_by_student_id_and_academic_year_id(@student.id, y.id)
+        if smp.nil? or smp.gpa.nil?
+          n_to_be_transferred_subjects = @student.get_to_be_transferred_subjects_for_year(y).length
+          total_gpa, total_points, uni_gpa, mil_gpa, mil_p_gpa = @student.get_gpa_and_points_for_year(y)
+          seniority = nil
+        else
+          total_gpa = smp.gpa
+          total_points = smp.points
+          uni_gpa = smp.univ_gpa
+          mil_gpa = smp.mil_gpa
+          mil_p_gpa = smp.grade
+          n_to_be_transferred_subjects = smp.n_unfinished_subjects
+          seniority = smp.seniority
+        end
         n_to_be_transferred_subjects = @student.get_to_be_transferred_subjects_for_year(y).length
-        total_gpa, total_points, uni_gpa, mil_gpa, mil_p_gpa = @student.get_gpa_and_points_for_year(y)
-        seniority = nil
-      else
-        total_gpa = smp.gpa
-        total_points = smp.points
-        uni_gpa = smp.univ_gpa
-        mil_gpa = smp.mil_gpa
-        mil_p_gpa = smp.grade
-        n_to_be_transferred_subjects = smp.n_unfinished_subjects
-        seniority = smp.seniority
+        info = {:total_gpa=>total_gpa, :total_points=>total_points, :uni_gpa=>uni_gpa, :mil_gpa=>mil_gpa, :mil_p_gpa=>mil_p_gpa, :year=>y.name, :year_id=>y.id, :n_transfer_subjects=>n_to_be_transferred_subjects, :seniority=>seniority}
+        @grades_info.push(info)
       end
-      n_to_be_transferred_subjects = @student.get_to_be_transferred_subjects_for_year(y).length
-      info = {:total_gpa=>total_gpa, :total_points=>total_points, :uni_gpa=>uni_gpa, :mil_gpa=>mil_gpa, :mil_p_gpa=>mil_p_gpa, :year=>y.name, :year_id=>y.id, :n_transfer_subjects=>n_to_be_transferred_subjects, :seniority=>seniority}
-      @grades_info.push(info)
     end
   end
 
@@ -508,7 +510,14 @@ class StudentController < ApplicationController
   def change_to_former
     @dependency = @student.former_dependency
     if request.post?
-      @student.archive_student(params[:remove][:status_description])
+      #@student.archive_student(params[:remove][:status_description])
+      #@student.attributes({:is_active=>false, :status_description=>params[:remove][:status_description],
+      #                           :graduation_leave_date=>params[:remove][:date_of_leave]})
+      if params[:remove][:leave_reason] == 'graduated'
+        @student.graduate(params[:remove][:date_of_leave], params[:status_description])
+      else
+        @student.deactivate(params[:remove][:date_of_leave], params[:remove][:status_description] )
+      end
       render :update do |page|
         page.replace_html 'remove-student', :partial => 'student_tc_generate'
       end
@@ -516,10 +525,10 @@ class StudentController < ApplicationController
   end
 
   def generate_tc_pdf
-    @student = ArchivedStudent.find_by_admission_no(params[:id])
-    @father = ArchivedGuardian.find_by_ward_id(@student.id, :conditions=>"relation = 'father'")
-    @mother = ArchivedGuardian.find_by_ward_id(@student.id, :conditions=>"relation = 'mother'")
-    @immediate_contact = ArchivedGuardian.find_by_ward_id(@student.immediate_contact_id) \
+    @student = Student.find_by_admission_no(params[:id])
+    @father = Guardian.find_by_ward_id(@student.id, :conditions=>"relation = 'father'")
+    @mother = Guardian.find_by_ward_id(@student.id, :conditions=>"relation = 'mother'")
+    @immediate_contact = Guardian.find_by_ward_id(@student.immediate_contact_id) \
       unless @student.immediate_contact_id.nil? or @student.immediate_contact_id == ''
     render :pdf=>'generate_tc_pdf'
     #        respond_to do |format|
@@ -555,11 +564,23 @@ class StudentController < ApplicationController
     @student_categories = StudentCategory.active
     @batches = Batch.active
     @application_sms_enabled = SmsSetting.find_by_settings_key("ApplicationEnabled")
+    group_id = @student.group_id
+
 
     if request.post?
+
+      #if params[:student][:group_id] and params[:student][:group_id] != group_id.to_s
+      #  do_update_grades = true
+      #else
+      #  do_update_grades = false
+      #end
       unless params[:student][:image_file].blank?
         unless params[:student][:image_file].size.to_f > 280000
           if @student.update_attributes(params[:student])
+            #if do_update_grades
+            #  @student.update_grades_on_group_change(group_id)
+            #end
+
             unless @student.changed.include?('admission_no')
               @student_user.update_attributes(:username=> @student.admission_no,:password => "#{@student.admission_no.to_s}123",:first_name=> @student.first_name , :last_name=> @student.last_name, :email=> @student.email, :role=>'Student')
             else
@@ -574,6 +595,9 @@ class StudentController < ApplicationController
         end
       else
         if @student.update_attributes(params[:student])
+          #if do_update_grades
+          #  @student.update_grades_on_group_change(group_id)
+          #end
           unless @student.changed.include?('admission_no')
             @student_user.update_attributes(:username=> @student.admission_no,:password => "#{@student.admission_no.to_s}123",:first_name=> @student.first_name , :last_name=> @student.last_name, :email=> @student.email, :role=>'Student')
           else
@@ -684,35 +708,35 @@ class StudentController < ApplicationController
   end
 
   def search_ajax
-    if params[:option] == "active"
+    #if params[:option] == "active"
       if params[:query].length>= 3
         @students = Student.find(:all,
           :conditions => ["first_name LIKE ? OR middle_name LIKE ? OR last_name LIKE ?
                             OR admission_no = ? OR (concat(first_name, \" \", last_name) LIKE ? ) ",
             "#{params[:query]}%","#{params[:query]}%","#{params[:query]}%",
             "#{params[:query]}", "#{params[:query]}" ],
-          :order => "group_id asc,first_name asc") unless params[:query] == ''
+          :order => "group_id asc,last_name asc") unless params[:query] == ''
       else
         @students = Student.find(:all,
           :conditions => ["admission_no = ? " , params[:query]],
-          :order => "group_id asc,first_name asc") unless params[:query] == ''
+          :order => "group_id asc,last_name asc") unless params[:query] == ''
       end
       render :layout => false
-    else
-      if params[:query].length>= 3
-        @archived_students = ArchivedStudent.find(:all,
-          :conditions => ["first_name LIKE ? OR middle_name LIKE ? OR last_name LIKE ?
-                            OR admission_no = ? OR (concat(first_name, \" \", last_name) LIKE ? ) ",
-            "#{params[:query]}%","#{params[:query]}%","#{params[:query]}%",
-            "#{params[:query]}", "#{params[:query]}" ],
-          :order => "group_id asc,first_name asc") unless params[:query] == ''
-      else
-        @archived_students = ArchivedStudent.find(:all,
-          :conditions => ["admission_no = ? " , params[:query]],
-          :order => "group_id asc,first_name asc") unless params[:query] == ''
-      end
-      render :partial => "search_ajax"
-    end
+    #end
+#      if params[:query].length>= 3
+#        @archived_students = ArchivedStudent.find(:all,
+#          :conditions => ["first_name LIKE ? OR middle_name LIKE ? OR last_name LIKE ?
+#                            OR admission_no = ? OR (concat(first_name, \" \", last_name) LIKE ? ) ",
+#            "#{params[:query]}%","#{params[:query]}%","#{params[:query]}%",
+#            "#{params[:query]}", "#{params[:query]}" ],
+#          :order => "group_id asc,first_name asc") unless params[:query] == ''
+#      else
+#        @archived_students = ArchivedStudent.find(:all,
+#          :conditions => ["admission_no = ? " , params[:query]],
+#          :order => "group_id asc,first_name asc") unless params[:query] == ''
+#      end
+#      render :partial => "search_ajax"
+#    end
   end
 
   def student_annual_overview
@@ -869,31 +893,31 @@ class StudentController < ApplicationController
         @students = []
         groups.each do |b|
           params[:search][:group_id_equals] = b
-          if params[:search][:is_active_equals]=="true"
+          #if params[:search][:is_active_equals]=="true"
             @search = Student.search(params[:search])
             @students+=@search.all
-          elsif params[:search][:is_active_equals]=="false"
-            @search = ArchivedStudent.search(params[:search])
-            @students+=@search.all
-          else
-            @search1 = Student.search(params[:search]).all
-            @search2 = ArchivedStudent.search(params[:search]).all
-            @students+=@search1+@search2
-          end
+          #elsif params[:search][:is_active_equals]=="false"
+          #  @search = ArchivedStudent.search(params[:search])
+          #  @students+=@search.all
+          #else
+          #  @search1 = Student.search(params[:search]).all
+          #  @search2 = ArchivedStudent.search(params[:search]).all
+          #  @students+=@search1+@search2
+          #end
         end
         params[:search][:group_id_equals] = nil
       else
-        if params[:search][:is_active_equals]=="true"
+        #if params[:search][:is_active_equals]=="true"
           @search = Student.search(params[:search])
           @students = @search.all
-        elsif params[:search][:is_active_equals]=="false"
-          @search = ArchivedStudent.search(params[:search])
-          @students = @search.all
-        else
-          @search1 = Student.search(params[:search]).all
-          @search2 = ArchivedStudent.search(params[:search]).all
-          @students = @search1+@search2
-        end
+        #elsif params[:search][:is_active_equals]=="false"
+        #  @search = ArchivedStudent.search(params[:search])
+        #  @students = @search.all
+        #else
+        #  @search1 = Student.search(params[:search]).all
+        #  @search2 = ArchivedStudent.search(params[:search]).all
+        #  @students = @search1+@search2
+        #end
       end
       @searched_for = ''
       @searched_for += "<span>#{t('name')}: </span>" + params[:search][:first_name_or_middle_name_or_last_name_like].to_s unless params[:search][:first_name_or_middle_name_or_last_name_like].empty?

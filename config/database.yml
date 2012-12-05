@@ -1,7 +1,7 @@
 development:
       host: localhost
       adapter: mysql
-      database: sandb
+      database: san
       encoding: utf8
       port: 3306
       username: root
@@ -18,7 +18,7 @@ test: &test
 production:
       host: localhost
       adapter: mysql
-      database: sandb
+      database: san
       encoding: utf8
       port: 3306
       username: root

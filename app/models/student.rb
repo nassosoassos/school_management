@@ -89,6 +89,57 @@ class Student < ActiveRecord::Base
     errors.add(:admission_no, "#{t('should_not_be_admin')}") if self.admission_no.to_s.downcase== 'admin'
   end
 
+  def update_grades_on_group_change(old_group_id)
+    new_group_id = self.group.id
+    ind = 1
+    if old_group_id!=new_group_id
+      stu_subs = StudentsSubject.find_all_by_student_id(self.id)
+      stu_subs.each do |s|
+        new_sem = SanSemester.find_by_number_and_group_id(s.san_semester.number, new_group_id)
+        new_orig_sem = SanSemester.find_by_number_and_group_id(s.semester_subjects.san_semester.number, new_group_id)
+        new_sem_sub = SemesterSubjects.find_by_subject_id_and_semester_id(s.subject_id, new_orig_sem.id)
+        if new_sem_sub.nil?
+          sem_subs = SemesterSubjects.find_all_by_subject_id(s.subject_id)
+          sem_subs.each do |semsub|
+            if semsub.san_semester.group.id==new_group_id
+              new_sem_sub = semsub
+            end
+          end
+        end
+        puts "Index: " + ind.to_s
+        unless new_sem.academic_year.nil? or new_sem.nil? or new_sem_sub.nil?
+          begin
+            s.update_attributes({:group_id=>new_group_id, :academic_year_id=>new_sem.academic_year.id, 
+                                :san_semester_id=>new_sem.id, :semester_subjects_id=>new_sem_sub.id})
+          rescue
+            puts "Error"
+          end
+        end
+        ind += 1
+      end
+
+      # Update military performances
+      stumps = StudentMilitaryPerformance.find_all_by_student_id(self.id)
+      stumps.each do |stump|
+        ac_year = stump.academic_year
+        old_sem = SanSemester.find_by_academic_year_id_and_group_id(ac_year.id, old_group_id)
+        new_ac_year = SanSemester.find_by_group_id_and_number(new_group_id, old_sem.number).academic_year
+        stump.update_attributes({:academic_year_id=>new_ac_year.id, :group_id=>new_group_id})
+      end
+
+      # Update seniorities
+      new_group_years = SanSemester.find_all_by_group_id(self.group.id).map(&:academic_year).uniq
+      new_group_years.each do |yr| 
+        self.estimate_performance_scores(yr)
+        self.group.estimate_seniority(yr, self.id)   
+      end
+      old_group_years = SanSemester.find_all_by_group_id(old_group_id).map(&:academic_year).uniq
+      old_group_years.each do |yr| 
+        self.group.estimate_seniority_batch(yr)   
+      end
+    end
+  end
+
   def finalize_grade_set(grade_set_array, exam_period='c')
     grades = Array.new
     grade_set_array.each do |grade_set| 
@@ -588,10 +639,52 @@ class Student < ActiveRecord::Base
     "#{last_name} #{first_name} #{middle_name}"
   end
 
+  def is_active_for_year(year)
+    if self.is_active 
+      return true
+    else
+      if self.graduation_leave_date < year.end_date
+        return false
+      else
+        return true
+      end
+    end
+  end
+
   def gender_as_text
     return 'Male' if gender.downcase == 'm'
     return 'Female' if gender.downcase == 'f'
     nil
+  end
+
+  def graduate(date, details)
+    if details
+      description = "Αποφοίτησε - " + details
+    else
+      description = "Αποφοίτησε"
+    end
+    self.update_attributes({:is_active=>false, :graduated=>true, :graduation_leave_date=>date, :status_description=>description})
+  end
+
+  def deactivate(date, details)
+    if details
+      description = "Αποχώρησε - " + details
+    else
+      description = "Αποχώρησε"
+    end
+    self.update_attributes({:is_active=>false, :graduation_leave_date=>date, :status_description=>description})
+    group_years = SanSemester.find_all_by_group_id(self.group.id).map(&:academic_year).uniq
+
+    # Update class seniority to reflect the changes
+    group_years.each do |y|
+      if y.end_date > date
+        smps = StudentMilitaryPerformance.find_all_by_student_id_and_academic_year_id(self.id, y.id)
+        smps.each do |sm|
+          sm.update_attributes({:is_active=>false})
+        end
+        self.group.estimate_seniority_batch(y)
+      end
+    end
   end
 
   def graduated_batches
