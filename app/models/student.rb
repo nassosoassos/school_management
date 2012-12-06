@@ -366,6 +366,9 @@ class Student < ActiveRecord::Base
 
   def find_next_student(year)
     smp = StudentMilitaryPerformance.find_by_student_id_and_academic_year_id(self.id, year.id)
+    unless self.is_active_for_year(year)
+      return self
+    end
     if smp.nil? or smp.seniority.nil?
       self.estimate_performance_scores(year)
       smp = StudentMilitaryPerformance.find_by_student_id_and_academic_year_id(self.id, year.id)
@@ -406,6 +409,10 @@ class Student < ActiveRecord::Base
   def estimate_performance_scores(year)
     gpa, points, uni_gpa, mil_gpa, mil_p_grade, uni_points, mil_points, mil_performance_points = get_gpa_and_points_for_year(year)
     n_unfinished_subjects = get_to_be_transferred_subjects_for_year(year).length
+
+    group_last_year = self.group.last_year
+    cum_gpa, cum_points, cum_uni_gpa, cum_mil_gpa, cum_mil_p_grade, cum_uni_points, cum_mil_points, cum_mil_performance_points = get_gpa_and_points_for_year(group_last_year)
+    cum_n_unfinished_subjects = get_total_number_of_transferred_subjects('b')
     if n_unfinished_subjects>0 
       success_type = 0
     else
@@ -418,8 +425,11 @@ class Student < ActiveRecord::Base
     smp = StudentMilitaryPerformance.find_or_create_by_student_id_and_academic_year_id(self.id, year.id)
     smp.update_attributes({:group_id => self.group.id, :gpa=>gpa, :grade=>mil_p_grade, :univ_gpa=>uni_gpa, :mil_gpa=>mil_gpa, 
                           :points=>points, :univ_points=>uni_points, :mil_points=>mil_points, :mil_p_points=>mil_performance_points, 
-                          :n_unfinished_subjects=>n_unfinished_subjects, :success_type=>success_type})
+                          :n_unfinished_subjects=>n_unfinished_subjects, :success_type=>success_type, :cum_gpa=>cum_gpa,
+                          :cum_points=>cum_points, :cum_univ_gpa=>cum_uni_gpa, :cum_mil_gpa=>cum_mil_gpa,
+                          :cum_mil_p_grade=>cum_mil_p_grade, :cum_n_unfinished_subjects=>cum_n_unfinished_subjects})
     self.group.estimate_seniority(year, self.id)
+    self.group.estimate_cum_seniority(self.id)
   end
 
   def get_gpa_and_points_for_year(year, exam_period='c')
@@ -666,6 +676,10 @@ class Student < ActiveRecord::Base
     self.update_attributes({:is_active=>false, :graduated=>true, :graduation_leave_date=>date, :status_description=>description})
   end
 
+  def revert_graduation
+    self.update_attributes({:is_active=>true, :graduated=>false, :graduation_leave_date=>nil, :status_description=>nil})
+  end
+
   def deactivate(date, details)
     if details
       description = "Αποχώρησε - " + details
@@ -682,6 +696,7 @@ class Student < ActiveRecord::Base
         smps.each do |sm|
           sm.update_attributes({:is_active=>false})
         end
+        self.reset_seniority(y)
         self.group.estimate_seniority_batch(y)
       end
     end

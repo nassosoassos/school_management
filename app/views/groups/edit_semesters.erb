@@ -46,27 +46,44 @@
       <td>Περατωθέν</td>
       <td>Ενέργειες</td>
     </tr>
-    <% @active_semesters.sort!{|a,b| b[:number]<=>a[:number]}.each do |sem| %>
-      <tr class="tr-<%= cycle('odd', 'even') %>">
-        <td align="center"><%= sem[:number] %></td>
-        <td><%= sem[:year] %></td>
-        <% if sem[:is_active] %>
-          <td align="center"><%= radio_button_tag sem[:id], "active", true %> </td>  
-          <td align="center"><%= radio_button_tag sem[:id], "past" %> </td>  
-        <% else %>
-          <td align="center"><%= radio_button_tag sem[:id], "active" %> </td>  
-          <td align="center"><%= radio_button_tag sem[:id], "past", true %> </td>  
-        <% end %>
-        <td> <%= link_to 'Ακύρωση Εγγραφής', {:controller=>"groups", :action=>"delete_semester", :semester_id=>sem[:id]}, :method=>:post, :confirm => 'Είστε σίγουρος;' %></td>
-      </tr>
-    <% end %>
-  </table>
-  <p/>
-
+    <% form_for @group, :url=>{:action=>'edit_semesters'}, :html=>{:method=>:post}  do |f| %>
+      <% @active_semesters.sort!{|a,b| b[:number]<=>a[:number]}.each do |sem| %>
+        <tr class="tr-<%= cycle('odd', 'even') %>">
+          <td align="center"><%= sem[:number] %></td>
+          <td><%= sem[:year] %></td>
+          <td align="center"><%= f.radio_button sem[:id], "active", {:checked=>sem[:is_active]} %> </td>  
+          <td align="center"><%= f.radio_button sem[:id], "past", {:checked=>!sem[:is_active]} %> </td>  
+          <td> <%= link_to 'Ακύρωση Εγγραφής', {:controller=>"groups", :action=>"delete_semester", :semester_id=>sem[:id]}, :method=>:post, :confirm => 'Είστε σίγουρος;' %></td>
+       </tr>
+      <% end %>
+    </table>
+    <p/>
+    </div>
+  <div class="label-field-pair">
+    <label for="graduation_date">
+      Η τάξη αποφοίτησε: 
+    </label>
+    <div class="text-input-bg-admission">
+      <%= f.check_box :graduated %>
+    </div>
   </div>
-<div class="options">
-  Η τάξη αποφοίτησε: <%= check_box_tag "class" %>
-</div>
+  <div class="label-field-pair">
+    <label for="graduation_date"><%= t('date_of_graduation') %></label>
+    <div class="text-input-bg-admission">
+      <% if @group.graduation_date.nil? %>
+        <%= calendar_date_select_tag :graduation_date, I18n.l(Date.today ,:format=>:default),
+          :year_range => 15.years.ago..5.years.from_now, :readonly=>true, :popup=>"force" %>
+      <% else %>
+        <%= calendar_date_select_tag :graduation_date, I18n.l(@group.graduation_date ,:format=>:default),
+          :year_range => 15.years.ago..5.years.from_now, :readonly=>true, :popup=>"force" %>
+      <% end %>
+    </div>
+  </div>
+  <p/>
+  <div id="submit-button">
+     <%= submit_tag "► #{t('update')}" %>
+  </div>
+<% end %>
 
 
 <div id="modal-box" style="display:none;"></div>

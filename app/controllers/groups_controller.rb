@@ -203,6 +203,23 @@ class GroupsController < ApplicationController
       sem_info = {:number=>sem.number, :year=>sem.academic_year.name, :id=>sem.id, :is_active=>is_active }
       @active_semesters.push(sem_info)
     end
+    if request.post? 
+      semesters.sort!{|a,b| b.number<=>a.number}.each do |sem|
+        if params[:group][sem.id.to_s]=='past'
+          if @group.active_semester_id==sem.id
+            @group.update_attributes({:active_semester_id=>nil})
+          end
+        else
+            @group.update_attributes({:active_semester_id=>sem.id})
+        end
+      end
+      if params[:group][:graduated]=='1'
+        @group.graduate(params[:graduation_date])
+      else
+        @group.revert_graduation()
+      end
+      flash[:notice] = "Τα στοιχεία της τάξης ενημερώθηκαν."
+    end
   end
 
   # GET /groups/1/list_grades
@@ -348,6 +365,8 @@ class GroupsController < ApplicationController
         if group_smps.length < @group.n_students(last_group_year) or  group_smps.select {|a| a.seniority.nil?}.length > 0
           all_students = Student.find_all_by_group_id_and_is_active(@group.id, true).sort {|a, b| a.last_name<=>b.last_name}
           @students = all_students.paginate :page=>params[:page], :per_page=>15
+        
+          @students = group_smps.paginate :page=>params[:page], :per_page=>15
         end
       end
     else

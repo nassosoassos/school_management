@@ -26,16 +26,38 @@ class Group < ActiveRecord::Base
     end
 
     def estimate_seniority_batch(year)
-      all_students = Student.find_all_by_group_id_and_is_active(self.id, true)
+      all_students = Student.find_all_by_group_id(self.id, true)
       all_students.each do |stu|
-        stu.estimate_performance_scores(year)
+        if stu.is_active_for_year(year)
+          stu.estimate_performance_scores(year)
+        end
       end
       return all_students.length
     end
 
+    def graduate(graduation_date)
+      students = Student.find_all_by_group_id_and_active(self.id, true)
+      students.each do |stu|
+        if stu.to_be_transferred_subjects_for_year(self.last_year).length==0
+          stu.graduate(graduation_date, nil)
+        end
+      end
+      self.update_attributes({:graduated=>true, :graduation_leave_date=>graduation_date})
+    end
+
+    def revert_graduation
+      students = Student.find_all_by_group_id_and_active(self.id, true)
+      students.each do |stu|
+        if stu.to_be_transferred_subjects_for_year(self.last_year).length==0
+          stu.revert_graduation
+        end
+      end
+      self.update_attributes({:graduated=>false, :graduation_leave_date=>nil})
+    end
+
     def reset_seniority(year)
-      all_students = Student.find_all_by_group_id_and_is_active(self.id, true)
-      all_students.each do |stu|
+      all_students = Student.find_all_by_group_id(self.id)
+      all_students.each do |stu|        
         smp = StudentMilitaryPerformance.find_by_student_id_and_academic_year_id(stu.id, year.id)
         smp.update_attributes({:seniority=>nil})
       end
@@ -46,6 +68,55 @@ class Group < ActiveRecord::Base
       smps = StudentMilitaryPerformance.find(:all, :conditions=>{:group_id=>self.id, :academic_year_id=>year.id, :seniority=>1..200})
       sorted_smps = smps.sort {|a,b| a.seniority<=>b.seniority}
       return sorted_smps.map(&:student).map(&:last_name), sorted_smps.map(&:seniority)
+    end
+
+    def estimate_cum_seniority(student_id)
+        # In case we know that a specific student has been updated
+        # we can save the full sorting
+        group_last_year = self.last_year
+        stu_smp = StudentMilitaryPerformance.find_by_student_id_and_academic_year_id(student_id, group_last_year.id)
+        if stu_smp.cum_seniority.nil?
+           smps = StudentMilitaryPerformance.find(:all, :conditions=>{:academic_year_id=>group_last_year.id, :group_id=>self.id, :cum_seniority=>1..200})
+           stu_smp.update_attributes({:cum_seniority=>smps.length+1})
+        end
+        stu_smp_higher = StudentMilitaryPerformance.find_by_academic_year_id_and_group_id_and_cum_seniority(year.id, self.id, stu_smp.cum_seniority-1)
+        pos = 0
+        unless stu_smp_higher.nil?
+         while stu_smp_higher and stu_smp.cum_points and 
+         (stu_smp_higher.cum_points.nil? or stu_smp_higher.cum_n_unfinished_subjects>stu_smp.cum_n_unfinished_subjects or
+         (stu_smp_higher.cum_n_unfinished_subjects==stu_smp.cum_n_unfinished_subjects and 
+          ((stu_smp.cum_points-stu_smp_higher.cum_points > 0.001) or 
+         ((stu_smp.cum_points-stu_smp_higher.cum_points).abs<0.001 and (stu_smp.cum_univ_gpa-stu_smp_higher.cum_univ_gpa>0.001 or 
+         ((stu_smp.cum_univ_gpa-stu_smp_higher.cum_univ_gpa).abs<0.001 and stu_smp_higher.cum_mil_gpa<stu_smp.cum_mil_gpa))))))  
+            stu_smp.update_attributes({:cum_seniority=>stu_smp_higher.cum_seniority})
+            stu_smp_higher.update_attributes({:cum_seniority=>stu_smp.cum_seniority+1})
+            stu_smp_higher = StudentMilitaryPerformance.find_by_academic_year_id_and_group_id_and_cum_seniority(
+              year.id, self.id, stu_smp.cum_seniority-1)
+            pos += 1
+          end
+        end
+
+        if pos==0
+          stu_smp_lower = StudentMilitaryPerformance.find_by_academic_year_id_and_group_id_and_cum_seniority(
+            year.id, self.id, stu_smp.cum_seniority+1)
+          pos = 0
+          unless stu_smp_lower.nil?
+           while stu_smp_lower and stu_smp_lower.cum_points and 
+           (stu_smp.cum_points.nil? or stu_smp_lower.cum_n_unfinished_subjects<stu_smp.cum_n_unfinished_subjects or
+           (stu_smp_lower.cum_n_unfinished_subjects==stu_smp.cum_n_unfinished_subjects and 
+            ((stu_smp_lower.cum_points-stu_smp.cum_points > 0.001) or 
+           ((stu_smp.cum_points-stu_smp_lower.cum_points).abs<0.001 and (stu_smp_lower.cum_univ_gpa-stu_smp_lower.cum_univ_gpa>0.001 or 
+           ((stu_smp.cum_univ_gpa-stu_smp_lower.cum_univ_gpa).abs<0.001 and stu_smp_lower.cum_mil_gpa>stu_smp.cum_mil_gpa))))))  
+              stu_smp.update_attributes({:cum_seniority=>stu_smp_lower.cum_seniority})
+              stu_smp_lower.update_attributes({:cum_seniority=>stu_smp.cum_seniority-1})
+              stu_smp_lower = StudentMilitaryPerformance.find_by_academic_year_id_and_group_id_and_cum_seniority(
+                year.id, self.id, stu_smp.cum_seniority+1)
+              pos += 1
+            end
+          end
+        end
+        return stu_smp.cum_seniority
+
     end
 
     def estimate_seniority(year, student_id)
