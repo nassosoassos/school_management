@@ -366,6 +366,7 @@ class GroupsController < ApplicationController
           all_students = Student.find_all_by_group_id_and_is_active(@group.id, true).sort {|a, b| a.last_name<=>b.last_name}
           @students = all_students.paginate :page=>params[:page], :per_page=>15
         
+        else
           @students = group_smps.paginate :page=>params[:page], :per_page=>15
         end
       end

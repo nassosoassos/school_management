@@ -10,7 +10,8 @@ development:
 test: &test
       host: localhost
       adapter: mysql
-      database: sandb
+      database: test
+      encoding: utf8
       port: 3306
       username: root
       password: san

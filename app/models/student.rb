@@ -427,7 +427,7 @@ class Student < ActiveRecord::Base
                           :points=>points, :univ_points=>uni_points, :mil_points=>mil_points, :mil_p_points=>mil_performance_points, 
                           :n_unfinished_subjects=>n_unfinished_subjects, :success_type=>success_type, :cum_gpa=>cum_gpa,
                           :cum_points=>cum_points, :cum_univ_gpa=>cum_uni_gpa, :cum_mil_gpa=>cum_mil_gpa,
-                          :cum_mil_p_grade=>cum_mil_p_grade, :cum_n_unfinished_subjects=>cum_n_unfinished_subjects})
+                          :cum_mil_p_gpa=>cum_mil_p_grade, :cum_n_unfinished_subjects=>cum_n_unfinished_subjects})
     self.group.estimate_seniority(year, self.id)
     self.group.estimate_cum_seniority(self.id)
   end

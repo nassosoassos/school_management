@@ -79,7 +79,7 @@ class Group < ActiveRecord::Base
            smps = StudentMilitaryPerformance.find(:all, :conditions=>{:academic_year_id=>group_last_year.id, :group_id=>self.id, :cum_seniority=>1..200})
            stu_smp.update_attributes({:cum_seniority=>smps.length+1})
         end
-        stu_smp_higher = StudentMilitaryPerformance.find_by_academic_year_id_and_group_id_and_cum_seniority(year.id, self.id, stu_smp.cum_seniority-1)
+        stu_smp_higher = StudentMilitaryPerformance.find_by_academic_year_id_and_group_id_and_cum_seniority(group_last_year.id, self.id, stu_smp.cum_seniority-1)
         pos = 0
         unless stu_smp_higher.nil?
          while stu_smp_higher and stu_smp.cum_points and 
@@ -91,14 +91,14 @@ class Group < ActiveRecord::Base
             stu_smp.update_attributes({:cum_seniority=>stu_smp_higher.cum_seniority})
             stu_smp_higher.update_attributes({:cum_seniority=>stu_smp.cum_seniority+1})
             stu_smp_higher = StudentMilitaryPerformance.find_by_academic_year_id_and_group_id_and_cum_seniority(
-              year.id, self.id, stu_smp.cum_seniority-1)
+              group_last_year.id, self.id, stu_smp.cum_seniority-1)
             pos += 1
           end
         end
 
         if pos==0
           stu_smp_lower = StudentMilitaryPerformance.find_by_academic_year_id_and_group_id_and_cum_seniority(
-            year.id, self.id, stu_smp.cum_seniority+1)
+            group_last_year.id, self.id, stu_smp.cum_seniority+1)
           pos = 0
           unless stu_smp_lower.nil?
            while stu_smp_lower and stu_smp_lower.cum_points and 
@@ -110,7 +110,7 @@ class Group < ActiveRecord::Base
               stu_smp.update_attributes({:cum_seniority=>stu_smp_lower.cum_seniority})
               stu_smp_lower.update_attributes({:cum_seniority=>stu_smp.cum_seniority-1})
               stu_smp_lower = StudentMilitaryPerformance.find_by_academic_year_id_and_group_id_and_cum_seniority(
-                year.id, self.id, stu_smp.cum_seniority+1)
+                group_last_year.id, self.id, stu_smp.cum_seniority+1)
               pos += 1
             end
           end
