@@ -260,15 +260,15 @@ class StudentController < ApplicationController
         selected_sub = params[:subjects].select {|v| v==sem_sub.san_subject.id.to_s}
       end
       if selected_sub.blank?
-        stu_su = StudentsSubject.find_all_by_subject_id_and_student_id_and_semester_subjects_id(sub.id, student_id, sem_sub.id) 
+        stu_su = StudentsSubject.find_all_by_subject_id_and_student_id_and_semester_subjects_id(sem_sub.san_subject.id, student_id, sem_sub.id) 
         unless stu_su.empty? 
           stu_su.each do |st|
             st.destroy
           end
         end
       else
-        stu_su = StudentsSubject.find_or_create_by_subject_id_and_student_id_and_semester_subjects_id(sub.id, student_id, sem_sub.id)
-        stu_su.update_attributes({:san_semester_id=>semester_id, :group_id=>group_id, :academic_year_id=>SanSemester.find(semester_id).academic_year.id})
+        stu_su = StudentsSubject.find_or_create_by_san_semester_id_and_student_id_and_semester_subjects_id(semester_id, student_id, sem_sub.id)
+        stu_su.update_attributes({:subject_id=>sem_sub.san_subject.id, :group_id=>group_id, :academic_year_id=>SanSemester.find(semester_id).academic_year.id})
       end
     end
     redirect_to :action => 'subscribe_subjects',:id=>params[:id]

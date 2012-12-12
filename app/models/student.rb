@@ -618,7 +618,7 @@ class Student < ActiveRecord::Base
       changes_to_be_checked = ['admission_no','first_name','last_name','email','immediate_contact_id']
       check_changes = self.changed & changes_to_be_checked
       unless check_changes.blank?
-        self.user.username = self.admission_no if check_changes.include?('admission_no')
+        self.user.username = self.admission_no.to_s.gsub(/[^a-zA-Z0-9]+/,'') if check_changes.include?('admission_no')
         self.user.first_name = self.first_name if check_changes.include?('first_name')
         self.user.last_name = self.last_name if check_changes.include?('last_name')
         self.user.email = self.email if check_changes.include?('email')

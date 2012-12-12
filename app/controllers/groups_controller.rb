@@ -12,6 +12,13 @@ class GroupsController < ApplicationController
     @type = Integer(params[:list_type])
     @exam_period = params[:exam_period]
     year_id = params[:group_year]
+    if year_id.blank?
+      respond_to do |format|
+        format.html { redirect_to :action=> "lists", :id=>params[:id] }
+        format.xml  { head :ok }
+      end
+      return
+    end
     year = AcademicYear.find(year_id)
     if @type != 3
       if @exam_period=='all'
@@ -62,6 +69,14 @@ class GroupsController < ApplicationController
     @type = Integer(params[:list_type])
     @exam_period = params[:exam_period]
     year_id = params[:group_year]
+    if year_id.blank?
+      respond_to do |format|
+        format.html { redirect_to :action=> "lists", :id=>params[:id] }
+        format.xml  { head :ok }
+      end
+      return
+    end
+
     @year = AcademicYear.find(year_id)
     @group_year_number = @group.find_year_number(@year).to_s
     if @type != 3
@@ -294,7 +309,7 @@ class GroupsController < ApplicationController
       if sem.id == @group.active_semester_id
         is_active = true
       end
-      sem_info = {:number=>sem.number, :year=>sem.year, :id=>sem.id, :is_active=>is_active }
+      sem_info = {:number=>sem.number, :year=>sem.academic_year.name, :id=>sem.id, :is_active=>is_active }
       @active_semesters.push(sem_info)
     end
 
@@ -320,7 +335,7 @@ class GroupsController < ApplicationController
     @semester_collection = Array.new
     semesters = SanSemester.find_all_by_group_id(nil)
     semesters.each do |sem|
-      sem_info = {:id=>sem.id, :name=>sem.number.to_s + 'ο Εξάμηνο, ' + sem.year}
+      sem_info = {:id=>sem.id, :name=>sem.number.to_s + 'ο Εξάμηνο, ' + sem.academic_year.name}
       @semester_collection.push(sem_info)
     end
 
@@ -353,28 +368,34 @@ class GroupsController < ApplicationController
   def show
     @group = Group.find(params[:id])
     last_group_year = @group.last_year
-    group_smps = StudentMilitaryPerformance.find(:all, :conditions=>{:group_id=>@group.id, :is_active=>true, 
+    if last_group_year
+      group_smps = StudentMilitaryPerformance.find(:all, :conditions=>{:group_id=>@group.id, :is_active=>true, 
                                                  :academic_year_id=>last_group_year.id},
                                                  :order=>"case when seniority is null then -1 else seniority end asc")
-    if group_smps.length < @group.n_students(last_group_year) or  group_smps.select {|a| a.seniority.nil?}.length > 0
-      previous_group_year = last_group_year.previous
-      if previous_group_year
-        group_smps = StudentMilitaryPerformance.find(:all, :conditions=>{:group_id=>@group.id, :is_active=>true,
-                                                     :academic_year_id=>previous_group_year.id},
-                                                 :order=>"case when seniority is null then -1 else seniority end asc")
-        if group_smps.length < @group.n_students(last_group_year) or  group_smps.select {|a| a.seniority.nil?}.length > 0
-          all_students = Student.find_all_by_group_id_and_is_active(@group.id, true).sort {|a, b| a.last_name<=>b.last_name}
-          @students = all_students.paginate :page=>params[:page], :per_page=>15
+      if group_smps.length < @group.n_students(last_group_year) or  group_smps.select {|a| a.seniority.nil?}.length > 0
+        previous_group_year = last_group_year.previous
+        if previous_group_year
+          group_smps = StudentMilitaryPerformance.find(:all, :conditions=>{:group_id=>@group.id, :is_active=>true,
+                                                       :academic_year_id=>previous_group_year.id},
+                                                       :order=>"case when seniority is null then -1 else seniority end asc")
+          if group_smps.length < @group.n_students(last_group_year) or  group_smps.select {|a| a.seniority.nil?}.length > 0
+            all_students = Student.find_all_by_group_id_and_is_active(@group.id, true).sort {|a, b| a.last_name<=>b.last_name}
+            @students = all_students.paginate :page=>params[:page], :per_page=>15
         
-        else
-          @students = group_smps.paginate :page=>params[:page], :per_page=>15
+          else
+            @students = group_smps.paginate :page=>params[:page], :per_page=>15
+          end
         end
+      else
+        @students = group_smps.paginate :page=>params[:page], :per_page=>15
       end
     else
-      @students = group_smps.paginate :page=>params[:page], :per_page=>15
+      all_students = Student.find_all_by_group_id_and_is_active(@group.id, true).sort {|a, b| a.last_name<=>b.last_name}
+      @students = all_students.paginate :page=>params[:page], :per_page=>15
     end
-    @semesters = SanSemester.find_all_by_group_id(@group.id)
 
+      @semesters = SanSemester.find_all_by_group_id(@group.id)
+  
     respond_to do |format|
       format.html # show.html.erb
       format.xml  { render :xml => @group }

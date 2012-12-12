@@ -1,7 +1,7 @@
 development:
       host: localhost
       adapter: mysql
-      database: san
+      database: test
       encoding: utf8
       port: 3306
       username: root

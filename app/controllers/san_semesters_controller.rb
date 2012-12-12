@@ -37,8 +37,8 @@ class SanSemestersController < ApplicationController
     @san_semester = SanSemester.new
     @academic_years = AcademicYear.all
 
-    @uni_subjects = SanSubject.find_all_by_kind("University")
-    @mil_subjects = SanSubject.find_all_by_kind("Military")
+    @uni_subjects = SanSubject.find_all_by_kind("University").sort!{|a,b| a.title<=>b.title}
+    @mil_subjects = SanSubject.find_all_by_kind("Military").sort!{|a,b| a.title<=>b.title}
 
     respond_to do |format|
       format.html # new.html.erb
@@ -50,8 +50,8 @@ class SanSemestersController < ApplicationController
   def edit
     @san_semester = SanSemester.find(params[:id])
     @academic_years = AcademicYear.all
-    @uni_subjects = SanSubject.find_all_by_kind("University")
-    @mil_subjects = SanSubject.find_all_by_kind("Military")
+    @uni_subjects = SanSubject.find_all_by_kind("University").sort!{|a,b| a.title<=>b.title}
+    @mil_subjects = SanSubject.find_all_by_kind("Military").sort!{|a,b| a.title<=>b.title}
     @compulsory_semester_subjects = SanSubject.find(SemesterSubjects.find_all_by_semester_id_and_optional(@san_semester.id, false).map(&:subject_id))
     @optional_semester_subjects = SanSubject.find(SemesterSubjects.find_all_by_semester_id_and_optional(@san_semester.id, true).map(&:subject_id))
   end
@@ -79,7 +79,7 @@ class SanSemestersController < ApplicationController
 
     respond_to do |format|
       if created
-        flash[:notice] = 'SanSemester was successfully created.'
+        flash[:notice] = 'Το εξάμηνο δημιουργήθηκε επιτυχώς.'
         format.html { redirect_to(@san_semester) }
         format.xml  { render :xml => @san_semester, :status => :created, :location => @san_semester }
       else

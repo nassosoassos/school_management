@@ -76,16 +76,17 @@
       </div>
 
       <hr class="label-underline"></hr>
-
       <div class="label-field-pair">
-        <label for="master_student_first_name"><%= t('middle_name') %></label>
-        <div class="text-input-bg"><%= s.text_field :middle_name %></div>
+        <label for="student_grade"><%= t('fathers_first_name') %><span class="necessary-field">*</span> </label>
+        <div class="text-input-bg"><%= s.text_field :fathers_first_name %></div>
       </div>
 
       <hr class="label-underline"></hr>
 
+
+
       <div class="label-field-pair">
-        <label for="master_student_first_name"><%= t('last_name') %></label>
+        <label for="master_student_first_name"><%= t('last_name') %><span class="necessary-field">*</span> </label>
         <div class="text-input-bg"><%= s.text_field :last_name %></div>
       </div>
       <hr class="label-underline"></hr>
@@ -140,6 +141,21 @@
         </div>
 
         <hr class="label-underline"></hr>
+
+        <div class="label-field-pair">
+          <label for="student_height"><%= t('height')+' (cm)' %></label>
+          <div class="text-input-bg"><%= s.text_field :height %></div>
+        </div>
+
+        <hr class="label-underline"></hr>
+
+        <div class="label-field-pair">
+          <label for="student_weight"><%= t('weight')+ ' (kg)' %></label>
+          <div class="text-input-bg"><%= s.text_field :weight %></div>
+        </div>
+
+        <hr class="label-underline"></hr>
+
 
         <div class="label-field-pair">
           <label for="master_student_nationality"><%= t('nationality') %></label>

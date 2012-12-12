@@ -176,9 +176,9 @@ class Group < ActiveRecord::Base
       group_students = Student.find_all_by_group_id(self.id)
 
       # Find if this is the only semester the group has subscribed to for the particular academic year
-      semesters = SanSemester.find_by_group_id(self.id)
+      semesters = SanSemester.find_all_by_group_id(self.id)
       delete_mil_performance = false
-      if semesters.select{|a| a.academic_year_id == semester.academic_year_id}.empty?
+      if semesters.nil? or semesters.select{|a| a.academic_year_id == semester.academic_year_id}.empty?
         delete_mil_performance = true
       end
 
@@ -201,31 +201,31 @@ class Group < ActiveRecord::Base
       self.update_attributes({:active_semester_id=>semester.id})
 
       # Subscribe all group students to the semester subjects
-      group_students = Student.find_all_by_group_id(@group.id)
-      semester_subjects = SemesterSubjects.find_by_semester_id_and_optional(semester.id, false)
+      group_students = Student.find_all_by_group_id(self.id)
+      semester_subjects = SemesterSubjects.find_all_by_semester_id_and_optional(semester.id, false)
       ac_year = semester.academic_year
       previous_year = ac_year.previous
 
       group_students.each do |student|
         # Subscribe to the new classes
         semester_subjects.each do |sem_sub|
-          stu_sub = find_or_create_by_student_id_and_san_semester_id_and_semester_subjects_id(student.id, semester.id, sem_sub.id)
-          stu_sub.update_attributes({group_id=>self.id, academic_year_id=>ac_year.id})
+          stu_sub = StudentsSubject.find_or_create_by_student_id_and_san_semester_id_and_semester_subjects_id(student.id, sem_sub.san_semester.id, sem_sub.id)
+          stu_sub.update_attributes({:group_id=>self.id, :academic_year_id=>ac_year.id, :subject_id=>sem_sub.san_subject.id})
         end
         # Subscribe to classes that are transferred from previous years
-        transferred_student_subjects = student.find_to_be_transferred_subjects_for_year(previous_year)
+        transferred_student_subjects = student.get_to_be_transferred_subjects_for_year(previous_year)
         unless transferred_student_subjects.empty?
           transferred_student_subjects.each do |t_stu_sub|
             # Check if the subject to be transferred is taught in the same period
             sem_num_sum = t_stu_sub.semester_subjects.san_semester.number+semester.number 
             if sem_num_sum%2 == 0
-              stu_sub = find_or_create_by_student_id_and_san_semester_id_and_semester_subjects_id(student.id, semester.id, t_stu_sub.semester_subjects_id)
-              stu_sub.update_attributes({group_id=>self.id, academic_year_id=>ac_year.id})
+              stu_sub = StudentsSubject. find_or_create_by_student_id_and_san_semester_id_and_semester_subjects_id(student.id, semester.id, t_stu_sub.semester_subjects_id)
+              stu_sub.update_attributes({:group_id=>self.id, :academic_year_id=>ac_year.id, :subject_id=>t_stu_sub.san_subject.id})
             end
           end
         end
-      end
         student_performance = StudentMilitaryPerformance.find_or_create_by_student_id_and_academic_year_id(student.id, semester.academic_year.id)
+      end
     end
 
     def get_successful_students_for_year(year, exam_period='c')
