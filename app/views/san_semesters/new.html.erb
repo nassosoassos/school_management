@@ -139,7 +139,12 @@ function RemoveFromListbox(IsCompulsory)
 
 <div id="page-yield">
   <span class="span-sub-heading"><%= t('semester_info') %></span>
-   <hr class="sub-heading"></hr>
+  <hr class="sub-heading"></hr>
+
+
+  <% unless flash[:notice].nil? %>
+    <p class="flash-msg"> <%= flash[:notice] %> </p>
+  <% end %>
   <% form_for(@san_semester, :url => {:action=> 'create'}, :html=> {:multipart=>true}) do |s| %>
     <%= error_messages_for 'san_semester', :header_message => nil %>
 

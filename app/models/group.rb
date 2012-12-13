@@ -46,7 +46,7 @@ class Group < ActiveRecord::Base
     end
 
     def revert_graduation
-      students = Student.find_all_by_group_id_and_active(self.id, true)
+      students = Student.find_all_by_group_id_and_is_active(self.id, true)
       students.each do |stu|
         if stu.to_be_transferred_subjects_for_year(self.last_year).length==0
           stu.revert_graduation
@@ -182,11 +182,19 @@ class Group < ActiveRecord::Base
         delete_mil_performance = true
       end
 
+      if SanSemester.find_by_academic_year_id_and_group_id(semester.academic_year.id, self.id).nil?
+        current_academic_year = self.last_year
+      end
+
       group_students.each do |student|
         if delete_mil_performance
-          student_performance = StudentMilitaryPerformance.delete(:student_id=>student.id, :academic_year_id=>semester.id)
+          student_performance = StudentMilitaryPerformance.delete(:student_id=>student.id, :academic_year_id=>semester.academic_year.id)
         end
         StudentsSubject.delete_all(:student_id=>student.id, :san_semester_id=>semester.id)
+
+        if current_academic_year
+          student.estimate_performance_scores(current_academic_year)
+        end
       end
     end
 
@@ -196,12 +204,22 @@ class Group < ActiveRecord::Base
       return academic_years.index{|a| a.id==year.id} + 1
     end
 
+    def subscribe_to_semester_subjects(sem_subs)
+      group_students = Student.find_all_by_group_id_and_is_active(self.id, true)
+      group_students.each do |student|
+        sem_subs.each do |sem_sub|
+          stu_sub = StudentsSubject.find_or_create_by_student_id_and_san_semester_id_and_semester_subjects_id(student.id, sem_sub.san_semester.id, sem_sub.id)
+          stu_sub.update_attributes({:group_id=>self.id, :academic_year_id=>sem_sub.san_semester.ac_year.id, :subject_id=>sem_sub.san_subject.id})
+        end
+      end
+    end
+
     def subscribe_to_semester(semester)
       semester.update_attributes({:group_id=>self.id}) 
       self.update_attributes({:active_semester_id=>semester.id})
 
       # Subscribe all group students to the semester subjects
-      group_students = Student.find_all_by_group_id(self.id)
+      group_students = Student.find_all_by_group_id_and_is_active(self.id, true)
       semester_subjects = SemesterSubjects.find_all_by_semester_id_and_optional(semester.id, false)
       ac_year = semester.academic_year
       previous_year = ac_year.previous
@@ -225,6 +243,7 @@ class Group < ActiveRecord::Base
           end
         end
         student_performance = StudentMilitaryPerformance.find_or_create_by_student_id_and_academic_year_id(student.id, semester.academic_year.id)
+        student.estimate_performance_scores(semester.academic_year)
       end
     end
 

@@ -79,13 +79,13 @@ class SanSemestersController < ApplicationController
 
     respond_to do |format|
       if created
-        flash[:notice] = 'Το εξάμηνο δημιουργήθηκε επιτυχώς.'
-        format.html { redirect_to(@san_semester) }
-        format.xml  { render :xml => @san_semester, :status => :created, :location => @san_semester }
+          flash[:notice] = 'Το εξάμηνο δημιουργήθηκε επιτυχώς.'
+          format.html { redirect_to(@san_semester) }
+          format.xml  { render :xml => @san_semester, :status => :created, :location => @san_semester }
       else
-        flash[:notice] = 'SanSemester errors.'
-        format.html { render :action => "new" }
-        format.xml  { render :xml => @san_semester.errors, :status => :unprocessable_entity }
+          flash[:notice] = 'Πρόβλημα στη δημιουργία του εξαμήνου.'
+          format.html { redirect_to :action => "new" }
+          format.xml  { render :xml => @san_semester.errors, :status => :unprocessable_entity }
       end
     end
   end
@@ -116,6 +116,7 @@ class SanSemestersController < ApplicationController
         @san_semester.update_subjects(compulsory_subject_ids, false)
         @san_semester.update_subjects(optional_subject_ids, true)
         if update_grades
+          @san_semester.group.reset_seniority(@san_semester.academic_year)
           @san_semester.group.estimate_seniority_batch(@san_semester.academic_year)
         end
 

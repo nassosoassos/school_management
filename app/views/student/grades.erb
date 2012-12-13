@@ -30,8 +30,9 @@
   <ul>
       <li><%= link_to "#{t('profile_text')}", :controller => "student",
           :action => "profile", :id => @student.id %></li>
-
-    <li><%= link_to "Εκτύπωση",
+      <li><%= link_to "Μαθήματα", :controller => 'student',
+        :action => 'subscribe_subjects', :id => @student.id %></li>
+      <li><%= link_to "Εκτύπωση",
           {:controller => "student", :action => "grades_pdf", :id => @student.id} %>
 </li>
   </ul>

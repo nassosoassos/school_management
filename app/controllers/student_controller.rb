@@ -69,7 +69,7 @@ class StudentController < ApplicationController
           stu_perf = StudentMilitaryPerformance.find_or_create_by_student_id_and_academic_year_id(@student.id, sem.academic_year.id)
           subjects = SemesterSubjects.find_all_by_semester_id_and_optional(sem.id, false)
           subjects.each do |sub|
-            stu_sub = StudentsSubject.find_or_create_by_student_id_and_subject_id_and_group_id_and_semester_subject_id(@student.id, sub.subject_id, @student.group_id, sub.id)
+            stu_sub = StudentsSubject.find_or_create_by_student_id_and_subject_id_and_group_id_and_semester_subjects_id(@student.id, sub.subject_id, @student.group_id, sub.id)
             stu_sub.update_attributes({:san_semester_id=>sem.id, :academic_year_id=>sem.academic_year.id})
           end
         end
@@ -247,11 +247,14 @@ class StudentController < ApplicationController
   def update_subjects
     student_id = params[:id]
     semester_id = params[:semester_id]
+    semester = SanSemester.find(semester_id)
     group_id = params[:group_id]
     optional_semester_subjects = SemesterSubjects.find_all_by_semester_id_and_optional(semester_id, true)
     optional_subjects = SanSubject.find_all_by_id(optional_semester_subjects.map(&:subject_id))
 
     subjects = params[:subjects]
+
+    update_performance_scores = false
 
     optional_semester_subjects.each do |sem_sub|
       if subjects.blank?
@@ -262,14 +265,20 @@ class StudentController < ApplicationController
       if selected_sub.blank?
         stu_su = StudentsSubject.find_all_by_subject_id_and_student_id_and_semester_subjects_id(sem_sub.san_subject.id, student_id, sem_sub.id) 
         unless stu_su.empty? 
+          update_performance_scores = true
           stu_su.each do |st|
             st.destroy
           end
         end
       else
         stu_su = StudentsSubject.find_or_create_by_san_semester_id_and_student_id_and_semester_subjects_id(semester_id, student_id, sem_sub.id)
-        stu_su.update_attributes({:subject_id=>sem_sub.san_subject.id, :group_id=>group_id, :academic_year_id=>SanSemester.find(semester_id).academic_year.id})
+        stu_su.update_attributes({:subject_id=>sem_sub.san_subject.id, :group_id=>group_id, :academic_year_id=>semester.academic_year.id})
+        update_performance_scores = true
       end
+    end
+    if update_performance_scores
+      student = Student.find(student_id)
+      student.estimate_performance_scores(semester.academic_year)
     end
     redirect_to :action => 'subscribe_subjects',:id=>params[:id]
   end

@@ -1892,6 +1892,7 @@ gr: # locale
   student_category_cant_be_blank: "Student Category cant be blank"
   student_admission_no_cant_be_blank: "Student Admission number cant be blank"
   must_be_a_valid_email_address: "πρέπει να είναι μια έγκυρη διεύθυνση email"
+  must_be_unique_for_academic_year: "πρέπει να είναι μοναδικό για ένα συγκεκριμένο ακαδημαϊκό έτος"
   must_contain_only_letters: "must contain only letters, numbers, hyphen, and  underscores"
   must_contain_only_letters_numbers_space: "must contain only letters, numbers, and space"
   must_be_height: "Το ύψος του σπουδαστή πρέπει να είναι σε εκατοστόμετρα (cm), μεταξύ 100 και 250."

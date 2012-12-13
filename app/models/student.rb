@@ -315,7 +315,14 @@ class Student < ActiveRecord::Base
     last_semester = SanSemester.find_by_academic_year_id_and_group_id(self.group.last_year.id, self.group_id)
     mil_p_weight = last_semester.mil_p_weight.to_f
     mil_p_grades = StudentMilitaryPerformance.find_all_by_student_id(self.id).map(&:grade)
-    mil_p_grade = mil_p_grades.inject(0.0) { |sum, el| sum + el } / mil_p_grades.size
+    if mil_p_grades.include?nil
+      mil_p_grades.compact!
+    end
+    if mil_p_grades.blank?
+      mil_p_grade = nil
+    else
+      mil_p_grade = mil_p_grades.inject(0.0) { |sum, el| sum + el } / mil_p_grades.size
+    end
     if mil_p_grade
       mil_performance_points = mil_p_weight * mil_p_grade
     else
@@ -325,7 +332,9 @@ class Student < ActiveRecord::Base
     sum_of_weights = 0
     sum_of_weights += last_semester.uni_weight.to_f
     sum_of_weights += last_semester.mil_weight.to_f
-    sum_of_weights += mil_p_weight
+    if mil_performance_points
+      sum_of_weights += mil_p_weight
+    end
 
     if mil_performance_points
       points = uni_points + mil_points + mil_performance_points
@@ -376,7 +385,11 @@ class Student < ActiveRecord::Base
     if smp.seniority==self.group.n_students(year)
       smp_next = smp
     else
-      smp_next = StudentMilitaryPerformance.find_by_seniority_and_group_id_and_academic_year_id_and_is_active(smp.seniority+1, self.group.id, year.id, true)
+      if smp.seniority.nil?
+        smp_next = nil
+      else
+        smp_next = StudentMilitaryPerformance.find_by_seniority_and_group_id_and_academic_year_id_and_is_active(smp.seniority+1, self.group.id, year.id, true)
+      end
     end
     if smp_next
       stu = smp_next.student
@@ -395,7 +408,11 @@ class Student < ActiveRecord::Base
     if smp.seniority==1
       smp_prev = smp
     else
-      smp_prev = StudentMilitaryPerformance.find_by_seniority_and_group_id_and_academic_year_id_and_is_active(smp.seniority-1, self.group.id, year.id, true)
+      if smp.seniority.nil?
+        smp_prev = nil
+      else
+        smp_prev = StudentMilitaryPerformance.find_by_seniority_and_group_id_and_academic_year_id_and_is_active(smp.seniority-1, self.group.id, year.id, true)
+      end
     end
     if smp_prev
       stu = smp_prev.student
@@ -428,8 +445,10 @@ class Student < ActiveRecord::Base
                           :n_unfinished_subjects=>n_unfinished_subjects, :success_type=>success_type, :cum_gpa=>cum_gpa,
                           :cum_points=>cum_points, :cum_univ_gpa=>cum_uni_gpa, :cum_mil_gpa=>cum_mil_gpa,
                           :cum_mil_p_gpa=>cum_mil_p_grade, :cum_n_unfinished_subjects=>cum_n_unfinished_subjects})
-    self.group.estimate_seniority(year, self.id)
-    self.group.estimate_cum_seniority(self.id)
+    unless gpa.nil?
+      self.group.estimate_seniority(year, self.id)
+      self.group.estimate_cum_seniority(self.id)
+    end
   end
 
   def get_gpa_and_points_for_year(year, exam_period='c')
@@ -453,7 +472,9 @@ class Student < ActiveRecord::Base
     sum_of_weights = 0
     sum_of_weights += first_semester.uni_weight.to_f
     sum_of_weights += first_semester.mil_weight.to_f
-    sum_of_weights += mil_p_weight
+    if mil_performance_points
+      sum_of_weights += mil_p_weight
+    end
 
     if mil_performance_points
       points = uni_points + mil_points + mil_performance_points

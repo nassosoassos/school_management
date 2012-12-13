@@ -230,7 +230,7 @@ class GroupsController < ApplicationController
       end
       if params[:group][:graduated]=='1'
         @group.graduate(params[:graduation_date])
-      else
+      elsif @group.graduated
         @group.revert_graduation()
       end
       flash[:notice] = "Τα στοιχεία της τάξης ενημερώθηκαν."

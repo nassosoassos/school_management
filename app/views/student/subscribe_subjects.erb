@@ -25,6 +25,19 @@
     <%= link_to_function image_tag("/images/buttons/back.png",:border => 0), "history.back()" %>
   </div>
 </div>
+<div id="nav">
+  <ul>
+      <li><%= link_to "#{t('profile_text')}", :controller => "student",
+          :action => "profile", :id => @student.id %></li>
+      <li><%= link_to "#{t('grades')}", :controller => 'student',
+        :action => 'grades', :id => @student.id %></li>
+      <li><%= link_to "Εκτύπωση",
+          {:controller => "student", :action => "grades_pdf", :id => @student.id} %>
+</li>
+  </ul>
+</div>
+
+
 
 <div id="page-yield">
   <% unless flash[:notice].nil? %><p class="flash-msg"> <%= flash[:notice] %> <% flash[:notice]=nil %> </p><% end %>

@@ -93,7 +93,7 @@
 
     <div id ="student_main_info">
       <h3> <%= @student.full_name %>  </h3>
-      <h4> <%= t('group') %> : <%= @student.group.name %> </h4>
+      <h4> <%= t('group') %> : <%= link_to @student.group.name, @student.group %> </h4>
       <h4> <%= t('adm_no') %> : <%= @student.admission_no %> </h4>
     </div>
 
