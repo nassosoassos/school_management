@@ -345,6 +345,7 @@ class StudentController < ApplicationController
         smp = StudentMilitaryPerformance.find_by_student_id_and_academic_year_id(@student.id, y.id)
         if smp.nil? or smp.gpa.nil?
           n_to_be_transferred_subjects = @student.get_to_be_transferred_subjects_for_year(y).length
+          n_passed_subjects = @student.get_passed_subjects_for_year(y).length
           total_gpa, total_points, uni_gpa, mil_gpa, mil_p_gpa = @student.get_gpa_and_points_for_year(y)
           seniority = nil
         else
@@ -354,13 +355,37 @@ class StudentController < ApplicationController
           mil_gpa = smp.mil_gpa
           mil_p_gpa = smp.grade
           n_to_be_transferred_subjects = smp.n_unfinished_subjects
+          n_passed_subjects = @student.get_passed_subjects_for_year(y).length
           seniority = smp.seniority
+
         end
         n_to_be_transferred_subjects = @student.get_to_be_transferred_subjects_for_year(y).length
-        info = {:total_gpa=>total_gpa, :total_points=>total_points, :uni_gpa=>uni_gpa, :mil_gpa=>mil_gpa, :mil_p_gpa=>mil_p_gpa, :year=>y.name, :year_id=>y.id, :n_transfer_subjects=>n_to_be_transferred_subjects, :seniority=>seniority}
+        info = {:total_gpa=>total_gpa, :total_points=>total_points, :uni_gpa=>uni_gpa, :mil_gpa=>mil_gpa, :mil_p_gpa=>mil_p_gpa, :year=>y.name, :year_id=>y.id, :n_transfer_subjects=>n_to_be_transferred_subjects, :n_passed_subjects=>n_passed_subjects, :seniority=>seniority}
         @grades_info.push(info)
       end
     end
+
+    # Cumulative
+    smp = StudentMilitaryPerformance.find_by_student_id_and_academic_year_id(@student.id, @student.group.last_year.id)
+    cum_n_passed_subjects = @student.get_all_passed_subjects.length
+    if smp.nil? or smp.gpa.nil?
+       cum_gpa = nil
+       cum_points = nil
+       cum_univ_gpa = nil
+       cum_mil_gpa = nil
+       cum_mil_p_gpa = nil
+       cum_seniority = nil
+       cum_n_unfinished_subjects = nil
+    else
+       cum_gpa = smp.cum_gpa
+       cum_points = smp.cum_points
+       cum_univ_gpa = smp.cum_univ_gpa
+       cum_mil_gpa = smp.cum_mil_gpa
+       cum_mil_p_gpa = smp.cum_mil_p_gpa
+       cum_seniority = smp.seniority
+       cum_n_unfinished_subjects = smp.cum_n_unfinished_subjects
+    end
+    @cum_grades = {:cum_gpa=>cum_gpa, :cum_univ_gpa=>cum_univ_gpa, :cum_mil_gpa=>cum_mil_gpa, :cum_mil_p_gpa=>cum_mil_p_gpa, :cum_points=>cum_points, :cum_n_unfinished_subjects=>cum_n_unfinished_subjects, :cum_n_passed_subjects=>cum_n_passed_subjects, :cum_seniority=>cum_seniority}
   end
 
   def grades_pdf

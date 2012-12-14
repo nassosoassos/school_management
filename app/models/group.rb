@@ -48,7 +48,7 @@ class Group < ActiveRecord::Base
     def revert_graduation
       students = Student.find_all_by_group_id_and_is_active(self.id, true)
       students.each do |stu|
-        if stu.to_be_transferred_subjects_for_year(self.last_year).length==0
+        if stu.get_to_be_transferred_subjects_for_year(self.last_year).length==0
           stu.revert_graduation
         end
       end
@@ -236,9 +236,11 @@ class Group < ActiveRecord::Base
           transferred_student_subjects.each do |t_stu_sub|
             # Check if the subject to be transferred is taught in the same period
             sem_num_sum = t_stu_sub.semester_subjects.san_semester.number+semester.number 
+            # Transfer the subjects from previous academic years
+            stu_sub = StudentsSubject.find_or_create_by_student_id_and_academic_year_id_and_semester_subjects_id(student.id, ac_year.id, t_stu_sub.semester_subjects_id)
+            stu_sub.update_attributes({:group_id=>self.id, :subject_id=>t_stu_sub.san_subject.id})
             if sem_num_sum%2 == 0
-              stu_sub = StudentsSubject. find_or_create_by_student_id_and_san_semester_id_and_semester_subjects_id(student.id, semester.id, t_stu_sub.semester_subjects_id)
-              stu_sub.update_attributes({:group_id=>self.id, :academic_year_id=>ac_year.id, :subject_id=>t_stu_sub.san_subject.id})
+              stu_sub.update_attributes({:san_semester_id=>semester.id})
             end
           end
         end

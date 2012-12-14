@@ -2407,6 +2407,7 @@ gr: # locale
   autosuggest_menu:
    search_employees: "Search employees"
    search_students: "Αναζήτηση Σπουδαστών"
+   search_news_text: "Αναζήτηση Ειδήσεων"
    employee_admission: "Employee Admission"
    student_admission: "Student Admission"
    exam: "Exam"

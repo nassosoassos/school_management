@@ -307,9 +307,6 @@ class Student < ActiveRecord::Base
     uni_gpa, uni_points = get_total_univ_gpa_and_points(exam_period)
     mil_gpa, mil_points = get_total_mil_gpa_and_points(exam_period)
 
-    if uni_gpa.nil? or mil_gpa.nil? 
-      return nil, nil, nil, nil, nil, nil
-    end
     # Only use the weights specified for the first semester of the 
     # academic year
     last_semester = SanSemester.find_by_academic_year_id_and_group_id(self.group.last_year.id, self.group_id)
@@ -330,18 +327,25 @@ class Student < ActiveRecord::Base
     end
 
     sum_of_weights = 0
-    sum_of_weights += last_semester.uni_weight.to_f
-    sum_of_weights += last_semester.mil_weight.to_f
+    points = 0
+    if uni_points
+      sum_of_weights += last_semester.uni_weight.to_f
+      points += uni_points
+    end
+    if mil_points
+      sum_of_weights += last_semester.mil_weight.to_f
+      points += mil_points
+    end
     if mil_performance_points
       sum_of_weights += mil_p_weight
+      points += mil_performance_points
     end
-
-    if mil_performance_points
-      points = uni_points + mil_points + mil_performance_points
+    if sum_of_weights>0
+      gpa = points.to_f / sum_of_weights
     else
-      points = uni_points + mil_points
+      gpa = nil
+      points = nil
     end
-    gpa = points.to_f / sum_of_weights
 
     return [gpa, points, uni_gpa, mil_gpa, mil_p_grade, uni_points, mil_points, mil_performance_points]
   end
@@ -428,7 +432,7 @@ class Student < ActiveRecord::Base
     n_unfinished_subjects = get_to_be_transferred_subjects_for_year(year).length
 
     group_last_year = self.group.last_year
-    cum_gpa, cum_points, cum_uni_gpa, cum_mil_gpa, cum_mil_p_grade, cum_uni_points, cum_mil_points, cum_mil_performance_points = get_gpa_and_points_for_year(group_last_year)
+    cum_gpa, cum_points, cum_uni_gpa, cum_mil_gpa, cum_mil_p_grade, cum_uni_points, cum_mil_points, cum_mil_performance_points = get_total_gpa_and_points
     cum_n_unfinished_subjects = get_total_number_of_transferred_subjects('b')
     if n_unfinished_subjects>0 
       success_type = 0
@@ -455,9 +459,6 @@ class Student < ActiveRecord::Base
     uni_gpa, uni_points = get_univ_gpa_and_points_for_year(year, exam_period)
     mil_gpa, mil_points = get_mil_gpa_and_points_for_year(year, exam_period)
 
-    if uni_gpa.nil? or mil_gpa.nil? 
-      return nil, nil, nil, nil, nil, nil
-    end
     # Only use the weights specified for the first semester of the 
     # academic year
     first_semester = SanSemester.find_by_academic_year_id_and_group_id(year.id, self.group_id)
@@ -470,18 +471,25 @@ class Student < ActiveRecord::Base
     end
 
     sum_of_weights = 0
-    sum_of_weights += first_semester.uni_weight.to_f
-    sum_of_weights += first_semester.mil_weight.to_f
+    points = 0
+    if uni_gpa
+      sum_of_weights += first_semester.uni_weight.to_f
+      points += uni_points
+    end
+    if mil_gpa
+      sum_of_weights += first_semester.mil_weight.to_f
+      points += mil_points
+    end
     if mil_performance_points
       sum_of_weights += mil_p_weight
+      points += mil_performance_points
     end
-
-    if mil_performance_points
-      points = uni_points + mil_points + mil_performance_points
+    if sum_of_weights>0
+      gpa = points.to_f / sum_of_weights
     else
-      points = uni_points + mil_points
+      gpa = nil
+      points = nil
     end
-    gpa = points.to_f / sum_of_weights
 
     return [gpa, points, uni_gpa, mil_gpa, mil_p_grade, uni_points, mil_points, mil_performance_points]
   end

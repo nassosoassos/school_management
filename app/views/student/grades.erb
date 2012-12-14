@@ -48,7 +48,7 @@
         <td colspan="1"></td>
         <td colspan="3" align="center">ΒΑΘΜΟΛΟΓΙΑ</td>
         <td colspan="3"></td>
-        <td/>
+        <td colspan="2"></td>
       <tr class="tr-head">
         <td>Ακαδημαϊκό Έτος</td>
         <td>Παν/μίου</td>
@@ -57,6 +57,7 @@
         <td>Μόρια</td>
         <td>Τελική Βαθμολογία</td>
         <td>Σειρά</td>
+        <td>Αρ. Περατωθέντων Μαθημάτων</td>
         <td>Παρατηρήσεις</td>
         <td/>
       </tr>
@@ -95,6 +96,7 @@
         <% end %>
         <td class="col-5" align="center"> <%= total_gpa_string %></td>
         <td class="col-5" align="center"> <%= g_i[:seniority] %></td>
+        <td class="col-5" align="center"> <%= g_i[:n_passed_subjects] %></td>
 
         <% if g_i[:n_transfer_subjects]!=nil and g_i[:n_transfer_subjects]>0 %>
           <%  notes = g_i[:n_transfer_subjects].to_s + " Μεταφερόμενα" %>
@@ -110,7 +112,58 @@
         <td class="col-5"> <%= notes %></td>
         <td class="col-5"> <%= link_to_remote image_tag("/images/buttons/edit_small.png"), :url=>{:action=>'year_grades', :id=>@student.id, :year_id=>g_i[:year_id]}, :method=>:get %></td>
       </tr>
-  <% end %>
+    <% end %>
+      <% if @cum_grades[:cum_univ_gpa] %>
+      <tr/>
+        <tr class="tr-<%= cycle('odd','even') %>">
+        <td class="col-5"> Συγκεντρωτικά </td>
+        <% if @cum_grades[:cum_univ_gpa].blank? %>
+          <% uni_gpa_string = "" %>
+        <% else %>
+          <% uni_gpa_string = sprintf( "%.02f" , @cum_grades[:cum_univ_gpa] ) %>
+        <% end %>
+        <td class="col-5" align="center"> <%= uni_gpa_string %></td>
+        <% if @cum_grades[:cum_mil_gpa].blank? %>
+          <% mil_gpa_string = "" %>
+        <% else %>
+          <% mil_gpa_string = sprintf( "%.02f" , @cum_grades[:cum_mil_gpa] ) %>
+        <%end%>
+        <td class="col-5" align="center"> <%= mil_gpa_string %></td>
+        <% if @cum_grades[:cum_mil_p_gpa] != nil %>
+          <% mil_p_gpa_string = sprintf( "%.02f" , @cum_grades[:cum_mil_p_gpa]) %>
+        <% else %>
+          <% mil_p_gpa_string = "" %>
+        <% end %>
+
+        <td class="col-5" align="center"> <%= mil_p_gpa_string %></td>
+        <% if @cum_grades[:cum_points].blank? %>
+          <% global_sum_string = "" %>
+        <% else %>
+          <% global_sum_string = sprintf( "%.02f" , @cum_grades[:cum_points]) %>
+        <% end %>
+        <td class="col-5" align="center"> <%= global_sum_string %></td>
+        <% if @cum_grades[:cum_gpa].blank? %>
+          <% total_gpa_string = "" %>
+        <% else %>
+          <% total_gpa_string = sprintf( "%.02f" , @cum_grades[:cum_gpa]) %>
+        <% end %>
+        <td class="col-5" align="center"> <%= total_gpa_string %></td>
+        <td class="col-5" align="center"> <%= @cum_grades[:cum_seniority] %></td>
+        <td class="col-5" align="center"> <%= @cum_grades[:cum_n_passed_subjects] %></td>
+
+        <% if @cum_grades[:cum_n_unfinished_subjects]!=nil and @cum_grades[:cum_n_unfinished_subjects]>0 %>
+          <%  notes = @cum_grades[:cum_n_unfinished_subjects].to_s + " Οφειλόμενα Ιουνίου" %>
+        <%elsif @cum_grades[:cum_n_unfinished_subjects].blank? %>
+          <% notes = "" %>
+        <% else %>
+            <% notes = "Κανένα οφειλόμενο" %>
+        <% end %>
+        <td class="col-5"> <%= notes %></td>
+        <td class="col-5"> <%= link_to_remote image_tag("/images/buttons/edit_small.png"), :url=>{:action=>'year_grades', :id=>@student.id, :year_id=>@cum_grades[:year_id]}, :method=>:get %></td>
+        </tr>
+        <tr>
+        </tr>
+      <% end %>
     </table>
       <div id='year_grades'>
       </div>

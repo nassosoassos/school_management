@@ -261,7 +261,7 @@
       <td/>
       <td colspan=6 align="center">Μεταφερόμενα</td>
     </tr>
-  <% @transferred_university_student_subjects.sort!{|a, b| a.san_semester.number == b.san_semester.number ? (a.san_subject.title <=> b.san_subject.title ) : a.san_semester.number <=> b.san_semester.number }.each do |grade_set| %>
+  <% @transferred_university_student_subjects.sort!{|a, b| a.semester_subjects.san_semester.number == b.semester_subjects.san_semester.number ? (a.san_subject.title <=> b.san_subject.title ) : a.semester_subjects.san_semester.number <=> b.semester_subjects.san_semester.number }.each do |grade_set| %>
       <% subject_index += 1 %>
       <% subject_id = grade_set.subject_id %>
     <% final_grade = nil %>
