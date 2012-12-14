@@ -89,6 +89,20 @@ class Student < ActiveRecord::Base
     errors.add(:admission_no, "#{t('should_not_be_admin')}") if self.admission_no.to_s.downcase== 'admin'
   end
 
+  def update_subject_grades(stu_sub, a_grade, b_grade, c_grade)
+    stu_sub.update_attributes({:a_grade=>a_grade, :b_grade=>b_grade, :c_grade=>c_grade})
+    f_gs = finalize_grade_set([stu_sub])
+    if f_gs[0]>=5
+      # Make sure that this student_subject is not transferred to following years
+      stud_subs = StudentSubject.find_all_by_student_id_and_semester_subjects_id(self.id, stu_sub.semester_subjects_id)  
+      stud_subs.each do |ssub|
+        if (ssub.san_semester and ssub.san_semester.number>stu_sub.san_semester.number) or
+          (ssub.academic_year and ssub.academic_year.start_date>stu_sub.academic_year.start_date)
+        end
+      end
+    end
+  end
+
   def update_grades_on_group_change(old_group_id)
     new_group_id = self.group.id
     ind = 1

@@ -424,13 +424,15 @@ class StudentController < ApplicationController
   def update_grades 
     @student_subjects_grades = StudentsSubject.find_all_by_student_id_and_academic_year_id(params[:id], params[:year_id])
     grades_updated = false
+    student = Student.find(params[:id])
     @student_subjects_grades.each do |grade_set|
       subject_id = grade_set.subject_id
       if params[:students_subjects][:a_grade].has_key?(subject_id.to_s)
         a_grade = params[:students_subjects][:a_grade][subject_id.to_s]
         b_grade = params[:students_subjects][:b_grade][subject_id.to_s]
         c_grade = params[:students_subjects][:c_grade][subject_id.to_s]
-        grade_set.update_attributes({:a_grade=>a_grade, :b_grade=>b_grade, :c_grade=>c_grade})
+        student.update_subject_grades(grade_set, a_grade, b_grade, c_grade)
+        # grade_set.update_attributes({:a_grade=>a_grade, :b_grade=>b_grade, :c_grade=>c_grade})
         grades_updated = true
       end
     end
