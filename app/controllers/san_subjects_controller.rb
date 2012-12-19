@@ -5,8 +5,8 @@ class SanSubjectsController < ApplicationController
   # GET /san_subjects
   # GET /san_subjects.xml
   def index
-    @san_university_subjects = SanSubject.paginate :page=>params[:page], :per_page=>15, :conditions=>{:kind=>'University'}
-    @san_military_subjects = SanSubject.paginate :page=>params[:page], :per_page=>15, :conditions=>{:kind=>'Military'}
+    @san_university_subjects = SanSubject.paginate :page=>params[:page], :per_page=>15, :conditions=>{:kind=>'University'}, :order=>"title ASC"
+    @san_military_subjects = SanSubject.paginate :page=>params[:page], :per_page=>15, :conditions=>{:kind=>'Military'}, :order=>"title ASC"
 
 #    respond_to do |format|
 #      format.html # index.html.erb
@@ -53,8 +53,8 @@ class SanSubjectsController < ApplicationController
 
     if @san_subject.save
 
-      @san_university_subjects = SanSubject.paginate :page=>params[:page], :per_page=>15, :conditions=>{:kind=>'University'}
-      @san_military_subjects = SanSubject.paginate :page=>params[:page], :per_page=>15, :conditions=>{:kind=>'Military'}
+      @san_university_subjects = SanSubject.paginate :page=>params[:page], :per_page=>15, :conditions=>{:kind=>'University'}, :order=>"title ASC"
+      @san_military_subjects = SanSubject.paginate :page=>params[:page], :per_page=>15, :conditions=>{:kind=>'Military'}, :order=>"title ASC"
       flash[:notice] = t('flash_msg44')
     else
       @error = true
@@ -66,9 +66,21 @@ class SanSubjectsController < ApplicationController
   def update
     @san_subject = SanSubject.find(params[:id])
 
+    if params[:san_subject][:kind] != @san_subject.kind
+      # Find semesters that include the specific subject
+      sub_sems = SemesterSubjects.find_all_by_subject_id(@san_subject.id)
+      @san_subject.destroy
+
+      sub_sems.each do |ssem|
+        ssem.san_semester.group.reset_seniority(ssem.san_semester.academic_year)
+        ssem.san_semester.group.estimate_seniority_batch(ssem.san_semester.academic_year)
+      end
+    end
+
+
     if @san_subject.update_attributes(params[:san_subject])
-      @san_university_subjects = SanSubject.paginate :page=>params[:page], :per_page=>15, :conditions=>{:kind=>'University'}
-      @san_military_subjects = SanSubject.paginate :page=>params[:page], :per_page=>15, :conditions=>{:kind=>'Military'}
+      @san_university_subjects = SanSubject.paginate :page=>params[:page], :per_page=>15, :conditions=>{:kind=>'University'}, :order=>"title ASC"
+      @san_military_subjects = SanSubject.paginate :page=>params[:page], :per_page=>15, :conditions=>{:kind=>'Military'}, :order=>"title ASC"
       flash[:notice] = t('flash_msg45')
     else
       @errors = @san_subject.errors
@@ -79,7 +91,15 @@ class SanSubjectsController < ApplicationController
   # DELETE /san_subjects/1.xml
   def destroy
     @san_subject = SanSubject.find(params[:id])
+    
+    # Find semesters that include the specific subject
+    sub_sems = SemesterSubjects.find_all_by_subject_id(@san_subject.id)
     @san_subject.destroy
+
+    sub_sems.each do |ssem|
+      ssem.san_semester.group.reset_seniority(ssem.san_semester.academic_year)
+      ssem.san_semester.group.estimate_seniority_batch(ssem.san_semester.academic_year)
+    end
 
     respond_to do |format|
       format.html { redirect_to(san_subjects_url) }

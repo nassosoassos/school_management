@@ -5,6 +5,32 @@ class Group < ActiveRecord::Base
 
     validates_presence_of :name, :first_year, :graduation_year 
 
+    def next
+      # Sort groups by graduation year
+      groups = Groups.find(:all, :order=>"graduation_year")
+      self_ind = groups.index {|a| a.id==self.id}
+      next_ind = self_ind + 1
+      if next_ind==groups.length
+        next_ind = self_ind
+      end
+      return groups[next_ind]
+    end
+
+    def previous
+      # Sort groups by graduation year
+      groups = Groups.find(:all, :order=>"graduation_year")
+      self_ind = groups.index {|a| a.id==self.id}
+      previous_ind = self_ind - 1
+      if self_ind==0
+        previous_ind = self_ind
+      end
+      return groups[previous_ind]
+    end
+
+    def get_not_graduated_students
+      return Student.find_all_by_group_id_and_graduated(self.id, false)
+    end
+
     def n_students(year=nil)
       if year.nil?
         g_students = Student.find_all_by_group_id_and_is_active(self.id, true)
@@ -36,13 +62,15 @@ class Group < ActiveRecord::Base
     end
 
     def graduate(graduation_date)
-      students = Student.find_all_by_group_id_and_active(self.id, true)
+      students = Student.find_all_by_group_id_and_is_active(self.id, true)
       students.each do |stu|
-        if stu.to_be_transferred_subjects_for_year(self.last_year).length==0
+        if stu.get_to_be_transferred_subjects_for_year(self.last_year).length==0
           stu.graduate(graduation_date, nil)
+        else
+
         end
       end
-      self.update_attributes({:graduated=>true, :graduation_leave_date=>graduation_date})
+      self.update_attributes({:graduated=>true, :graduation_date=>graduation_date})
     end
 
     def revert_graduation
@@ -53,6 +81,15 @@ class Group < ActiveRecord::Base
         end
       end
       self.update_attributes({:graduated=>false, :graduation_leave_date=>nil})
+    end
+
+    def reset_cum_seniority
+      all_students = Student.find_all_by_group_id(self.id)
+      all_students.each do |stu|        
+        smp = StudentMilitaryPerformance.find_by_student_id_and_academic_year_id(stu.id, self.last_year.id)
+        smp.update_attributes({:cum_seniority=>nil})
+      end
+      return all_students.length
     end
 
     def reset_seniority(year)
@@ -67,7 +104,7 @@ class Group < ActiveRecord::Base
     def get_seniority(year)
       smps = StudentMilitaryPerformance.find(:all, :conditions=>{:group_id=>self.id, :academic_year_id=>year.id, :seniority=>1..200})
       sorted_smps = smps.sort {|a,b| a.seniority<=>b.seniority}
-      return sorted_smps.map(&:student).map(&:last_name), sorted_smps.map(&:seniority)
+      return sorted_smps.map(&:student).map(&:last_name), sorted_smps.map(&:seniority), sorted_smps.map(&:points)
     end
 
     def estimate_cum_seniority(student_id)
@@ -252,6 +289,21 @@ class Group < ActiveRecord::Base
     def get_successful_students_for_year(year, exam_period='c')
       students = Student.find_all_by_group_id(self.id)
       successful_students = students.select{|a| a.get_to_be_transferred_subjects_for_year(year, exam_period).length==0}
+      unsuccessful_students = students-successful_students
+      return successful_students, unsuccessful_students
+    end
+
+    def get_graduation_academic_year
+      expected_graduation_year = self.graduation_year.year
+      ac_years = AcademicYear.all.select{|a| a.end_date.year==expected_graduation_year}
+      return ac_years[0]
+    end
+
+    def get_graduating_students
+      students = Student.find_all_by_group_id(self.id)
+      grad_acad_year = self.get_graduation_academic_year
+      successful_students = StudentMilitaryPerformance.find(:all, :conditions=>{:group_id=>self.id, :academic_year_id=>grad_acad_year.id,
+                                                                                :n_unfinished_subjects=>0})
       unsuccessful_students = students-successful_students
       return successful_students, unsuccessful_students
     end

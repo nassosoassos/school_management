@@ -44,7 +44,7 @@ class Student < ActiveRecord::Base
   has_many   :assessment_scores
   has_many   :exam_scores
   has_many   :previous_exam_scores
-  has_many   :student_military_performances
+  has_many   :student_military_performances, :dependent => :destroy
   
 
   named_scope :active, :conditions => { :is_active => true }
@@ -90,17 +90,71 @@ class Student < ActiveRecord::Base
   end
 
   def update_subject_grades(stu_sub, a_grade, b_grade, c_grade)
-    stu_sub.update_attributes({:a_grade=>a_grade, :b_grade=>b_grade, :c_grade=>c_grade})
-    f_gs = finalize_grade_set([stu_sub])
-    if f_gs[0]>=5
-      # Make sure that this student_subject is not transferred to following years
-      stud_subs = StudentSubject.find_all_by_student_id_and_semester_subjects_id(self.id, stu_sub.semester_subjects_id)  
-      stud_subs.each do |ssub|
-        if (ssub.san_semester and ssub.san_semester.number>stu_sub.san_semester.number) or
-          (ssub.academic_year and ssub.academic_year.start_date>stu_sub.academic_year.start_date)
+    # Ensure proper transfer of subjects between semesters when grades are updated
+    #         
+    # update_subject_grades(stu_sub, a_grade, b_grade, c_grade)
+    #
+    # Description:
+    # Typically, each student's subjects to be transferred to the following academic
+    # year are determined when the student's class (group) is subscribed to the first
+    # semester of the following year. At that point, subjects for which there is no exam grade above 
+    # 5 are transferred to the following academic year.
+    # However, if by mistake a subject's grade is not updated in time and is corrected later on,
+    # this function ensures that the transferred subjects between semesters as well as the seniority lists 
+    # are properly updated.
+    #
+    # Arguments:
+    # stu_sub - ActiveRecord instance of StudentsSubject class. Contains all the information about a particular
+    #           subject for a certain semester. A new one is created for each subject that is transferred to a
+    #           new semester.
+    # a_grade - Grade for the first examination period (January-February)
+    # b_grade - Grade for the second examination period (June-July)
+    # c_grade - Grade for the third examination period (September)
+    updated = false
+    if a_grade!=stu_sub.a_grade or b_grade!=stu_sub.b_grade or c_grade!=stu_sub.c_grade
+      stu_sub.update_attributes({:a_grade=>a_grade, :b_grade=>b_grade, :c_grade=>c_grade})
+      f_gs = finalize_grade_set([stu_sub])
+      stud_subs = StudentsSubject.find_all_by_student_id_and_semester_subjects_id(self.id, stu_sub.semester_subjects_id)  
+      if f_gs[0] and f_gs[0]>=5 and stud_subs.length>1
+        # Make sure that this student_subject is not transferred to following years
+        stud_subs.each do |ssub|
+          if (ssub.san_semester and ssub.san_semester.number>stu_sub.san_semester.number) or
+            (ssub.academic_year and ssub.academic_year.start_date>stu_sub.academic_year.start_date)
+            ac_year = ssub.academic_year
+            if ac_year.nil?
+              ac_year = ssub.semester_subjects.san_semester.academic_year
+            end
+            ssub.destroy
+            if ac_year
+              estimate_performance_scores(ac_year)
+            end
+          end
+        end
+      elsif f_gs.empty? or f_gs[0].nil? or f_gs[0]<5
+        # Check whether the subject has been transferred to the following academic year. If not, transfer it.
+        next_ac_year = stu_sub.academic_year.next
+        while next_ac_year and self.is_active_for_year(next_ac_year)
+          next_year_semesters = SanSemester.find_all_by_group_id_and_academic_year_id(self.group.id, next_ac_year.id)
+          unless next_year_semesters.empty? or next_ac_year==self.group.get_graduation_academic_year.next
+           ssub = StudentsSubject.find_by_student_id_and_academic_year_id_and_semester_subjects_id(
+            self.id, next_ac_year.id, stu_sub.semester_subjects_id)
+           if ssub.nil?  
+            ssub = StudentsSubject.new({:student_id=>self.id, :academic_year_id=>next_ac_year.id, 
+                   :semester_subjects_id=>stu_sub.semester_subjects_id, :subject_id=>stu_sub.subject_id})
+            ssub.save
+            next_corresponding_semester = next_year_semesters.select{|a| a.number==stu_sub.san_semester.number+2}
+            unless next_corresponding_semester.empty?
+              ssub.update_attributes({:san_semester_id=>next_corresponding_semester[0].id})
+            end
+            self.estimate_performance_scores(next_ac_year)
+           end
+         end
+         next_ac_year = next_ac_year.next
         end
       end
+      updated = true
     end
+    return updated
   end
 
   def update_grades_on_group_change(old_group_id)
@@ -464,7 +518,9 @@ class Student < ActiveRecord::Base
                           :cum_points=>cum_points, :cum_univ_gpa=>cum_uni_gpa, :cum_mil_gpa=>cum_mil_gpa,
                           :cum_mil_p_gpa=>cum_mil_p_grade, :cum_n_unfinished_subjects=>cum_n_unfinished_subjects})
     unless gpa.nil?
-      self.group.estimate_seniority(year, self.id)
+      if !group.graduated or group.graduation_date>year.end_date
+        self.group.estimate_seniority(year, self.id)
+      end
       self.group.estimate_cum_seniority(self.id)
     end
   end
@@ -556,7 +612,7 @@ class Student < ActiveRecord::Base
         tot_uni_subs += n_uni_subs
       end
       if kind=='all' or kind=='Military'
-        mil_grade_set = self.finalize_grade_set(mil_semester_grades)
+        mil_grade_set = self.completelyfinalize_grade_set(mil_semester_grades)
         n_mil_subs = mil_grade_set.nitems
         low_grades = mil_grade_set.select {|g| g!=nil and g<5 }
         n_unfinished_subjects += low_grades.length
@@ -739,7 +795,7 @@ class Student < ActiveRecord::Base
         smps.each do |sm|
           sm.update_attributes({:is_active=>false})
         end
-        self.reset_seniority(y)
+        self.group.reset_seniority(y)
         self.group.estimate_seniority_batch(y)
       end
     end

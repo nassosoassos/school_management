@@ -382,7 +382,7 @@ class StudentController < ApplicationController
        cum_univ_gpa = smp.cum_univ_gpa
        cum_mil_gpa = smp.cum_mil_gpa
        cum_mil_p_gpa = smp.cum_mil_p_gpa
-       cum_seniority = smp.seniority
+       cum_seniority = smp.cum_seniority
        cum_n_unfinished_subjects = smp.cum_n_unfinished_subjects
     end
     @cum_grades = {:cum_gpa=>cum_gpa, :cum_univ_gpa=>cum_univ_gpa, :cum_mil_gpa=>cum_mil_gpa, :cum_mil_p_gpa=>cum_mil_p_gpa, :cum_points=>cum_points, :cum_n_unfinished_subjects=>cum_n_unfinished_subjects, :cum_n_passed_subjects=>cum_n_passed_subjects, :cum_seniority=>cum_seniority}
@@ -431,9 +431,8 @@ class StudentController < ApplicationController
         a_grade = params[:students_subjects][:a_grade][subject_id.to_s]
         b_grade = params[:students_subjects][:b_grade][subject_id.to_s]
         c_grade = params[:students_subjects][:c_grade][subject_id.to_s]
-        student.update_subject_grades(grade_set, a_grade, b_grade, c_grade)
+        grades_updated = student.update_subject_grades(grade_set, a_grade, b_grade, c_grade) or grades_updated
         # grade_set.update_attributes({:a_grade=>a_grade, :b_grade=>b_grade, :c_grade=>c_grade})
-        grades_updated = true
       end
     end
     @student_mil_perf = StudentMilitaryPerformance.find_all_by_student_id(params[:id])
@@ -552,7 +551,7 @@ class StudentController < ApplicationController
       if params[:remove][:leave_reason] == 'graduated'
         @student.graduate(params[:remove][:date_of_leave], params[:status_description])
       else
-        @student.deactivate(params[:remove][:date_of_leave], params[:remove][:status_description] )
+        @student.deactivate(Date.parse(params[:date_of_leave]), params[:remove][:status_description] )
       end
       render :update do |page|
         page.replace_html 'remove-student', :partial => 'student_tc_generate'

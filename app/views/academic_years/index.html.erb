@@ -49,6 +49,7 @@
 	 <tr class="tr-head">
        <td><%= t('title') %></td>
        <td>Εγγεγραμμένοι Σπουδαστές</td>
+       <td>Αποφοιτώντες Σπουδαστές</td>
        <td></td>
        <td></td>
     </tr>
@@ -57,6 +58,7 @@
     <tr class="tr-<%= cycle('odd', 'even') %>">
       <td class="col-2"><%=h ac_year.name %></td>
       <td class="col-5"><%= ac_year.n_subscribed_students %></td>
+      <td class="col-5"><%= ac_year.n_graduating_students %></td>
       <td class="col-5"> <%= link_to_remote image_tag("/images/buttons/edit_small.png"), :url=>{:action=>'edit', :id=>ac_year.id}, :method=>:get %></td>
       <td class="col-5"> <%= link_to image_tag("/images/buttons/tt_delete.png"), ac_year, :confirm => 'Είστε σίγουρος;', :method => :delete %></td>
   </tr>
