@@ -337,7 +337,7 @@ class StudentController < ApplicationController
 
   def grades
     @student = Student.find(params[:id])
-    @years = SanSemester.find_all_by_group_id(@student.group_id).map(&:academic_year).uniq
+    @years = StudentsSubject.find_all_by_student_id(@student.id).map(&:academic_year).uniq
 
     @grades_info = Array.new
     @years.sort!{|a, b| a.start_date<=>b.start_date}.each do |y|

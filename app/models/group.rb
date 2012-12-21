@@ -63,11 +63,13 @@ class Group < ActiveRecord::Base
 
     def graduate(graduation_date)
       students = Student.find_all_by_group_id_and_is_active(self.id, true)
+      graduation_year = self.last_year
       students.each do |stu|
         if stu.get_to_be_transferred_subjects_for_year(self.last_year).length==0
           stu.graduate(graduation_date, nil)
         else
-
+          graduation_year.create_next_year
+          stu.validate_subject_grades(graduation_year)
         end
       end
       self.update_attributes({:graduated=>true, :graduation_date=>graduation_date})
@@ -80,7 +82,7 @@ class Group < ActiveRecord::Base
           stu.revert_graduation
         end
       end
-      self.update_attributes({:graduated=>false, :graduation_leave_date=>nil})
+      self.update_attributes({:graduated=>false, :graduation_date=>nil})
     end
 
     def reset_cum_seniority

@@ -89,6 +89,66 @@ class Student < ActiveRecord::Base
     errors.add(:admission_no, "#{t('should_not_be_admin')}") if self.admission_no.to_s.downcase== 'admin'
   end
 
+  def validate_subject_grades(ac_year)
+    stu_subs = StudentsSubject.find_all_by_student_id_and_academic_year_id(self.id, ac_year.id)
+    n_transferred_subjects = 0
+    n_stu_subs = stu_subs.length
+    stu_subs.each do |stu_sub|
+      f_gs = finalize_grade_set([stu_sub])
+      stud_subs = StudentsSubject.find_all_by_student_id_and_semester_subjects_id(self.id, stu_sub.semester_subjects_id)
+      if f_gs[0] and f_gs[0]>=5 and stud_subs.length>1
+        # Make sure that this student_subject is not transferred to following years
+        stud_subs.each do |ssub|
+          if (ssub.san_semester and ssub.san_semester.number>stu_sub.san_semester.number) or
+            (ssub.academic_year and ssub.academic_year.start_date>stu_sub.academic_year.start_date)
+            ac_year = ssub.academic_year
+            if ac_year.nil?
+              ac_year = ssub.semester_subjects.san_semester.academic_year
+            end
+            ssub.destroy
+            if ac_year
+              estimate_performance_scores(ac_year)
+            end
+          end
+        end
+      elsif f_gs.empty? or f_gs[0].nil? or f_gs[0]<5
+        # If the student has graduated then this has happened incorrectly.
+        if self.graduated
+          self.update_attributes({:graduated=>false, :graduation_leave_date=>Date.today})
+        end
+
+        # Check whether the subject has been transferred to the following academic year. If not, transfer it.
+        next_ac_year = stu_sub.academic_year.next
+        n_transferred_subjects += 1
+        while next_ac_year and self.is_active_for_year(next_ac_year)
+          next_year_semesters = SanSemester.find_all_by_group_id_and_academic_year_id(self.group.id, next_ac_year.id)
+          if !next_year_semesters.empty? or (next_ac_year==self.group.get_graduation_academic_year.next and self.group.graduated)
+            puts "I am here"
+           ssub = StudentsSubject.find_by_student_id_and_academic_year_id_and_semester_subjects_id(
+            self.id, next_ac_year.id, stu_sub.semester_subjects_id)
+           if ssub.nil?  
+            ssub = StudentsSubject.new({:student_id=>self.id, :academic_year_id=>next_ac_year.id, 
+                   :semester_subjects_id=>stu_sub.semester_subjects_id, :subject_id=>stu_sub.subject_id})
+            ssub.save
+            next_corresponding_semester = next_year_semesters.select{|a| a.number==stu_sub.san_semester.number+2}
+            unless next_corresponding_semester.empty?
+              ssub.update_attributes({:san_semester_id=>next_corresponding_semester[0].id})
+            end
+            self.estimate_performance_scores(next_ac_year)
+           end
+         end
+         next_ac_year = next_ac_year.next
+         if self.group.graduated 
+           if next_ac_year.start_date.year==self.group.last_year.start_date.year+2
+              break
+           end
+         end
+        end
+      end
+    end
+    return n_transferred_subjects
+  end
+
   def update_subject_grades(stu_sub, a_grade, b_grade, c_grade)
     # Ensure proper transfer of subjects between semesters when grades are updated
     #         
@@ -132,10 +192,15 @@ class Student < ActiveRecord::Base
         end
       elsif f_gs.empty? or f_gs[0].nil? or f_gs[0]<5
         # Check whether the subject has been transferred to the following academic year. If not, transfer it.
+
+        # If the student has graduated then this has happened incorrectly.
+        if self.graduated
+          self.update_attributes({:graduated=>false, :graduation_leave_date=>Date.today})
+        end
         next_ac_year = stu_sub.academic_year.next
         while next_ac_year and self.is_active_for_year(next_ac_year)
           next_year_semesters = SanSemester.find_all_by_group_id_and_academic_year_id(self.group.id, next_ac_year.id)
-          unless next_year_semesters.empty? or next_ac_year==self.group.get_graduation_academic_year.next
+          if !next_year_semesters.empty? or (next_ac_year==self.group.get_graduation_academic_year.next and self.group.graduated)
            ssub = StudentsSubject.find_by_student_id_and_academic_year_id_and_semester_subjects_id(
             self.id, next_ac_year.id, stu_sub.semester_subjects_id)
            if ssub.nil?  
@@ -150,6 +215,11 @@ class Student < ActiveRecord::Base
            end
          end
          next_ac_year = next_ac_year.next
+         if self.group.graduated 
+           if next_ac_year.start_date.year==self.group.last_year.start_date.year+2
+              break
+           end
+         end
         end
       end
       updated = true
@@ -378,6 +448,9 @@ class Student < ActiveRecord::Base
     # Only use the weights specified for the first semester of the 
     # academic year
     last_semester = SanSemester.find_by_academic_year_id_and_group_id(self.group.last_year.id, self.group_id)
+    unless last_semester
+      last_semester = SanSemester.find_by_academic_year_id_and_group_id(self.group.last_year.id, self.group.id)
+    end
     mil_p_weight = last_semester.mil_p_weight.to_f
     mil_p_grades = StudentMilitaryPerformance.find_all_by_student_id(self.id).map(&:grade)
     if mil_p_grades.include?nil
@@ -425,7 +498,11 @@ class Student < ActiveRecord::Base
 
     if grades.size > 0
       univ_gpa = grades.inject(0.0) { |sum, el| sum + el } / grades.size 
-      univ_points = SanSemester.find_by_academic_year_id_and_group_id(year.id, self.group.id).uni_weight  * univ_gpa
+      first_semester = SanSemester.find_by_academic_year_id_and_group_id(year.id, self.group.id)
+      unless first_semester
+        first_semester = SanSemester.find_by_academic_year_id_and_group_id(self.group.last_year.id, self.group.id)
+      end
+      univ_points = first_semester.uni_weight  * univ_gpa
       return univ_gpa, univ_points
     else 
       return nil, nil
@@ -438,7 +515,11 @@ class Student < ActiveRecord::Base
     grades = finalize_grade_set(mil_subjects, exam_period)
     if grades.size > 0
       mil_gpa = grades.inject(0.0) { |sum, el| sum + el } / grades.size 
-      mil_points = SanSemester.find_by_academic_year_id_and_group_id(year.id, self.group.id).mil_weight * mil_gpa
+      last_semester = SanSemester.find_by_academic_year_id_and_group_id(year.id, self.group.id)
+      unless last_semester
+        last_semester = SanSemester.find_by_academic_year_id_and_group_id(self.group.last_year.id, self.group.id)
+      end
+      mil_points = last_semester.mil_weight * mil_gpa
       return mil_gpa, mil_points
     else 
       return nil, nil
@@ -532,8 +613,15 @@ class Student < ActiveRecord::Base
     # Only use the weights specified for the first semester of the 
     # academic year
     first_semester = SanSemester.find_by_academic_year_id_and_group_id(year.id, self.group_id)
+    unless first_semester
+      first_semester = SanSemester.find_by_academic_year_id_and_group_id(self.group.last_year.id, self.group.id)
+    end
     mil_p_weight = first_semester.mil_p_weight.to_f
-    mil_p_grade = StudentMilitaryPerformance.find_by_student_id_and_academic_year_id(self.id, year.id).grade
+    mil_perf = StudentMilitaryPerformance.find_by_student_id_and_academic_year_id(self.id, year.id)
+    mil_p_grade = nil
+    if mil_perf
+      mil_p_grade = mil_perf.grade
+    end
     if mil_p_grade
       mil_performance_points = mil_p_weight * mil_p_grade
     else
@@ -752,7 +840,7 @@ class Student < ActiveRecord::Base
     if self.is_active 
       return true
     else
-      if self.graduation_leave_date < year.end_date
+      if self.graduated and self.graduation_leave_date < year.end_date
         return false
       else
         return true

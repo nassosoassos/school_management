@@ -29,10 +29,15 @@ class AcademicYear < ActiveRecord::Base
     end
   end
 
-  def self.create_next_year
-    last_ac_year = self.last
-    ac_year = AcademicYear.new({:start_date=>last_ac_year.start_date>>12, :end_date=>last_ac_year.end_date>>12})
-    ac_year.save
+  def create_next_year
+    all_years = AcademicYear.all
+    sel_years = all_years.select{|a| a.start_date.year==self.start_date.year+1 and 
+                          a.end_date.year==self.end_date.year+1}
+    ac_year = sel_years[0]
+    if ac_year.nil?
+      ac_year = AcademicYear.new({:start_date=>self.start_date>>12, :end_date=>self.end_date>>12})
+      ac_year.save
+    end
     return ac_year
   end
 
