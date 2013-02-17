@@ -1352,7 +1352,7 @@ gr: # locale
   to_dashboard: "to Fedena dashboard"
   admission_link_title: "Εισαγωγή στοιχείων σπουδαστή για την εγγραφή του στα αρχεία της σχολής."
   student_link_title: "Αναζήτηση ενεργών ή παλαιότερων σπουδαστών."
-  user_link_title: "         Manage Users         "
+  user_link_title: "      Διαχείριση Χρηστών            "
   news_link_title: "Προβολή ή δημοσίευση των τελευταίων νέων της Σχολής και ανακοινώσεων"
   exam_link_title: "See examination details and results"
   timetable_link_title: "  Timetable management module  "

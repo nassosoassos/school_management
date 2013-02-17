@@ -48,11 +48,14 @@
           <%= submit_tag t('login'), :class => "submit" %>
         </div>
 
+
+        <% if false %>
         <label for="forgot_password" class="forgot_password_link">
           <%= link_to t('forgot_password'),
             :controller => "user",
             :action => "forgot_password" %>
-        </label>
+          </label>
+        <% end %>
 
 
       </div>

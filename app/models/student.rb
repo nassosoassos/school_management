@@ -840,7 +840,7 @@ class Student < ActiveRecord::Base
     if self.is_active 
       return true
     else
-      if self.graduated and self.graduation_leave_date < year.end_date
+      if (self.graduated or (not self.is_active)) and self.graduation_leave_date < year.end_date
         return false
       else
         return true

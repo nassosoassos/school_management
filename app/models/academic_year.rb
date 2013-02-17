@@ -59,7 +59,18 @@ class AcademicYear < ActiveRecord::Base
     return nil
   end
 
+  def graduates
+    # Find the students that graduated this year.
+    all_graduates = Student.find(:all, :conditions=>['graduated = ? AND graduation_leave_date > ? AND graduation_leave_date < ?', true, self.start_date, self.end_date]);
+  end
+
+  def n_graduates
+    # Find the number of graduates for the specific year.
+    return graduates.length
+  end
+
   def graduating_students
+    # Find the students that are eligible to graduate this year.
     n_graduating_students = 0
     grad_students = Array.new
     grad_group = get_graduating_group

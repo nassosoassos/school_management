@@ -1,6 +1,6 @@
 class RemoveIndexStudentsSubjects < ActiveRecord::Migration
   def self.up
-      remove_index :students_subjects, :name=>"student_subject_year_index"
+      #remove_index :students_subjects, :name=>"student_subject_year_index"
   end
 
   def self.down

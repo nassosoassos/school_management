@@ -290,8 +290,9 @@ class Group < ActiveRecord::Base
 
     def get_successful_students_for_year(year, exam_period='c')
       students = Student.find_all_by_group_id(self.id)
-      successful_students = students.select{|a| a.get_to_be_transferred_subjects_for_year(year, exam_period).length==0}
-      unsuccessful_students = students-successful_students
+      inactive_students = students.select{|a| a.is_active_for_year(year)==false}
+      successful_students = students.select{|a| a.get_to_be_transferred_subjects_for_year(year, exam_period).length==0}-inactive_students
+      unsuccessful_students = students-successful_students-inactive_students
       return successful_students, unsuccessful_students
     end
 
