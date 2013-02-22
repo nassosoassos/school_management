@@ -1,260 +1,153 @@
 <%-# Fedena
-#Copyright 2010 Foradian Technologies Private Limited
-#
-#This product includes software developed at
-#Project Fedena - http://www.projectfedena.org/
-#
-#Licensed under the Apache License, Version 2.0 (the "License");
-#you may not use this file except in compliance with the License.
-#You may obtain a copy of the License at
-#
-#  http://www.apache.org/licenses/LICENSE-2.0
-#
-#Unless required by applicable law or agreed to in writing,
-#software distributed under the License is distributed on an
-#"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-#KIND, either express or implied.  See the License for the
-#specific language governing permissions and limitations
-#under the License. -%>
+   #Copyright 2010 Foradian Technologies Private Limited
+   #
+   #This product includes software developed at
+   #Project Fedena - http://www.projectfedena.org/
+   #
+   #Licensed under the Apache License, Version 2.0 (the "License");
+   #you may not use this file except in compliance with the License.
+   #You may obtain a copy of the License at
+   #
+   #  http://www.apache.org/licenses/LICENSE-2.0
+   #
+   #Unless required by applicable law or agreed to in writing,
+   #software distributed under the License is distributed on an
+   #"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   #KIND, either express or implied.  See the License for the
+   #specific language governing permissions and limitations
+   #under the License. -%>
 
- <div id="page-yield" class="available_sections">
-  <div class="hor_line"></div>
-  <div id="student_profile_heading" class="section">
-    <div id ="student_main_info">
-      <h2> <%= @student.full_name %>  </h2>
-      <h4>Βαθμολογία Σπουδαστή</h4>
-    </div>
+<div id="page-yield" class="available_sections">
+<div class="hor_line"></div>
+<div id="student_profile_heading" class="section">
+  <div id ="student_main_info">
+    <h2> <%= @student.full_name %>  </h2>
+    <h4>Βαθμολογία Σπουδαστή</h4>
   </div>
-    <table width="100%" id="pdf-table" class="section">
-      <tr class="table-header">
-        <td class="col-pdf" colspan="2"></td>
-        <td class="col-pdf" colspan="5" align="center">ΒΑΘΜΟΛΟΓΙΑ</td>
-        <td class="col-pdf" colspan="1"></td>
-      <tr class="table-header">
-        <td>Ονομ/νυμο</td>
-        <td>Όν. Πατρός</td>
-        <td>Παν/μίου</td>
-        <td>Σχ. Μαθημ.</td>
-        <td>Προσ. Διαγωγής</td>
-        <td>Μόρια</td>
-        <td>Τελική</td>
-        <td>Παρατηρήσεις</td>
-      </tr>
-      <tr class="even">
-        <td class="col-2"> <%= @student.full_name %></td>
-        <td class="col-2"> <%= Guardian.find(@student.immediate_contact_id).first_name %></td>
-        <% if @uni_gpa.blank? %>
-          <% uni_gpa_string = "" %>
+</div>
+
+
+<table width="100%" class="section" id="pdf-table">
+  <tr class="table-header">
+    <td colspan="1"></td>
+    <td colspan="3" align="center">ΒΑΘΜΟΛΟΓΙΑ</td>
+    <td colspan="3"></td>
+    <td colspan="2"></td>
+  </tr>
+  <tr class="table-header">
+    <td>Ακαδημαϊκό Έτος</td>
+    <td>Παν/μίου</td>
+    <td>Σχολής Μαθημάτων</td>
+    <td>Προσόντων Διαγωγής</td>
+    <td>Μόρια</td>
+    <td>Τελική Βαθμολογία</td>
+    <td>Σειρά</td>
+    <td>Αρ. Περατωθέντων Μαθημάτων</td>
+    <td>Παρατηρήσεις</td>
+  </tr>
+  <% @grades_info.each do |g_i| %>
+      <tr class="<%= cycle('odd','even') %>">
+        <td class="col-5"> <%= g_i[:year] %> </td>
+        <% if g_i[:uni_gpa].blank? %>
+            <% uni_gpa_string = "" %>
         <% else %>
-          <% uni_gpa_string = sprintf( "%.02f" , @uni_gpa ) %>
+            <% uni_gpa_string = sprintf( "%.02f" , g_i[:uni_gpa] ) %>
         <% end %>
         <td class="col-5" align="center"> <%= uni_gpa_string %></td>
-        <% if @mil_gpa.blank? %>
-          <% mil_gpa_string = "" %>
+        <% if g_i[:mil_gpa].blank? %>
+            <% mil_gpa_string = "" %>
         <% else %>
-          <% mil_gpa_string = sprintf( "%.02f" , @mil_gpa ) %>
+            <% mil_gpa_string = sprintf( "%.02f" , g_i[:mil_gpa] ) %>
         <%end%>
         <td class="col-5" align="center"> <%= mil_gpa_string %></td>
-        <% if @mil_p_gpa != nil %>
-          <% mil_p_gpa_string = sprintf( "%.02f" , @mil_p_gpa) %>
+        <% if g_i[:mil_p_gpa] != nil %>
+            <% mil_p_gpa_string = sprintf( "%.02f" , g_i[:mil_p_gpa]) %>
         <% else %>
-          <% mil_p_gpa_string = "" %>
+            <% mil_p_gpa_string = "" %>
         <% end %>
 
         <td class="col-5" align="center"> <%= mil_p_gpa_string %></td>
-        <% if @global_sum.blank? %>
-          <% global_sum_string = "" %>
+        <% if g_i[:total_points].blank? %>
+            <% global_sum_string = "" %>
         <% else %>
-          <% global_sum_string = sprintf( "%.02f" , @global_sum) %>
+            <% global_sum_string = sprintf( "%.02f" , g_i[:total_points]) %>
         <% end %>
         <td class="col-5" align="center"> <%= global_sum_string %></td>
-        <% if @total_gpa.blank? %>
-          <% total_gpa_string = "" %>
+        <% if g_i[:total_gpa].blank? %>
+            <% total_gpa_string = "" %>
         <% else %>
-          <% total_gpa_string = sprintf( "%.02f" , @total_gpa) %>
+            <% total_gpa_string = sprintf( "%.02f" , g_i[:total_gpa]) %>
         <% end %>
         <td class="col-5" align="center"> <%= total_gpa_string %></td>
-        <% if @n_unfinished_subjects != nil and @n_unfinished_subjects>0 %>
-          <%  notes = @n_unfinished_subjects.to_s + " Μεταφερόμενα" %>
-        <% elsif @n_unfinished_subjects.blank? %>
-          <% notes = "" %>
+        <td class="col-5" align="center"> <%= g_i[:seniority] %></td>
+        <td class="col-5" align="center"> <%= g_i[:n_passed_subjects] %></td>
+
+        <% if g_i[:n_transfer_subjects]!=nil and g_i[:n_transfer_subjects]>0 %>
+            <%  notes = g_i[:n_transfer_subjects].to_s + " Μεταφερόμενα" %>
+        <%elsif g_i[:n_transfer_subjects].blank? %>
+            <% notes = "" %>
         <% else %>
-          <% if @student.gender == "m" %>
-            <% notes = "Περατώσας" %>
-          <% else %>
-            <% notes = "Περατώσασα" %>
-          <% end %>
+            <% if @student.gender == "m" %>
+                <% notes = "Περατώσας" %>
+            <% else %>
+                <% notes = "Περατώσασα" %>
+            <% end %>
         <% end %>
         <td class="col-5"> <%= notes %></td>
-
       </tr>
-    </table>
-    <p/>
-
-
-      <div class="section" align="center">
-        <h4>Βαθμολογία Σπουδαστή ανά Ακαδημαϊκό Έτος</h4></div>
-        <% @years.sort!{|a, b| a.start_date <=> b.start_date}.each do |y| %>
-        <div class="section" align="center">
-          <h5>Ακαδημαικό Έτος <%= y.name %></h5>
-        </div>
-      <% university_student_subjects = @grades_info[y][:uni_subs] %>
-      <% military_student_subjects = @grades_info[y][:mil_subs] %>
-      <% uni_gpa = @grades_info[y][:uni_gpa] %>
-      <% mil_gpa = @grades_info[y][:mil_gpa] %>
-      <% mil_p_gpa = @grades_info[y][:mil_p_gpa] %>
-      <% student_mil_perf = @grades_info[y][:student_mil_perf] %>
-
-      <table width="100%" id="pdf-table" class="section">
-    <tr class="table-header">
-      <td colspan=6>Πανεπιστημιακά Μαθήματα</td>
-    </tr>
-    <tr class="table-header">
-      <td>Τίτλος</td>
-      <td align="center">Εξάμηνο</td>
-      <td align="center">Εξέταση Α</td>
-      <td align="center">Εξέταση Β</td>
-      <td align="center">Εξέταση Γ</td>
-  </tr>
-
-  <% university_student_subjects.sort!{|a, b| a.san_semester.number == b.san_semester.number ? (a.san_subject.title <=> b.san_subject.title ) : a.san_semester.number <=> b.san_semester.number }.each do |grade_set| %>
-      <% subject_id = grade_set.subject_id %>
-      <tr class="<%= cycle('odd', 'even') %>">
-        <td class="col-2">
-          <%= SanSubject.find(subject_id).title %>
-        </td>
-        <td class="col-5" align="center">
-          <%= SanSemester.find_by_id(StudentsSubject.find_by_subject_id_and_group_id(subject_id, @student.group_id).san_semester_id ).number %>
-        </td>
-        <td class="col-5" align="center"><div class="label-field-pair2">
-                <div class="text-input-bg2">
-                  <% if grade_set.a_grade.blank? %>
-
-                    <% else %>
-                        <%= grade_set.a_grade%>
-                    <%end%>
-            </div>
-          </div>
-        </td>
-        <td class="col-5" align="center">
-          <div class="label-field-pair2">
-              <div class="text-input-bg2">
-                    <% if grade_set.b_grade.blank? %>
-                    <% else %>
-                        <%= grade_set.b_grade%>
-                    <%end%>
-            </div>
-          </div>
-      </td>
-        <td class="col-5" align="center">
-          <div class="label-field-pair2">
-              <div class="text-input-bg2">
-                    <% if grade_set.c_grade.blank? %>
-                    <% else %>
-                        <%= grade_set.c_grade%>
-                    <%end%>
-            </div>
-          </div>
-        </td>
-      </tr>
-    <% end %>
-    <tr class="table-header">
-        <td colspan="4" align="right">Μέσος Όρος Έτους</td>
-        <% if uni_gpa.blank? %>
-          <% university_gpa_string = "" %>
-        <% else %>
-          <% university_gpa_string = sprintf( "%.02f" , uni_gpa ) %>
-        <% end %>
-        <td align="center"><%= university_gpa_string %></td>
-      </tr>
-    </table>
-
-  <table width="100%" id="pdf-table" class="section">
-    <tr class="table-header">
-      <td colspan=6>Στρατιωτικά Μαθήματα</td>
-    </tr>
-    <tr class="table-header">
-      <td>Τίτλος</td>
-      <td>Εξάμηνο</td>
-      <td>Εξέταση Α</td>
-      <td>Εξέταση Β</td>
-      <td>Εξέταση Γ</td>
-  </tr>
-
-  <% military_student_subjects.sort!{|a, b| a.san_semester.number == b.san_semester.number ? (a.san_subject.title <=> b.san_subject.title ) : a.san_semester.number <=> b.san_semester.number }.each do |grade_set| %>
-      <% subject_id = grade_set.subject_id %>
-      <tr class="<%= cycle('odd', 'even') %>">
-        <td class="col-2">
-          <%= SanSubject.find(subject_id).title %>
-        </td>
-        <td class="col-5" align="center">
-          <%= grade_set.san_semester.number %>
-        </td>
-        <td class="col-5" align="center"><div class="label-field-pair2">
-                <div class="text-input-bg2">
-                    <% if grade_set.a_grade.blank? %>
-                    <% else %>
-                        <%= grade_set.a_grade%>
-                    <%end%>
-            </div>
-          </div>
-        </td>
-        <td class="col-5" align="center">
-          <div class="label-field-pair2">
-              <div class="text-input-bg2">
-                    <% if grade_set.b_grade.blank? %>
-                    <% else %>
-                        <%= grade_set.b_grade%>
-                    <%end%>
-            </div>
-          </div>
-      </td>
-        <td class="col-5" align="center">
-          <div class="label-field-pair2">
-              <div class="text-input-bg2">
-                    <% if grade_set.c_grade.blank? %>
-                    <% else %>
-                        <%= grade_set.c_grade%>
-                    <%end%>
-            </div>
-          </div>
-        </td>
-    </tr>
   <% end %>
-      <tr class="table-header">
-        <td colspan="4" align="right">Μέσος Όρος Έτους</td>
-        <% if mil_gpa.blank? %>
-          <% military_gpa_string = "" %>
+  <% if @cum_grades[:cum_univ_gpa] %>
+      <tr/>
+      <tr class="tr-<%= cycle('odd','even') %>">
+        <td class="col-5"> Συγκεντρωτικά </td>
+        <% if @cum_grades[:cum_univ_gpa].blank? %>
+            <% uni_gpa_string = "" %>
         <% else %>
-          <% military_gpa_string = sprintf( "%.02f" , mil_gpa ) %>
+            <% uni_gpa_string = sprintf( "%.02f" , @cum_grades[:cum_univ_gpa] ) %>
         <% end %>
-        <td align="center"><%= military_gpa_string %></td>
+        <td class="col-5" align="center"> <%= uni_gpa_string %></td>
+        <% if @cum_grades[:cum_mil_gpa].blank? %>
+            <% mil_gpa_string = "" %>
+        <% else %>
+            <% mil_gpa_string = sprintf( "%.02f" , @cum_grades[:cum_mil_gpa] ) %>
+        <%end%>
+        <td class="col-5" align="center"> <%= mil_gpa_string %></td>
+        <% if @cum_grades[:cum_mil_p_gpa] != nil %>
+            <% mil_p_gpa_string = sprintf( "%.02f" , @cum_grades[:cum_mil_p_gpa]) %>
+        <% else %>
+            <% mil_p_gpa_string = "" %>
+        <% end %>
+
+        <td class="col-5" align="center"> <%= mil_p_gpa_string %></td>
+        <% if @cum_grades[:cum_points].blank? %>
+            <% global_sum_string = "" %>
+        <% else %>
+            <% global_sum_string = sprintf( "%.02f" , @cum_grades[:cum_points]) %>
+        <% end %>
+        <td class="col-5" align="center"> <%= global_sum_string %></td>
+        <% if @cum_grades[:cum_gpa].blank? %>
+            <% total_gpa_string = "" %>
+        <% else %>
+            <% total_gpa_string = sprintf( "%.02f" , @cum_grades[:cum_gpa]) %>
+        <% end %>
+        <td class="col-5" align="center"> <%= total_gpa_string %></td>
+        <td class="col-5" align="center"> <%= @cum_grades[:cum_seniority] %></td>
+        <td class="col-5" align="center"> <%= @cum_grades[:cum_n_passed_subjects] %></td>
+
+        <% if @cum_grades[:cum_n_unfinished_subjects]!=nil and @cum_grades[:cum_n_unfinished_subjects]>0 %>
+            <%  notes = @cum_grades[:cum_n_unfinished_subjects].to_s + " Οφειλόμενα Ιουνίου" %>
+        <%elsif @cum_grades[:cum_n_unfinished_subjects].blank? %>
+            <% notes = "" %>
+        <% else %>
+            <% notes = "Κανένα οφειλόμενο" %>
+        <% end %>
+        <td class="col-5"> <%= notes %></td>
       </tr>
-  
-
+      <tr>
+      </tr>
+  <% end %>
 </table>
-<p/>
-
-<table width="35%" id="pdf-table" class="section">
-    <tr class="table-header">
-      <td colspan=2>Στρατιωτικά Προσόντα/Διαγωγή</td>
-    </tr>
-    <tr class="table-header">
-      <td>Βαθμός</td>
-        <td class="col-5" align="center"><div class="label-field-pair2">
-                <div class="text-input-bg2">
-                    <% if student_mil_perf.blank? or student_mil_perf.grade.blank? %>
-                    <% else %>
-                        <%= student_mil_perf.grade%>
-                    <% end %>
-            </div>
-          </div>
-        </td>
-  </tr>
-
-    </table>
-    <p/>
 
 
-<% end %>
-  </div>
+
+</div>

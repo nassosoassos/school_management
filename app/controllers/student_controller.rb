@@ -20,28 +20,28 @@ class StudentController < ApplicationController
   filter_access_to :all
   before_filter :login_required
   before_filter :protect_other_student_data, :except =>[:show]
-    
+
   before_filter :find_student, :only => [
-    :academic_report, :academic_report_all, :admission3, :change_to_former,
-    :delete, :edit, :add_guardian, :email, :remove, :reports, :profile,
-    :guardians, :academic_pdf,:show_previous_details,:fees,:fee_details, :grades
+      :academic_report, :academic_report_all, :admission3, :change_to_former,
+      :delete, :edit, :add_guardian, :email, :remove, :reports, :profile,
+      :guardians, :academic_pdf,:show_previous_details,:fees,:fee_details, :grades
   ]
 
-  
+
   def academic_report_all
     @user = current_user
     @prev_student = @student.previous_student
     @next_student = @student.next_student
     @course = @student.course
     @examtypes = ExaminationType.find( ( @course.examinations.collect { |x| x.examination_type_id } ).uniq )
-    
+
     @graph = open_flash_chart_object(965, 350, "/student/graph_for_academic_report?course=#{@course.id}&student=#{@student.id}")
     @graph2 = open_flash_chart_object(965, 350, "/student/graph_for_annual_academic_report?course=#{@course.id}&student=#{@student.id}")
   end
 
   def admission1
     @student = Student.new(params[:student])
-    @selected_value = Configuration.default_country 
+    @selected_value = Configuration.default_country
     @application_sms_enabled = SmsSetting.find_by_settings_key("ApplicationEnabled")
     @last_admitted_student = Student.find(:last)
     @config = Configuration.find_by_config_key('AdmissionNumberAutoIncrement')
@@ -170,7 +170,7 @@ class StudentController < ApplicationController
     #@previous_subject = StudentPreviousSubjectMark.find_all_by_student_id(@student)
     if request.post?
       if @previous_data.update_attributes(params[:previous_data])
-         redirect_to :action => "show_previous_details", :id => @student.id
+        redirect_to :action => "show_previous_details", :id => @student.id
       end
     end
   end
@@ -214,7 +214,7 @@ class StudentController < ApplicationController
     @optional_subjects_info = Array.new
     @compulsory_subjects_info = Array.new
     optional_subjects.each do |o|
-      op_info = { :id => o.id, :title => o.title, :kind => o.kind } 
+      op_info = { :id => o.id, :title => o.title, :kind => o.kind }
       if StudentsSubject.find_by_student_id_and_subject_id(@student.id, o.id).blank?
         op_info[:subscribed] = false
       else
@@ -224,14 +224,14 @@ class StudentController < ApplicationController
     end
     academic_year_id = SanSemester.find(@semester_id).academic_year.id
     compulsory_semester_subjects.each do |o|
-      cmp_info = { :id => o.san_subject.id, :title => o.san_subject.title, :kind => o.san_subject.kind } 
+      cmp_info = { :id => o.san_subject.id, :title => o.san_subject.title, :kind => o.san_subject.kind }
       stu = StudentsSubject.find_by_student_id_and_semester_subjects_id(@student.id, o.id)
       if stu.blank?
         # This should not be the case. It is only to take care of problematic cases coming from 
         # the previous information system.
         stu = StudentsSubject.new({:student_id=>@student.id, :group_id=>@group.id, :semester_subjects_id=>o.id,
-                                    :san_semester_id=>@semester_id, :subject_id=>o.san_subject.id,
-                                    :academic_year_id=>academic_year_id})
+                                   :san_semester_id=>@semester_id, :subject_id=>o.san_subject.id,
+                                   :academic_year_id=>academic_year_id})
         stu.save
       elsif stu.academic_year_id.nil?
         stu.update_attributes({:academic_year_id=>academic_year_id})
@@ -263,8 +263,8 @@ class StudentController < ApplicationController
         selected_sub = params[:subjects].select {|v| v==sem_sub.san_subject.id.to_s}
       end
       if selected_sub.blank?
-        stu_su = StudentsSubject.find_all_by_subject_id_and_student_id_and_semester_subjects_id(sem_sub.san_subject.id, student_id, sem_sub.id) 
-        unless stu_su.empty? 
+        stu_su = StudentsSubject.find_all_by_subject_id_and_student_id_and_semester_subjects_id(sem_sub.san_subject.id, student_id, sem_sub.id)
+        unless stu_su.empty?
           update_performance_scores = true
           stu_su.each do |st|
             st.destroy
@@ -293,7 +293,7 @@ class StudentController < ApplicationController
     @student = Student.find(params[:id])
     if params[:year_id].blank?
       @year = nil
-    else 
+    else
       @year = AcademicYear.find(params[:year_id])
     end
     unless @year.blank?
@@ -318,18 +318,28 @@ class StudentController < ApplicationController
       passed_student_subjects = @student.get_passed_subjects_for_year(@year)
       n_passed_university_student_subjects = passed_student_subjects.select{|a| a.san_subject.kind=='University'}.length
       n_passed_military_student_subjects = passed_student_subjects.length - n_passed_university_student_subjects
-      @grades_info = {:total_gpa=>total_gpa, :total_points=>total_points, :uni_gpa=>uni_gpa, :mil_gpa=>mil_gpa, :mil_p_gpa=>mil_p_gpa, :year=>@year.name, :year_id=>@year.id, :n_transfer_subjects=>n_to_be_transferred_subjects, :uni_points=>uni_points, :mil_points=>mil_points, :mil_p_points=>mil_p_points, :n_uni_passed=>n_passed_university_student_subjects, :n_mil_passed=>n_passed_military_student_subjects, :seniority=>seniority}
+      @grades_info = {:total_gpa=>total_gpa, :total_points=>total_points, :uni_gpa=>uni_gpa, :mil_gpa=>mil_gpa,
+                      :mil_p_gpa=>mil_p_gpa, :year=>@year.name, :year_id=>@year.id,
+                      :n_transfer_subjects=>n_to_be_transferred_subjects, :uni_points=>uni_points,
+                      :mil_points=>mil_points, :mil_p_points=>mil_p_points,
+                      :n_uni_passed=>n_passed_university_student_subjects,
+                      :n_mil_passed=>n_passed_military_student_subjects, :seniority=>seniority}
 
       @standard_student_subjects = @student.get_standard_subjects_for_year(@year)
       @transferred_student_subjects = @student.get_transferred_subjects_for_year(@year)
-      @compulsory_university_student_subjects = @standard_student_subjects.select{|a| a.semester_subjects.optional==false and a.san_subject.kind=='University'}
-      @optional_university_student_subjects = @standard_student_subjects.select{|a| a.semester_subjects.optional==true and a.san_subject.kind=='University'}
-      @transferred_university_student_subjects = @transferred_student_subjects.select{|a| a.san_subject.kind=='University'}
-      @standard_military_student_subjects = @standard_student_subjects.select{|a| a.san_subject.kind=='Military'}
-      @transferred_military_student_subjects = @transferred_student_subjects.select{|a| a.san_subject.kind=='Military'}
+      @compulsory_university_student_subjects = @standard_student_subjects.select{|a|
+        a.semester_subjects.optional==false and a.san_subject.kind=='University'}
+      @optional_university_student_subjects = @standard_student_subjects.select{|a|
+        a.semester_subjects.optional==true and a.san_subject.kind=='University'}
+      @transferred_university_student_subjects = @transferred_student_subjects.select{|a|
+        a.san_subject.kind=='University'}
+      @standard_military_student_subjects = @standard_student_subjects.select{|a|
+        a.san_subject.kind=='Military'}
+      @transferred_military_student_subjects = @transferred_student_subjects.select{|a|
+        a.san_subject.kind=='Military'}
 
       @student_mil_perf = StudentMilitaryPerformance.find_by_student_id_and_academic_year_id(params[:id], @year.id)
-    
+
       @next_student_id = @student.find_next_student(@year).id
       @previous_student_id = @student.find_previous_student(@year).id
     end
@@ -360,7 +370,10 @@ class StudentController < ApplicationController
 
         end
         n_to_be_transferred_subjects = @student.get_to_be_transferred_subjects_for_year(y).length
-        info = {:total_gpa=>total_gpa, :total_points=>total_points, :uni_gpa=>uni_gpa, :mil_gpa=>mil_gpa, :mil_p_gpa=>mil_p_gpa, :year=>y.name, :year_id=>y.id, :n_transfer_subjects=>n_to_be_transferred_subjects, :n_passed_subjects=>n_passed_subjects, :seniority=>seniority}
+        info = {:total_gpa=>total_gpa, :total_points=>total_points, :uni_gpa=>uni_gpa, :mil_gpa=>mil_gpa,
+                :mil_p_gpa=>mil_p_gpa, :year=>y.name, :year_id=>y.id,
+                :n_transfer_subjects=>n_to_be_transferred_subjects, :n_passed_subjects=>n_passed_subjects,
+                :seniority=>seniority}
         @grades_info.push(info)
       end
     end
@@ -369,59 +382,122 @@ class StudentController < ApplicationController
     smp = StudentMilitaryPerformance.find_by_student_id_and_academic_year_id(@student.id, @student.group.last_year.id)
     cum_n_passed_subjects = @student.get_all_passed_subjects.length
     if smp.nil? or smp.gpa.nil?
-       cum_gpa = nil
-       cum_points = nil
-       cum_univ_gpa = nil
-       cum_mil_gpa = nil
-       cum_mil_p_gpa = nil
-       cum_seniority = nil
-       cum_n_unfinished_subjects = nil
+      cum_gpa = nil
+      cum_points = nil
+      cum_univ_gpa = nil
+      cum_mil_gpa = nil
+      cum_mil_p_gpa = nil
+      cum_seniority = nil
+      cum_n_unfinished_subjects = nil
     else
-       cum_gpa = smp.cum_gpa
-       cum_points = smp.cum_points
-       cum_univ_gpa = smp.cum_univ_gpa
-       cum_mil_gpa = smp.cum_mil_gpa
-       cum_mil_p_gpa = smp.cum_mil_p_gpa
-       cum_seniority = smp.cum_seniority
-       cum_n_unfinished_subjects = smp.cum_n_unfinished_subjects
+      cum_gpa = smp.cum_gpa
+      cum_points = smp.cum_points
+      cum_univ_gpa = smp.cum_univ_gpa
+      cum_mil_gpa = smp.cum_mil_gpa
+      cum_mil_p_gpa = smp.cum_mil_p_gpa
+      cum_seniority = smp.cum_seniority
+      cum_n_unfinished_subjects = smp.cum_n_unfinished_subjects
     end
-    @cum_grades = {:cum_gpa=>cum_gpa, :cum_univ_gpa=>cum_univ_gpa, :cum_mil_gpa=>cum_mil_gpa, :cum_mil_p_gpa=>cum_mil_p_gpa, :cum_points=>cum_points, :cum_n_unfinished_subjects=>cum_n_unfinished_subjects, :cum_n_passed_subjects=>cum_n_passed_subjects, :cum_seniority=>cum_seniority}
+    @cum_grades = {:cum_gpa=>cum_gpa, :cum_univ_gpa=>cum_univ_gpa, :cum_mil_gpa=>cum_mil_gpa,
+                   :cum_mil_p_gpa=>cum_mil_p_gpa, :cum_points=>cum_points,
+                   :cum_n_unfinished_subjects=>cum_n_unfinished_subjects, :cum_n_passed_subjects=>cum_n_passed_subjects,
+                   :cum_seniority=>cum_seniority}
   end
 
   def grades_pdf
+    # Generate a student's grade report in pdf:
+    # 1) Show a table of averages for all years, plus a cumulative score.
+    # 2) Show the grades in every subject.
     @student = Student.find(params[:id])
-    @years = SanSemester.find_all_by_group_id(@student.group_id).map(&:academic_year).uniq
+    @years = StudentsSubject.find_all_by_student_id(@student.id).map(&:academic_year).uniq
 
-    @total_gpa, @global_sum, @uni_gpa, @mil_gpa, @mil_p_gpa, @n_unfinished_subjects = @student.gpa_for_year(@years,'all')
-    @grades_info = {}
-    @years.each do |y|
-      semester_ids = SanSemester.find_all_by_academic_year_id(y.id)
-      student_subjects = StudentsSubject.find_all_by_student_id_and_san_semester_id(params[:id], semester_ids)
-      university_student_subjects = Array.new
-      military_student_subjects = Array.new
-      student_subjects.each do |subject|
-        if SanSubject.find(subject.subject_id).kind=='University'
-          university_student_subjects.push(subject)
+    @grades_info = Array.new
+    @years.sort!{|a, b| a.start_date<=>b.start_date}.each do |y|
+      if @student.is_active_for_year(y)
+        smp = StudentMilitaryPerformance.find_by_student_id_and_academic_year_id(@student.id, y.id)
+        if smp.nil? or smp.gpa.nil?
+          n_to_be_transferred_subjects = @student.get_to_be_transferred_subjects_for_year(y).length
+          n_passed_subjects = @student.get_passed_subjects_for_year(y).length
+          total_gpa, total_points, uni_gpa, mil_gpa, mil_p_gpa = @student.get_gpa_and_points_for_year(y)
+          seniority = nil
         else
-          military_student_subjects.push(subject)
+          total_gpa = smp.gpa
+          total_points = smp.points
+          uni_gpa = smp.univ_gpa
+          mil_gpa = smp.mil_gpa
+          mil_p_gpa = smp.grade
+          n_to_be_transferred_subjects = smp.n_unfinished_subjects
+          n_passed_subjects = @student.get_passed_subjects_for_year(y).length
+          seniority = smp.seniority
         end
+        to_be_transferred_subjects = @student.get_to_be_transferred_subjects_for_year(y)
+
+        n_to_be_transferred_subjects = to_be_transferred_subjects.length
+
+        passed_student_subjects = @student.get_passed_subjects_for_year(y)
+        n_pass_uni_stu_subs = passed_student_subjects.select{|a|
+          a.san_subject.kind=='University'}.length
+        n_pass_mil_stu_subs = passed_student_subjects.length - n_pass_uni_stu_subs
+
+        standard_student_subjects = @student.get_standard_subjects_for_year(y)
+        transferred_student_subjects = @student.get_transferred_subjects_for_year(y)
+        compulsory_university_student_subjects = standard_student_subjects.select{|a|
+          a.semester_subjects.optional==false and a.san_subject.kind=='University'}
+        optional_university_student_subjects = standard_student_subjects.select{|a|
+          a.semester_subjects.optional==true and a.san_subject.kind=='University'}
+        transferred_university_student_subjects = transferred_student_subjects.select{|a|
+          a.san_subject.kind=='University'}
+        standard_military_student_subjects = standard_student_subjects.select{|a|
+          a.san_subject.kind=='Military'}
+        transferred_military_student_subjects = transferred_student_subjects.select{|a|
+          a.san_subject.kind=='Military'}
+
+
+        info = {:total_gpa=>total_gpa, :total_points=>total_points, :uni_gpa=>uni_gpa, :mil_gpa=>mil_gpa,
+                :mil_p_gpa=>mil_p_gpa, :year=>y.name, :year_id=>y.id, :n_transfer_subjects=>n_to_be_transferred_subjects,
+                :n_uni_passed_subjects=>n_pass_uni_stu_subs, :n_mil_passed_subjects=>n_pass_mil_stu_subs,
+                :n_passed_subjects=>n_passed_subjects, :seniority=>seniority,
+                :compulsory_university_student_subjects=>compulsory_university_student_subjects,
+                :optional_university_student_subjects=>optional_university_student_subjects,
+                :transferred_university_student_subjects=>transferred_university_student_subjects,
+                :standard_military_student_subjects=>standard_military_student_subjects,
+                :transferred_military_student_subjects=>transferred_university_student_subjects,
+                :standard_student_subjects=>standard_student_subjects,
+                :transferred_student_subjects=>transferred_student_subjects
+                }
+        @grades_info.push(info)
       end
-      student_mil_perf = StudentMilitaryPerformance.find_by_student_id_and_academic_year_id(params[:id], SanSemester.find(semester_ids[0]).academic_year.id)
-
-      total_gpa, global_sum, uni_gpa, mil_gpa, mil_p_gpa = @student.gpa_for_year([y],'all')
-
-      year_info = {:uni_subs=>university_student_subjects, :mil_subs=>military_student_subjects,
-                    :student_mil_perf=>student_mil_perf, :total_gpa=>total_gpa,
-                    :global_sum=>global_sum, :uni_gpa=>uni_gpa, :mil_gpa=>mil_gpa, 
-                    :mil_p_gpa=>mil_p_gpa}
-      @grades_info[y] = year_info
     end
+
+    # Cumulative
+    smp = StudentMilitaryPerformance.find_by_student_id_and_academic_year_id(@student.id, @student.group.last_year.id)
+    cum_n_passed_subjects = @student.get_all_passed_subjects.length
+    if smp.nil? or smp.gpa.nil?
+      cum_gpa = nil
+      cum_points = nil
+      cum_univ_gpa = nil
+      cum_mil_gpa = nil
+      cum_mil_p_gpa = nil
+      cum_seniority = nil
+      cum_n_unfinished_subjects = nil
+    else
+      cum_gpa = smp.cum_gpa
+      cum_points = smp.cum_points
+      cum_univ_gpa = smp.cum_univ_gpa
+      cum_mil_gpa = smp.cum_mil_gpa
+      cum_mil_p_gpa = smp.cum_mil_p_gpa
+      cum_seniority = smp.cum_seniority
+      cum_n_unfinished_subjects = smp.cum_n_unfinished_subjects
+    end
+    @cum_grades = {:cum_gpa=>cum_gpa, :cum_univ_gpa=>cum_univ_gpa, :cum_mil_gpa=>cum_mil_gpa,
+                   :cum_mil_p_gpa=>cum_mil_p_gpa, :cum_points=>cum_points, :cum_n_unfinished_subjects=>cum_n_unfinished_subjects,
+                   :cum_n_passed_subjects=>cum_n_passed_subjects, :cum_seniority=>cum_seniority}
 
     render :pdf=>'grades'
 
   end
 
-  def update_grades 
+  def update_grades
     @student_subjects_grades = StudentsSubject.find_all_by_student_id_and_academic_year_id(params[:id], params[:year_id])
     grades_updated = false
     student = Student.find(params[:id])
@@ -436,7 +512,7 @@ class StudentController < ApplicationController
       end
     end
     @student_mil_perf = StudentMilitaryPerformance.find_all_by_student_id(params[:id])
-    @student_mil_perf.each do |performance| 
+    @student_mil_perf.each do |performance|
       if params[:student_military_performances][:grade].has_key?(performance.academic_year_id.to_s)
         grade = params[:student_military_performances][:grade][performance.academic_year_id.to_s]
         performance.update_attributes({:grade=>grade})
@@ -482,7 +558,7 @@ class StudentController < ApplicationController
     if request.post?
       params[:student_additional_details].each_pair do |k, v|
         StudentAdditionalDetail.create(:student_id => params[:id],
-          :additional_field_id => k,:additional_info => v['additional_info'])
+                                       :additional_field_id => k,:additional_info => v['additional_info'])
       end
       flash[:notice] = "#{t('flash9')} #{@student.first_name} #{@student.last_name}."
       redirect_to :controller => "student", :action => "profile", :id => @student.id
@@ -493,12 +569,12 @@ class StudentController < ApplicationController
     @student = Student.find(params[:id])
     @additional_fields = StudentAdditionalField.find(:all, :conditions=> "status = true")
     @additional_details = StudentAdditionalDetail.find_all_by_student_id(@student)
-    
+
     if @additional_details.empty?
       redirect_to :controller => "student",:action => "admission4" , :id => @student.id
     end
     if request.post?
-   
+
       params[:student_additional_details].each_pair do |k, v|
         row_id=StudentAdditionalDetail.find_by_student_id_and_additional_field_id(@student.id,k)
         unless row_id.nil?
@@ -574,7 +650,7 @@ class StudentController < ApplicationController
   def generate_all_tc_pdf
     @ids = params[:stud]
     @students = @ids.map { |st_id| ArchivedStudent.find(st_id) }
-    
+
     render :pdf=>'generate_all_tc_pdf'
   end
 
@@ -672,13 +748,13 @@ class StudentController < ApplicationController
     if request.post?
       recipient_list = []
       case params['email']['recipients']
-      when 'Student'
-        recipient_list << @student.email
-      when 'Guardian'
-        recipient_list << @student.immediate_contact.email unless @student.immediate_contact.nil?
-      when 'Student & Guardian'
-        recipient_list << @student.email
-        recipient_list << @student.immediate_contact.email unless @student.immediate_contact.nil?
+        when 'Student'
+          recipient_list << @student.email
+        when 'Guardian'
+          recipient_list << @student.immediate_contact.email unless @student.immediate_contact.nil?
+        when 'Student & Guardian'
+          recipient_list << @student.email
+          recipient_list << @student.immediate_contact.email unless @student.immediate_contact.nil?
       end
       FedenaMailer::deliver_email(sender, recipient_list, params['email']['subject'], params['email']['message'])
       flash[:notice] = "#{t('flash12')} #{recipient_list.join(', ')}"
@@ -744,34 +820,34 @@ class StudentController < ApplicationController
 
   def search_ajax
     #if params[:option] == "active"
-      if params[:query].length>= 3
-        @students = Student.find(:all,
-          :conditions => ["first_name LIKE ? OR middle_name LIKE ? OR last_name LIKE ?
+    if params[:query].length>= 3
+      @students = Student.find(:all,
+                               :conditions => ["first_name LIKE ? OR middle_name LIKE ? OR last_name LIKE ?
                             OR admission_no = ? OR (concat(first_name, \" \", last_name) LIKE ? ) ",
-            "#{params[:query]}%","#{params[:query]}%","#{params[:query]}%",
-            "#{params[:query]}", "#{params[:query]}" ],
-          :order => "group_id asc,last_name asc") unless params[:query] == ''
-      else
-        @students = Student.find(:all,
-          :conditions => ["admission_no = ? " , params[:query]],
-          :order => "group_id asc,last_name asc") unless params[:query] == ''
-      end
-      render :layout => false
+                                               "#{params[:query]}%","#{params[:query]}%","#{params[:query]}%",
+                                               "#{params[:query]}", "#{params[:query]}" ],
+                               :order => "group_id asc,last_name asc") unless params[:query] == ''
+    else
+      @students = Student.find(:all,
+                               :conditions => ["admission_no = ? " , params[:query]],
+                               :order => "group_id asc,last_name asc") unless params[:query] == ''
+    end
+    render :layout => false
     #end
-#      if params[:query].length>= 3
-#        @archived_students = ArchivedStudent.find(:all,
-#          :conditions => ["first_name LIKE ? OR middle_name LIKE ? OR last_name LIKE ?
-#                            OR admission_no = ? OR (concat(first_name, \" \", last_name) LIKE ? ) ",
-#            "#{params[:query]}%","#{params[:query]}%","#{params[:query]}%",
-#            "#{params[:query]}", "#{params[:query]}" ],
-#          :order => "group_id asc,first_name asc") unless params[:query] == ''
-#      else
-#        @archived_students = ArchivedStudent.find(:all,
-#          :conditions => ["admission_no = ? " , params[:query]],
-#          :order => "group_id asc,first_name asc") unless params[:query] == ''
-#      end
-#      render :partial => "search_ajax"
-#    end
+    #      if params[:query].length>= 3
+    #        @archived_students = ArchivedStudent.find(:all,
+    #          :conditions => ["first_name LIKE ? OR middle_name LIKE ? OR last_name LIKE ?
+    #                            OR admission_no = ? OR (concat(first_name, \" \", last_name) LIKE ? ) ",
+    #            "#{params[:query]}%","#{params[:query]}%","#{params[:query]}%",
+    #            "#{params[:query]}", "#{params[:query]}" ],
+    #          :order => "group_id asc,first_name asc") unless params[:query] == ''
+    #      else
+    #        @archived_students = ArchivedStudent.find(:all,
+    #          :conditions => ["admission_no = ? " , params[:query]],
+    #          :order => "group_id asc,first_name asc") unless params[:query] == ''
+    #      end
+    #      render :partial => "search_ajax"
+    #    end
   end
 
   def student_annual_overview
@@ -809,7 +885,7 @@ class StudentController < ApplicationController
     @immediate_contact = Guardian.find(@student.immediate_contact_id) \
       unless @student.immediate_contact_id.nil? or @student.immediate_contact_id == ''
   end
-  
+
   def profile_pdf
     @current_user = current_user
     @student = Student.find(params[:id])
@@ -820,7 +896,7 @@ class StudentController < ApplicationController
     @previous_data = StudentPreviousData.find_by_student_id(@student.id)
     @immediate_contact = Guardian.find(@student.immediate_contact_id) \
       unless @student.immediate_contact_id.nil? or @student.immediate_contact_id == ''
-        
+
     render :pdf=>'profile_pdf'
   end
 
@@ -829,13 +905,13 @@ class StudentController < ApplicationController
     #@previous_subjects = StudentPreviousSubjectMark.find_all_by_student_id(@student.id)
     @previous_languages = StudentLanguage.find_all_by_student_id(@student.id)
   end
-  
+
   def show
     @student = Student.find_by_admission_no(params[:id])
     send_data(@student.photo_data,
-      :type => @student.photo_content_type,
-      :filename => @student.photo_filename,
-      :disposition => 'inline')
+              :type => @student.photo_content_type,
+              :filename => @student.photo_filename,
+              :disposition => 'inline')
   end
 
   def guardians
@@ -901,7 +977,7 @@ class StudentController < ApplicationController
 
   def category_edit
     @student_category = StudentCategory.find(params[:id])
-    
+
   end
 
   def category_update
@@ -921,7 +997,7 @@ class StudentController < ApplicationController
     @search = Student.search(params[:search])
     if params[:search]
       if params[:search][:group_id_equals].empty?
-         groups = Group.all.collect{|b|b.id}
+        groups = Group.all.collect{|b|b.id}
       end
       if groups.is_a?(Array)
 
@@ -929,8 +1005,8 @@ class StudentController < ApplicationController
         groups.each do |b|
           params[:search][:group_id_equals] = b
           #if params[:search][:is_active_equals]=="true"
-            @search = Student.search(params[:search])
-            @students+=@search.all
+          @search = Student.search(params[:search])
+          @students+=@search.all
           #elsif params[:search][:is_active_equals]=="false"
           #  @search = ArchivedStudent.search(params[:search])
           #  @students+=@search.all
@@ -943,8 +1019,8 @@ class StudentController < ApplicationController
         params[:search][:group_id_equals] = nil
       else
         #if params[:search][:is_active_equals]=="true"
-          @search = Student.search(params[:search])
-          @students = @search.all
+        @search = Student.search(params[:search])
+        @students = @search.all
         #elsif params[:search][:is_active_equals]=="false"
         #  @search = ArchivedStudent.search(params[:search])
         #  @students = @search.all
@@ -985,7 +1061,7 @@ class StudentController < ApplicationController
     end
   end
 
-   
+
 
   #  def adv_search
   #    @batches = []
@@ -1167,7 +1243,7 @@ class StudentController < ApplicationController
       end
     end
     render :pdf=>'generate_tc_pdf'
-         
+
   end
 
   #  def new_adv
@@ -1267,7 +1343,7 @@ class StudentController < ApplicationController
   end
 
 
-  
+
   #  # Graphs
   #
   #  def graph_for_previous_years_marks_overview

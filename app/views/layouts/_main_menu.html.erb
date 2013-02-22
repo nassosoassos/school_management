@@ -67,10 +67,10 @@
     <% end %>
   <% end %>
   <% if permitted_to? :index, :configuration %>
-    <li class="a"><%= link_to "#{t('settings')} ▼", :controller => "configuration", :action => "index" %>
-    <ul class="level-1">
+    <li class="a"><%= link_to "#{t('settings')}", :controller => "configuration", :action => "settings" %>
         <%- # FIXME: Left out for school -%>
         <% if false %>
+    <ul class="level-1">
         <% if permitted_to? :create, :courses %>
           <li><%= link_to "#{t('manage_course_batch')}", courses_path %></li>
         <% end %>
@@ -80,20 +80,17 @@
         <% if permitted_to? :index, :subjects %>
           <li><%= link_to "#{t('manage_subject')}", subjects_path %></li>
         <% end %>
-      <% end %>
         <% if permitted_to? :settings, :configuration %>
           <li><%= link_to "#{t('general_settings')}", :controller => "configuration", :action => "settings" %></li>
         <% end %>
-        <%- # FIXME: Left out for school -%>
-        <% if false %>
         <% if permitted_to? :settings, :configuration %>
           <li><%= link_to "#{t('add_admission_additional_detail')}", :controller=>"student", :action => "add_additional_details" %></li>
         <% end %>
         <% if permitted_to? :index, :sms %>
           <li><%= link_to "#{t('sms_module')}", :controller=>"sms", :action => "index" %></li>
         <% end %>
-      <% end %>
       </ul>
+      <% end %>
     </li>
   <% end %>
   <!--

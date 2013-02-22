@@ -87,8 +87,8 @@ class UserController < ApplicationController
   end
 
   def list_student_user
-    batch = params[:batch_id]
-    @student = Student.find_all_by_batch_id(batch, :conditions => { :is_active => true },:order =>'first_name ASC')
+    group = params[:group_id]
+    @student = Student.find_all_by_group_id(group, :conditions => { :is_active => true },:order =>'first_name ASC')
     @users = @student.collect { |student| student.user}
     @users.delete(nil)
     render(:update) {|page| page.replace_html 'users', :partial=> 'users'}

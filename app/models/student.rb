@@ -19,7 +19,7 @@
 class Student < ActiveRecord::Base
 
   include CceReportMod
-    
+
   belongs_to :country
   belongs_to :group
   belongs_to :student_category
@@ -45,7 +45,7 @@ class Student < ActiveRecord::Base
   has_many   :exam_scores
   has_many   :previous_exam_scores
   has_many   :student_military_performances, :dependent => :destroy
-  
+
 
   named_scope :active, :conditions => { :is_active => true }
   named_scope :with_full_name_only, :select=>"id, CONCAT_WS('',first_name,' ',last_name) AS name,first_name,last_name", :order=>:first_name
@@ -57,29 +57,29 @@ class Student < ActiveRecord::Base
   validates_uniqueness_of :admission_no, :uni_admission_no
   validates_presence_of :gender, :fathers_first_name
   validates_format_of     :email, :with => /^[A-Z0-9._%-]+@([A-Z0-9-]+\.)+[A-Z]{2,4}$/i,   :allow_blank=>true,
-    :message => "#{t('must_be_a_valid_email_address')}"
+                          :message => "#{t('must_be_a_valid_email_address')}"
   validates_format_of     :admission_no, :with => %r"^[A-ZΑ-Ω0-9/_-]*$"i,
-    :message => "#{t('must_contain_only_letters')}"
-  validates_numericality_of :height, :only_integer=>true, :greater_than=>100, :less_than=>250, :allow_nil=>true, 
-    :message => "#{t('must_be_height')}"
-  validates_numericality_of :weight, :only_integer=>true, :greater_than=>30, :less_than=>150, :allow_nil=>true, 
-    :message => "#{t('must_be_weight')}"
+                          :message => "#{t('must_contain_only_letters')}"
+  validates_numericality_of :height, :only_integer=>true, :greater_than=>100, :less_than=>250, :allow_nil=>true,
+                            :message => "#{t('must_be_height')}"
+  validates_numericality_of :weight, :only_integer=>true, :greater_than=>30, :less_than=>150, :allow_nil=>true,
+                            :message => "#{t('must_be_weight')}"
 
   validates_associated :user
   before_validation :create_user_and_validate
 
   has_attached_file :photo,
-    :styles => {:original=> "125x125#"},
-    :url => "/system/:class/:attachment/:id/:style/:basename.:extension",
-    :path => ":rails_root/public/system/:class/:attachment/:id/:style/:basename.:extension"
+                    :styles => {:original=> "125x125#"},
+                    :url => "/system/:class/:attachment/:id/:style/:basename.:extension",
+                    :path => ":rails_root/public/system/:class/:attachment/:id/:style/:basename.:extension"
 
   VALID_IMAGE_TYPES = ['image/gif', 'image/png','image/jpeg', 'image/jpg']
 
   validates_attachment_content_type :photo, :content_type =>VALID_IMAGE_TYPES,
-    :message=>'Image can only be GIF, PNG, JPG',:if=> Proc.new { |p| !p.photo_file_name.blank? }
+                                    :message=>'Image can only be GIF, PNG, JPG',:if=> Proc.new { |p| !p.photo_file_name.blank? }
   validates_attachment_size :photo, :less_than => 512000,\
     :message=>'must be less than 500 KB.',:if=> Proc.new { |p| p.photo_file_name_changed? }
-  
+
   def validate
     errors.add(:date_of_birth, "#{t('cant_be_a_future_date')}.") if self.date_of_birth >= Date.today \
       unless self.date_of_birth.nil?
@@ -100,7 +100,7 @@ class Student < ActiveRecord::Base
         # Make sure that this student_subject is not transferred to following years
         stud_subs.each do |ssub|
           if (ssub.san_semester and ssub.san_semester.number>stu_sub.san_semester.number) or
-            (ssub.academic_year and ssub.academic_year.start_date>stu_sub.academic_year.start_date)
+              (ssub.academic_year and ssub.academic_year.start_date>stu_sub.academic_year.start_date)
             ac_year = ssub.academic_year
             if ac_year.nil?
               ac_year = ssub.semester_subjects.san_semester.academic_year
@@ -124,25 +124,25 @@ class Student < ActiveRecord::Base
           next_year_semesters = SanSemester.find_all_by_group_id_and_academic_year_id(self.group.id, next_ac_year.id)
           if !next_year_semesters.empty? or (next_ac_year==self.group.get_graduation_academic_year.next and self.group.graduated)
             puts "I am here"
-           ssub = StudentsSubject.find_by_student_id_and_academic_year_id_and_semester_subjects_id(
-            self.id, next_ac_year.id, stu_sub.semester_subjects_id)
-           if ssub.nil?  
-            ssub = StudentsSubject.new({:student_id=>self.id, :academic_year_id=>next_ac_year.id, 
-                   :semester_subjects_id=>stu_sub.semester_subjects_id, :subject_id=>stu_sub.subject_id})
-            ssub.save
-            next_corresponding_semester = next_year_semesters.select{|a| a.number==stu_sub.san_semester.number+2}
-            unless next_corresponding_semester.empty?
-              ssub.update_attributes({:san_semester_id=>next_corresponding_semester[0].id})
+            ssub = StudentsSubject.find_by_student_id_and_academic_year_id_and_semester_subjects_id(
+                self.id, next_ac_year.id, stu_sub.semester_subjects_id)
+            if ssub.nil?
+              ssub = StudentsSubject.new({:student_id=>self.id, :academic_year_id=>next_ac_year.id,
+                                          :semester_subjects_id=>stu_sub.semester_subjects_id, :subject_id=>stu_sub.subject_id})
+              ssub.save
+              next_corresponding_semester = next_year_semesters.select{|a| a.number==stu_sub.san_semester.number+2}
+              unless next_corresponding_semester.empty?
+                ssub.update_attributes({:san_semester_id=>next_corresponding_semester[0].id})
+              end
+              self.estimate_performance_scores(next_ac_year)
             end
-            self.estimate_performance_scores(next_ac_year)
-           end
-         end
-         next_ac_year = next_ac_year.next
-         if self.group.graduated 
-           if next_ac_year.start_date.year==self.group.last_year.start_date.year+2
+          end
+          next_ac_year = next_ac_year.next
+          if self.group.graduated
+            if next_ac_year.start_date.year==self.group.last_year.start_date.year+2
               break
-           end
-         end
+            end
+          end
         end
       end
     end
@@ -174,12 +174,12 @@ class Student < ActiveRecord::Base
     if a_grade!=stu_sub.a_grade or b_grade!=stu_sub.b_grade or c_grade!=stu_sub.c_grade
       stu_sub.update_attributes({:a_grade=>a_grade, :b_grade=>b_grade, :c_grade=>c_grade})
       f_gs = finalize_grade_set([stu_sub])
-      stud_subs = StudentsSubject.find_all_by_student_id_and_semester_subjects_id(self.id, stu_sub.semester_subjects_id)  
+      stud_subs = StudentsSubject.find_all_by_student_id_and_semester_subjects_id(self.id, stu_sub.semester_subjects_id)
       if f_gs[0] and f_gs[0]>=5 and stud_subs.length>1
         # Make sure that this student_subject is not transferred to following years
         stud_subs.each do |ssub|
           if (ssub.san_semester and ssub.san_semester.number>stu_sub.san_semester.number) or
-            (ssub.academic_year and ssub.academic_year.start_date>stu_sub.academic_year.start_date)
+              (ssub.academic_year and ssub.academic_year.start_date>stu_sub.academic_year.start_date)
             ac_year = ssub.academic_year
             if ac_year.nil?
               ac_year = ssub.semester_subjects.san_semester.academic_year
@@ -201,25 +201,25 @@ class Student < ActiveRecord::Base
         while next_ac_year and self.is_active_for_year(next_ac_year)
           next_year_semesters = SanSemester.find_all_by_group_id_and_academic_year_id(self.group.id, next_ac_year.id)
           if !next_year_semesters.empty? or (next_ac_year==self.group.get_graduation_academic_year.next and self.group.graduated)
-           ssub = StudentsSubject.find_by_student_id_and_academic_year_id_and_semester_subjects_id(
-            self.id, next_ac_year.id, stu_sub.semester_subjects_id)
-           if ssub.nil?  
-            ssub = StudentsSubject.new({:student_id=>self.id, :academic_year_id=>next_ac_year.id, 
-                   :semester_subjects_id=>stu_sub.semester_subjects_id, :subject_id=>stu_sub.subject_id})
-            ssub.save
-            next_corresponding_semester = next_year_semesters.select{|a| a.number==stu_sub.san_semester.number+2}
-            unless next_corresponding_semester.empty?
-              ssub.update_attributes({:san_semester_id=>next_corresponding_semester[0].id})
+            ssub = StudentsSubject.find_by_student_id_and_academic_year_id_and_semester_subjects_id(
+                self.id, next_ac_year.id, stu_sub.semester_subjects_id)
+            if ssub.nil?
+              ssub = StudentsSubject.new({:student_id=>self.id, :academic_year_id=>next_ac_year.id,
+                                          :semester_subjects_id=>stu_sub.semester_subjects_id, :subject_id=>stu_sub.subject_id})
+              ssub.save
+              next_corresponding_semester = next_year_semesters.select{|a| a.number==stu_sub.san_semester.number+2}
+              unless next_corresponding_semester.empty?
+                ssub.update_attributes({:san_semester_id=>next_corresponding_semester[0].id})
+              end
+              self.estimate_performance_scores(next_ac_year)
             end
-            self.estimate_performance_scores(next_ac_year)
-           end
-         end
-         next_ac_year = next_ac_year.next
-         if self.group.graduated 
-           if next_ac_year.start_date.year==self.group.last_year.start_date.year+2
+          end
+          next_ac_year = next_ac_year.next
+          if self.group.graduated
+            if next_ac_year.start_date.year==self.group.last_year.start_date.year+2
               break
-           end
-         end
+            end
+          end
         end
       end
       updated = true
@@ -247,8 +247,8 @@ class Student < ActiveRecord::Base
         puts "Index: " + ind.to_s
         unless new_sem.academic_year.nil? or new_sem.nil? or new_sem_sub.nil?
           begin
-            s.update_attributes({:group_id=>new_group_id, :academic_year_id=>new_sem.academic_year.id, 
-                                :san_semester_id=>new_sem.id, :semester_subjects_id=>new_sem_sub.id})
+            s.update_attributes({:group_id=>new_group_id, :academic_year_id=>new_sem.academic_year.id,
+                                 :san_semester_id=>new_sem.id, :semester_subjects_id=>new_sem_sub.id})
           rescue
             puts "Error"
           end
@@ -267,20 +267,20 @@ class Student < ActiveRecord::Base
 
       # Update seniorities
       new_group_years = SanSemester.find_all_by_group_id(self.group.id).map(&:academic_year).uniq
-      new_group_years.each do |yr| 
+      new_group_years.each do |yr|
         self.estimate_performance_scores(yr)
-        self.group.estimate_seniority(yr, self.id)   
+        self.group.estimate_seniority(yr, self.id)
       end
       old_group_years = SanSemester.find_all_by_group_id(old_group_id).map(&:academic_year).uniq
-      old_group_years.each do |yr| 
-        self.group.estimate_seniority_batch(yr)   
+      old_group_years.each do |yr|
+        self.group.estimate_seniority_batch(yr)
       end
     end
   end
 
   def finalize_grade_set(grade_set_array, exam_period='c')
     grades = Array.new
-    grade_set_array.each do |grade_set| 
+    grade_set_array.each do |grade_set|
       if grade_set.a_grade != nil
         final_grade = grade_set.a_grade
       elsif grade_set.b_grade != nil
@@ -381,7 +381,7 @@ class Student < ActiveRecord::Base
 
   def get_all_passed_subjects(exam_period='c')
     all_years = SanSemester.find_all_by_group_id(self.group.id).map(&:academic_year).uniq
-   
+
     all_passed_subject_grades = Array.new
     all_years.each do |year|
       year_subject_grades = StudentsSubject.find(:all, :conditions=>['student_id=? and academic_year_id=?',self.id, year.id])
@@ -413,12 +413,12 @@ class Student < ActiveRecord::Base
   def get_total_univ_gpa_and_points(exam_period='c')
     passed_student_subjects = get_all_passed_subjects(exam_period)
     univ_subjects = passed_student_subjects.select{|a| a.san_subject.kind=='University'}
-    
+
     grades = finalize_grade_set(univ_subjects, exam_period)
     if grades.size>0
-      univ_gpa = grades.inject(0.0) { |sum, el| sum + el } / grades.size 
+      univ_gpa = grades.inject(0.0) { |sum, el| sum + el } / grades.size
       univ_points = univ_gpa*SanSemester.find_by_academic_year_id_and_group_id(self.group.last_year.id, self.group.id).uni_weight
-    else 
+    else
       univ_gpa = nil
       univ_points = nil
     end
@@ -428,13 +428,13 @@ class Student < ActiveRecord::Base
   def get_total_mil_gpa_and_points(exam_period='c')
     passed_student_subjects = get_all_passed_subjects(exam_period)
     mil_subjects = passed_student_subjects.select{|a| a.san_subject.kind=='Military'}
-    
+
     grades = finalize_grade_set(mil_subjects, exam_period)
     if grades.size>0
-      mil_gpa = grades.inject(0.0) { |sum, el| sum + el } / grades.size 
+      mil_gpa = grades.inject(0.0) { |sum, el| sum + el } / grades.size
       # Assume that the most recent weights are the valid ones
       mil_points = mil_gpa*SanSemester.find_by_academic_year_id_and_group_id(self.group.last_year.id, self.group.id).mil_weight
-    else 
+    else
       mil_gpa = nil
       mil_points = nil
     end
@@ -490,21 +490,21 @@ class Student < ActiveRecord::Base
 
     return [gpa, points, uni_gpa, mil_gpa, mil_p_grade, uni_points, mil_points, mil_performance_points]
   end
-  
+
   def get_univ_gpa_and_points_for_year(year, exam_period='c')
     passed_student_subjects = get_passed_subjects_for_year(year, exam_period)
     univ_subjects = passed_student_subjects.select{|a| a.san_subject.kind=='University'}
     grades = finalize_grade_set(univ_subjects, exam_period)
 
     if grades.size > 0
-      univ_gpa = grades.inject(0.0) { |sum, el| sum + el } / grades.size 
+      univ_gpa = grades.inject(0.0) { |sum, el| sum + el } / grades.size
       first_semester = SanSemester.find_by_academic_year_id_and_group_id(year.id, self.group.id)
       unless first_semester
         first_semester = SanSemester.find_by_academic_year_id_and_group_id(self.group.last_year.id, self.group.id)
       end
       univ_points = first_semester.uni_weight  * univ_gpa
       return univ_gpa, univ_points
-    else 
+    else
       return nil, nil
     end
   end
@@ -514,14 +514,14 @@ class Student < ActiveRecord::Base
     mil_subjects = passed_student_subjects.select{|a| a.san_subject.kind=='Military'}
     grades = finalize_grade_set(mil_subjects, exam_period)
     if grades.size > 0
-      mil_gpa = grades.inject(0.0) { |sum, el| sum + el } / grades.size 
+      mil_gpa = grades.inject(0.0) { |sum, el| sum + el } / grades.size
       last_semester = SanSemester.find_by_academic_year_id_and_group_id(year.id, self.group.id)
       unless last_semester
         last_semester = SanSemester.find_by_academic_year_id_and_group_id(self.group.last_year.id, self.group.id)
       end
       mil_points = last_semester.mil_weight * mil_gpa
       return mil_gpa, mil_points
-    else 
+    else
       return nil, nil
     end
   end
@@ -583,7 +583,7 @@ class Student < ActiveRecord::Base
     group_last_year = self.group.last_year
     cum_gpa, cum_points, cum_uni_gpa, cum_mil_gpa, cum_mil_p_grade, cum_uni_points, cum_mil_points, cum_mil_performance_points = get_total_gpa_and_points
     cum_n_unfinished_subjects = get_total_number_of_transferred_subjects('b')
-    if n_unfinished_subjects>0 
+    if n_unfinished_subjects>0
       success_type = 0
     else
       if get_to_be_transferred_subjects_for_year(year,'b').length==0
@@ -593,11 +593,11 @@ class Student < ActiveRecord::Base
       end
     end
     smp = StudentMilitaryPerformance.find_or_create_by_student_id_and_academic_year_id(self.id, year.id)
-    smp.update_attributes({:group_id => self.group.id, :gpa=>gpa, :grade=>mil_p_grade, :univ_gpa=>uni_gpa, :mil_gpa=>mil_gpa, 
-                          :points=>points, :univ_points=>uni_points, :mil_points=>mil_points, :mil_p_points=>mil_performance_points, 
-                          :n_unfinished_subjects=>n_unfinished_subjects, :success_type=>success_type, :cum_gpa=>cum_gpa,
-                          :cum_points=>cum_points, :cum_univ_gpa=>cum_uni_gpa, :cum_mil_gpa=>cum_mil_gpa,
-                          :cum_mil_p_gpa=>cum_mil_p_grade, :cum_n_unfinished_subjects=>cum_n_unfinished_subjects})
+    smp.update_attributes({:group_id => self.group.id, :gpa=>gpa, :grade=>mil_p_grade, :univ_gpa=>uni_gpa, :mil_gpa=>mil_gpa,
+                           :points=>points, :univ_points=>uni_points, :mil_points=>mil_points, :mil_p_points=>mil_performance_points,
+                           :n_unfinished_subjects=>n_unfinished_subjects, :success_type=>success_type, :cum_gpa=>cum_gpa,
+                           :cum_points=>cum_points, :cum_univ_gpa=>cum_uni_gpa, :cum_mil_gpa=>cum_mil_gpa,
+                           :cum_mil_p_gpa=>cum_mil_p_grade, :cum_n_unfinished_subjects=>cum_n_unfinished_subjects})
     unless gpa.nil?
       if !group.graduated or group.graduation_date>year.end_date
         self.group.estimate_seniority(year, self.id)
@@ -683,9 +683,9 @@ class Student < ActiveRecord::Base
       mil_semester_grades = Array.new
       student_semester_grades.each do |s|
         if SanSubject.find(s.subject_id).kind=='University'
-           uni_semester_grades.push(s)
+          uni_semester_grades.push(s)
         else
-           mil_semester_grades.push(s)
+          mil_semester_grades.push(s)
         end
       end
       if kind=='all' or kind=='University'
@@ -700,7 +700,7 @@ class Student < ActiveRecord::Base
         tot_uni_subs += n_uni_subs
       end
       if kind=='all' or kind=='Military'
-        mil_grade_set = self.completelyfinalize_grade_set(mil_semester_grades)
+        mil_grade_set = self.finalize_grade_set(mil_semester_grades)
         n_mil_subs = mil_grade_set.nitems
         low_grades = mil_grade_set.select {|g| g!=nil and g<5 }
         n_unfinished_subjects += low_grades.length
@@ -744,12 +744,12 @@ class Student < ActiveRecord::Base
       else
         return nil, nil
       end
-    else 
+    else
       if tot_uni_subs>0
         uni_gpa = weighted_uni_sum/uni_weights_sum.to_f
         # This is just in case the weights per semester change (It shouldn't happen)
         avg_uni_weight = uni_weights_sum.to_f / tot_uni_subs
-        total_uni_sum = uni_gpa * avg_uni_weight 
+        total_uni_sum = uni_gpa * avg_uni_weight
       else
         uni_gpa = nil
         total_uni_sum = 0
@@ -759,7 +759,7 @@ class Student < ActiveRecord::Base
         mil_gpa = weighted_mil_sum / mil_weights_sum.to_f
         avg_mil_weight = mil_weights_sum.to_f / tot_mil_subs.to_f
         total_mil_sum = mil_gpa * avg_mil_weight
-      else 
+      else
         mil_gpa = nil
         total_mil_sum = 0
         avg_mil_weight = 0
@@ -768,7 +768,7 @@ class Student < ActiveRecord::Base
         mil_p_gpa = weighted_mil_p_sum / mil_p_weights_sum.to_f
         avg_mil_p_weight = mil_p_weights_sum / n_mil_p_semesters.to_f
         total_mil_p_sum = mil_p_gpa * avg_mil_p_weight
-      else 
+      else
         mil_p_gpa = nil
         total_mil_p_sum = 0
         avg_mil_p_weight = 0
@@ -786,7 +786,7 @@ class Student < ActiveRecord::Base
   end
 
   def subscribe_to_semester(semester)
-   
+
   end
 
   def create_user_and_validate
@@ -815,7 +815,7 @@ class Student < ActiveRecord::Base
       if check_changes.include?('immediate_contact_id') or check_changes.include?('admission_no')
         Guardian.shift_user(self)
       end
-      
+
     end
     self.email = "" if self.email.blank?
     return false unless errors.blank?
@@ -837,7 +837,7 @@ class Student < ActiveRecord::Base
   end
 
   def is_active_for_year(year)
-    if self.is_active 
+    if self.is_active
       return true
     else
       if (self.graduated or (not self.is_active)) and self.graduation_leave_date < year.end_date
@@ -995,7 +995,7 @@ class Student < ActiveRecord::Base
   def self.next_admission_no
     '' #stub for logic to be added later.
   end
-  
+
   def get_fee_strucure_elements(date)
     elements = FinanceFeeStructureElement.get_student_fee_components(self,date)
     elements[:all] + elements[:by_batch] + elements[:by_category] + elements[:by_batch_and_category]
@@ -1045,16 +1045,16 @@ class Student < ActiveRecord::Base
       #      end
       #
     end
- 
+
   end
-  
+
   def check_dependency
     return true if self.finance_transactions.present? or self.graduated_batches.present? or self.attendances.present? or self.finance_fees.present?
     return true if FedenaPlugin.check_dependency(self,"permanant").present?
     return false
   end
 
- def former_dependency
+  def former_dependency
     plugin_dependencies = FedenaPlugin.check_dependency(self,"former")
   end
 
@@ -1205,5 +1205,5 @@ class Student < ActiveRecord::Base
     return false
   end
 
-  
+
 end

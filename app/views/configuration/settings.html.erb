@@ -64,10 +64,11 @@
           <%= text_field :configuration, :edu_directors_full_name, :value => @config[:edu_directors_full_name] %>
         </div>
       </div>
-      <div class="label-field-pair">
-        <label for="configuration_currency_type"><%= t('school_college_address') %></label>
-        <div class="text-input-bg">
-          <%= text_field :configuration, :institution_address, :value => @config[:institution_address] %>
+      <div class="label-three-fields-pair">
+        <label for="configuration_currency_type"><%= t('school_superior') %></label>
+        <div class="short-text-input-bg">
+          <%= text_field :configuration, :superiors_rank, :value => @config[:superiors_rank], :width=>'100px' %>
+          <%= text_field :configuration, :superiors_full_name, :value => @config[:superiors_full_name] %>
         </div>
       </div>
       <div class="label-field-pair">
@@ -76,6 +77,9 @@
           <%= text_field :configuration, :institution_phone_no, :value => @config[:institution_phone_no] %>
         </div>
       </div>
+
+	<% if false %>
+	<%- # FIXME: Left out for schoool -%>
       <div class="label-field-pair">
         <label for="configuration_student_attendance_type"><%= t('student_attendance_type') %></label>
         <div class="text-input-bg">
@@ -83,6 +87,8 @@
             :selected => @config[:student_attendance_type] %>
         </div>
       </div>
+
+
       <div class="label-field-pair">
         <label for="configuration_currency_type"><%= t('finance_year_start_date') %></label>
         <div class="text-input-bg">
@@ -98,6 +104,7 @@
             :year_range => 15.years.ago..5.years.from_now, :readonly=>true, :popup=>"force" %>
         </div>
       </div>
+	<% end %>
 
       <div class="label-field-pair">
         <label for="configuration_student_attendance_type"><%= "#{t('language') } " %></label>
@@ -107,7 +114,7 @@
         </div>
       </div>
       <div class="label-field-pair">
-        <label for="configuration_student_attendance_type">Time Zone</label>
+        <label for="configuration_student_attendance_type">Χρονική Ζώνη</label>
         <div class="text-input-bg">
           <%= select :configuration, :time_zone, @time_zones.map{|t| ["#{t.name}(#{t.code}) - GMT#{t.difference_type}#{Time.at(t.time_difference).gmtime.strftime('%R')}",t.id]},:selected =>@config[:time_zone].to_i  %>
         </div>
@@ -120,18 +127,24 @@
           <%= select :configuration, :default_country, @countries.map {|c| [c.name, c.id]}, :selected=> selected_value.to_i %>
         </div>
       </div>
+	<% if false %>
+	<%- # FIXME: Left out for school -%>
       <div class="label-field-pair">
         <label for="configuration_currency_type"><%= t('currency_type') %></label>
         <div class="text-input-bg">
           <%= text_field :configuration, :currency_type, :value => @config[:currency_type] %>
         </div>
       </div>
+	<% end %>
       <div class="label-field-pair">
         <label for="configuration_currency_type"><%= t('upload_logo') %></label>
         <div class="text-input-bg">
           <%= file_field 'school_detail','school_logo', :size=>12 %>
         </div>
       </div>
+
+	<% if false %>
+	<%- #FIXME: Removed for the needs of the school -%>
       <div class="label-field-pair">
         <label for="configuration_currency_type"><%= t('network_state') %></label>
         <div class="text-input-bg">
@@ -155,6 +168,8 @@
         </div>
       </div>
 
+	
+		
       <% FedenaPlugin::REGISTERED_HOOKS[:general_settings_form].each do |mod| %>
         <%= render :partial=>mod.camelize.constantize.send("general_settings_form") %>
       <% end %>
@@ -184,6 +199,7 @@
         <br/>
         <%= render :partial=>mod.camelize.constantize.send("general_settings_checkbox") %>
       <% end %>
+	<% end %>
       <div id="submit-button">
         <%= submit_tag "► #{t('update')}" %>
       </div>

@@ -1,21 +1,21 @@
 <%-# Fedena
-#Copyright 2010 Foradian Technologies Private Limited
-#
-#This product includes software developed at
-#Project Fedena - http://www.projectfedena.org/
-#
-#Licensed under the Apache License, Version 2.0 (the "License");
-#you may not use this file except in compliance with the License.
-#You may obtain a copy of the License at
-#
-#  http://www.apache.org/licenses/LICENSE-2.0
-#
-#Unless required by applicable law or agreed to in writing,
-#software distributed under the License is distributed on an
-#"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-#KIND, either express or implied.  See the License for the
-#specific language governing permissions and limitations
-#under the License. -%>
+   #Copyright 2010 Foradian Technologies Private Limited
+   #
+   #This product includes software developed at
+   #Project Fedena - http://www.projectfedena.org/
+   #
+   #Licensed under the Apache License, Version 2.0 (the "License");
+   #you may not use this file except in compliance with the License.
+   #You may obtain a copy of the License at
+   #
+   #  http://www.apache.org/licenses/LICENSE-2.0
+   #
+   #Unless required by applicable law or agreed to in writing,
+   #software distributed under the License is distributed on an
+   #"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   #KIND, either express or implied.  See the License for the
+   #specific language governing permissions and limitations
+   #under the License. -%>
 <div id="content-header">
   <img src="/images/student_details/student_details_logo.jpg" />
   <h1><%= @student.full_name %></h1>
@@ -26,26 +26,26 @@
 </div>
 
 <div id="nav">
-   <ul>
+  <ul>
     <li><%= link_to "#{t('profile_text')}", :controller => "student",
-          :action => "profile", :id => @student.id %></li>
+                    :action => "profile", :id => @student.id %></li>
     <li><%= link_to "#{t('grades')}", :controller => 'student',
-       :action => 'grades', :id => @student.id %></li>
+                    :action => 'grades', :id => @student.id %></li>
     <li><%= link_to "Προηγούμενος",
-          {:controller => "student", :action => "year_grades", :id => @previous_student_id, :params=>{:year_id=>@year.id}} %>
+                    {:controller => "student", :action => "year_grades", :id => @previous_student_id, :params=>{:year_id=>@year.id}} %>
     <li><%= link_to "Επόμενος",
-          {:controller => "student", :action => "year_grades", :id => @next_student_id, :params=>{:year_id=>@year.id}} %>
+                    {:controller => "student", :action => "year_grades", :id => @next_student_id, :params=>{:year_id=>@year.id}} %>
     <li><%= link_to "Εκτύπωση",
-          {:controller => "student", :action => "grades_pdf", :id => @student.id} %>
-</li>
+                    {:controller => "student", :action => "grades_pdf", :id => @student.id} %>
+    </li>
   </ul>
 </div>
 
 <div id="page-yield">
 
-  <% unless flash[:notice].nil? %><p class="flash-msg"> <%= flash[:notice] %> </p><% end %>
+<% unless flash[:notice].nil? %><p class="flash-msg"> <%= flash[:notice] %> </p><% end %>
 
-  <% unless @year.blank? %>
+<% unless @year.blank? %>
     <table width="100%" id="listing">
       <tr class="tr-head">
         <td colspan="1"></td>
@@ -65,509 +65,509 @@
         <% g_i = @grades_info %>
         <td class="col-5"> <%= g_i[:year] %></td>
         <% if g_i[:uni_gpa].blank? %>
-          <% uni_gpa_string = "" %>
+            <% uni_gpa_string = "" %>
         <% else %>
-          <% uni_gpa_string = sprintf( "%.02f (%0.02f)" , g_i[:uni_gpa], g_i[:uni_points] ) %>
+            <% uni_gpa_string = sprintf( "%.02f (%0.02f)" , g_i[:uni_gpa], g_i[:uni_points] ) %>
         <% end %>
         <td class="col-5" align="center"> <%= uni_gpa_string %></td>
         <% if g_i[:mil_gpa].blank? %>
-          <% mil_gpa_string = "" %>
+            <% mil_gpa_string = "" %>
         <% else %>
-          <% mil_gpa_string = sprintf( "%.02f (%0.02f)" , g_i[:mil_gpa], g_i[:mil_points]) %>
+            <% mil_gpa_string = sprintf( "%.02f (%0.02f)" , g_i[:mil_gpa], g_i[:mil_points]) %>
         <%end%>
         <td class="col-5" align="center"> <%= mil_gpa_string %></td>
         <% if g_i[:mil_p_gpa] != nil %>
-          <% mil_p_gpa_string = sprintf( "%.02f (%0.02f)" , g_i[:mil_p_gpa], g_i[:mil_p_points]) %>
+            <% mil_p_gpa_string = sprintf( "%.02f (%0.02f)" , g_i[:mil_p_gpa], g_i[:mil_p_points]) %>
         <% else %>
-          <% mil_p_gpa_string = "" %>
+            <% mil_p_gpa_string = "" %>
         <% end %>
 
         <td class="col-5" align="center"> <%= mil_p_gpa_string %></td>
         <% if g_i[:total_points].blank? %>
-          <% global_sum_string = "" %>
+            <% global_sum_string = "" %>
         <% else %>
-          <% global_sum_string = sprintf( "%.02f" , g_i[:total_points]) %>
+            <% global_sum_string = sprintf( "%.02f" , g_i[:total_points]) %>
         <% end %>
         <td class="col-5" align="center"> <%= global_sum_string %></td>
         <% if g_i[:total_gpa].blank? %>
-          <% total_gpa_string = "" %>
+            <% total_gpa_string = "" %>
         <% else %>
-          <% total_gpa_string = sprintf( "%.02f" , g_i[:total_gpa]) %>
+            <% total_gpa_string = sprintf( "%.02f" , g_i[:total_gpa]) %>
         <% end %>
         <td class="col-5" align="center"> <%= total_gpa_string %></td>
         <td class="col-5" align="center"> <%= g_i[:seniority] %></td>
 
         <% if g_i[:n_transfer_subjects]!=nil and g_i[:n_transfer_subjects]>0 %>
-          <%  notes = g_i[:n_transfer_subjects].to_s + " Μεταφερόμενα" %>
+            <%  notes = g_i[:n_transfer_subjects].to_s + " Μεταφερόμενα" %>
         <%elsif g_i[:n_transfer_subjects].blank? %>
-          <% notes = "" %>
+            <% notes = "" %>
         <% else %>
-          <% if @student.gender == "m" %>
-            <% notes = "Περατώσας" %>
-          <% else %>
-            <% notes = "Περατώσασα" %>
-          <% end %>
+            <% if @student.gender == "m" %>
+                <% notes = "Περατώσας" %>
+            <% else %>
+                <% notes = "Περατώσασα" %>
+            <% end %>
         <% end %>
         <td class="col-5"> <%= notes %></td>
       </tr>
     </table>
 
 
-<% remote_form_for @student, :url=>{ :action=>'update_grades', :id=>@student.id, :year_id=>@year.id}, :html=>{:multipart=>true, :method=>:post} do |g_form| %>
+    <% remote_form_for @student, :url=>{ :action=>'update_grades', :id=>@student.id, :year_id=>@year.id}, :html=>{:multipart=>true, :method=>:post} do |g_form| %>
 
-  <%= g_form.error_messages %>
+        <%= g_form.error_messages %>
 
-  <% subject_index = 0 %>
-<% fields_for :students_subjects do |s_form| %>
-  <table width="100%" id="listing">
-    <tr class="tr-head">
-      <td colspan=7>Πανεπιστημιακά Μαθήματα</td>
-    </tr>
-    <tr class="tr-head">
-      <td>Α/Α</td>
-      <td>Τίτλος</td>
-      <td>Εξάμηνο</td>
-      <td>Εξέταση Α</td>
-      <td>Εξέταση Β</td>
-      <td>Εξέταση Γ</td>
-  </tr>
-  <tr class="tr-head">
-    <td/>
-      <td colspan=6 align="center">Υποχρεωτικά</td>
-    </tr>
+        <% subject_index = 0 %>
+        <% fields_for :students_subjects do |s_form| %>
+            <table width="100%" id="listing">
+            <tr class="tr-head">
+              <td colspan=7>Πανεπιστημιακά Μαθήματα</td>
+            </tr>
+            <tr class="tr-head">
+              <td>Α/Α</td>
+              <td>Τίτλος</td>
+              <td>Εξάμηνο</td>
+              <td>Εξέταση Α</td>
+              <td>Εξέταση Β</td>
+              <td>Εξέταση Γ</td>
+            </tr>
+            <tr class="tr-head">
+              <td/>
+              <td colspan=6 align="center">Υποχρεωτικά</td>
+            </tr>
 
-    <% @compulsory_university_student_subjects.sort!{|a, b| a.san_semester.number == b.san_semester.number ? (a.san_subject.title <=> b.san_subject.title ) : a.san_semester.number <=> b.san_semester.number }.each do |grade_set| %>
-      <% subject_index += 1 %>
-    <% subject_id = grade_set.subject_id %>
-    <% final_grade = nil %>
-    <% if grade_set.a_grade %>
-      <%final_grade = grade_set.a_grade%>
-    <% elsif grade_set.b_grade %>
-      <%final_grade = grade_set.b_grade%>
-    <%end%>
-    <% if grade_set.c_grade %>
-      <% final_grade = grade_set.c_grade %>
-    <%end%>
-    <% if final_grade!=nil and final_grade>4.5 %>
-      <tr class="tr-<%= cycle('odd', 'even') %>">
-    <% else %>
-        <tr class="tr-separate">
-    <% end %>
-        <td class="col-5"><%= subject_index %></td>
+            <% @compulsory_university_student_subjects.sort!{|a, b| a.san_semester.number == b.san_semester.number ? (a.san_subject.title <=> b.san_subject.title ) : a.san_semester.number <=> b.san_semester.number }.each do |grade_set| %>
+                <% subject_index += 1 %>
+                <% subject_id = grade_set.subject_id %>
+                <% final_grade = nil %>
+                <% if grade_set.a_grade %>
+                    <%final_grade = grade_set.a_grade%>
+                <% elsif grade_set.b_grade %>
+                    <%final_grade = grade_set.b_grade%>
+                <%end%>
+                <% if grade_set.c_grade %>
+                    <% final_grade = grade_set.c_grade %>
+                <%end%>
+                <% if final_grade!=nil and final_grade>4.5 %>
+                    <tr class="tr-<%= cycle('odd', 'even') %>">
+                <% else %>
+                    <tr class="tr-separate">
+                <% end %>
+                <td class="col-5"><%= subject_index %></td>
 
-        <td class="col-2">
-          <%= link_to SanSubject.find(subject_id).title,:controller => "san_subjects", :action => 'show', :id => subject_id %>
-        </td>
-        <td class="col-5" align="center">
-          <%= grade_set.semester_subjects.san_semester.number%>
-        </td>
-        <td class="col-5"><div class="label-field-pair2">
-                <div class="text-input-bg2">
+                <td class="col-2">
+                  <%= link_to SanSubject.find(subject_id).title,:controller => "san_subjects", :action => 'show', :id => subject_id %>
+                </td>
+                <td class="col-5" align="center">
+                  <%= grade_set.semester_subjects.san_semester.number%>
+                </td>
+                <td class="col-5"><div class="label-field-pair2">
+                  <div class="text-input-bg2">
                     <% if grade_set.a_grade.blank? %>
                         <%= s_form.text_field 'a_grade['+subject_id.to_s+']', :size => 4, :class => 'grade' %>
                     <% else %>
                         <%= s_form.text_field 'a_grade['+subject_id.to_s+']', :size => 4, :class => 'grade' , :value=>grade_set.a_grade%>
                     <%end%>
-            </div>
-          </div>
-        </td>
-        <td class="col-5">
-          <div class="label-field-pair2">
-              <div class="text-input-bg2">
-                    <% if grade_set.b_grade.blank? %>
-                        <%= s_form.text_field 'b_grade['+subject_id.to_s+']', :size => 4, :class => 'grade' %>
-                    <% else %>
-                        <%= s_form.text_field 'b_grade['+subject_id.to_s+']', :size => 4, :class => 'grade' , :value=>grade_set.b_grade%>
-                    <%end%>
-            </div>
-          </div>
-      </td>
-        <td class="col-5">
-          <div class="label-field-pair2">
-              <div class="text-input-bg2">
-                    <% if grade_set.c_grade.blank? %>
-                        <%= s_form.text_field 'c_grade['+subject_id.to_s+']', :size => 4, :class => 'grade' %>
-                    <% else %>
-                        <%= s_form.text_field 'c_grade['+subject_id.to_s+']', :size => 4, :class => 'grade' , :value=>grade_set.c_grade%>
-                    <%end%>
-            </div>
-          </div>
-        </td>
-      </tr>
-    <% end %>
-    <tr class="tr-head">
-      <td/>
-      <td colspan=6 align="center">Επιλογής</td>
-    </tr>
-  <% @optional_university_student_subjects.sort!{|a, b| a.san_semester.number == b.san_semester.number ? (a.san_subject.title <=> b.san_subject.title ) : a.san_semester.number <=> b.san_semester.number }.each do |grade_set| %>
-      <% subject_index += 1 %>
-    <% subject_id = grade_set.subject_id %>
-    <% final_grade = nil %>
-    <% if grade_set.a_grade %>
-      <%final_grade = grade_set.a_grade%>
-    <% elsif grade_set.b_grade %>
-      <%final_grade = grade_set.b_grade%>
-    <%end%>
-    <% if grade_set.c_grade %>
-      <% final_grade = grade_set.c_grade %>
-    <%end%>
-    <% if final_grade!=nil and final_grade>4.5 %>
-      <tr class="tr-<%= cycle('odd', 'even') %>">
-    <% else %>
-        <tr class="tr-separate">
-    <% end %>
-        <td class="col-5"><%= subject_index %></td>
-        <td class="col-2">
-          <%= link_to SanSubject.find(subject_id).title,:controller => "san_subjects", :action => 'show', :id => subject_id %>
-        </td>
-        <td class="col-5" align="center">
-          <%= grade_set.semester_subjects.san_semester.number%>
-        </td>
-        <td class="col-5"><div class="label-field-pair2">
-                <div class="text-input-bg2">
+                  </div>
+                </div>
+                </td>
+                <td class="col-5">
+                  <div class="label-field-pair2">
+                    <div class="text-input-bg2">
+                      <% if grade_set.b_grade.blank? %>
+                          <%= s_form.text_field 'b_grade['+subject_id.to_s+']', :size => 4, :class => 'grade' %>
+                      <% else %>
+                          <%= s_form.text_field 'b_grade['+subject_id.to_s+']', :size => 4, :class => 'grade' , :value=>grade_set.b_grade%>
+                      <%end%>
+                    </div>
+                  </div>
+                </td>
+                <td class="col-5">
+                  <div class="label-field-pair2">
+                    <div class="text-input-bg2">
+                      <% if grade_set.c_grade.blank? %>
+                          <%= s_form.text_field 'c_grade['+subject_id.to_s+']', :size => 4, :class => 'grade' %>
+                      <% else %>
+                          <%= s_form.text_field 'c_grade['+subject_id.to_s+']', :size => 4, :class => 'grade' , :value=>grade_set.c_grade%>
+                      <%end%>
+                    </div>
+                  </div>
+                </td>
+                </tr>
+            <% end %>
+            <tr class="tr-head">
+              <td/>
+              <td colspan=6 align="center">Επιλογής</td>
+            </tr>
+            <% @optional_university_student_subjects.sort!{|a, b| a.san_semester.number == b.san_semester.number ? (a.san_subject.title <=> b.san_subject.title ) : a.san_semester.number <=> b.san_semester.number }.each do |grade_set| %>
+                <% subject_index += 1 %>
+                <% subject_id = grade_set.subject_id %>
+                <% final_grade = nil %>
+                <% if grade_set.a_grade %>
+                    <%final_grade = grade_set.a_grade%>
+                <% elsif grade_set.b_grade %>
+                    <%final_grade = grade_set.b_grade%>
+                <%end%>
+                <% if grade_set.c_grade %>
+                    <% final_grade = grade_set.c_grade %>
+                <%end%>
+                <% if final_grade!=nil and final_grade>4.5 %>
+                    <tr class="tr-<%= cycle('odd', 'even') %>">
+                <% else %>
+                    <tr class="tr-separate">
+                <% end %>
+                <td class="col-5"><%= subject_index %></td>
+                <td class="col-2">
+                  <%= link_to SanSubject.find(subject_id).title,:controller => "san_subjects", :action => 'show', :id => subject_id %>
+                </td>
+                <td class="col-5" align="center">
+                  <%= grade_set.semester_subjects.san_semester.number%>
+                </td>
+                <td class="col-5"><div class="label-field-pair2">
+                  <div class="text-input-bg2">
                     <% if grade_set.a_grade.blank? %>
                         <%= s_form.text_field 'a_grade['+subject_id.to_s+']', :size => 4, :class => 'grade' %>
                     <% else %>
                         <%= s_form.text_field 'a_grade['+subject_id.to_s+']', :size => 4, :class => 'grade' , :value=>grade_set.a_grade%>
                     <%end%>
-            </div>
-          </div>
-        </td>
-        <td class="col-5">
-          <div class="label-field-pair2">
-              <div class="text-input-bg2">
-                    <% if grade_set.b_grade.blank? %>
-                        <%= s_form.text_field 'b_grade['+subject_id.to_s+']', :size => 4, :class => 'grade' %>
-                    <% else %>
-                        <%= s_form.text_field 'b_grade['+subject_id.to_s+']', :size => 4, :class => 'grade' , :value=>grade_set.b_grade%>
-                    <%end%>
-            </div>
-          </div>
-      </td>
-        <td class="col-5">
-          <div class="label-field-pair2">
-              <div class="text-input-bg2">
-                    <% if grade_set.c_grade.blank? %>
-                        <%= s_form.text_field 'c_grade['+subject_id.to_s+']', :size => 4, :class => 'grade' %>
-                    <% else %>
-                        <%= s_form.text_field 'c_grade['+subject_id.to_s+']', :size => 4, :class => 'grade' , :value=>grade_set.c_grade%>
-                    <%end%>
-            </div>
-          </div>
-        </td>
-      </tr>
-    <% end %>
-    <tr class="tr-head">
-      <td/>
-      <td colspan=6 align="center">Μεταφερόμενα</td>
-    </tr>
-  <% @transferred_university_student_subjects.sort!{|a, b| a.semester_subjects.san_semester.number == b.semester_subjects.san_semester.number ? (a.san_subject.title <=> b.san_subject.title ) : a.semester_subjects.san_semester.number <=> b.semester_subjects.san_semester.number }.each do |grade_set| %>
-      <% subject_index += 1 %>
-      <% subject_id = grade_set.subject_id %>
-    <% final_grade = nil %>
-    <% if grade_set.a_grade %>
-      <%final_grade = grade_set.a_grade%>
-    <% elsif grade_set.b_grade %>
-      <%final_grade = grade_set.b_grade%>
-    <%end%>
-    <% if grade_set.c_grade %>
-      <% final_grade = grade_set.c_grade %>
-    <%end%>
-    <% if final_grade!=nil and final_grade>4.5 %>
-      <tr class="tr-<%= cycle('odd', 'even') %>">
-    <% else %>
-        <tr class="tr-separate">
-        <% end %>
-        <td class="col-5"><%= subject_index %></td>
-        <td class="col-2">
-          <%= link_to SanSubject.find(subject_id).title,:controller => "san_subjects", :action => 'show', :id => subject_id %>
-        </td>
-        <td class="col-5" align="center">
-          <%= grade_set.semester_subjects.san_semester.number%>
-        </td>
-        <td class="col-5"><div class="label-field-pair2">
-                <div class="text-input-bg2">
+                  </div>
+                </div>
+                </td>
+                <td class="col-5">
+                  <div class="label-field-pair2">
+                    <div class="text-input-bg2">
+                      <% if grade_set.b_grade.blank? %>
+                          <%= s_form.text_field 'b_grade['+subject_id.to_s+']', :size => 4, :class => 'grade' %>
+                      <% else %>
+                          <%= s_form.text_field 'b_grade['+subject_id.to_s+']', :size => 4, :class => 'grade' , :value=>grade_set.b_grade%>
+                      <%end%>
+                    </div>
+                  </div>
+                </td>
+                <td class="col-5">
+                  <div class="label-field-pair2">
+                    <div class="text-input-bg2">
+                      <% if grade_set.c_grade.blank? %>
+                          <%= s_form.text_field 'c_grade['+subject_id.to_s+']', :size => 4, :class => 'grade' %>
+                      <% else %>
+                          <%= s_form.text_field 'c_grade['+subject_id.to_s+']', :size => 4, :class => 'grade' , :value=>grade_set.c_grade%>
+                      <%end%>
+                    </div>
+                  </div>
+                </td>
+                </tr>
+            <% end %>
+            <tr class="tr-head">
+              <td/>
+              <td colspan=6 align="center">Μεταφερόμενα</td>
+            </tr>
+            <% @transferred_university_student_subjects.sort!{|a, b| a.semester_subjects.san_semester.number == b.semester_subjects.san_semester.number ? (a.san_subject.title <=> b.san_subject.title ) : a.semester_subjects.san_semester.number <=> b.semester_subjects.san_semester.number }.each do |grade_set| %>
+                <% subject_index += 1 %>
+                <% subject_id = grade_set.subject_id %>
+                <% final_grade = nil %>
+                <% if grade_set.a_grade %>
+                    <%final_grade = grade_set.a_grade%>
+                <% elsif grade_set.b_grade %>
+                    <%final_grade = grade_set.b_grade%>
+                <%end%>
+                <% if grade_set.c_grade %>
+                    <% final_grade = grade_set.c_grade %>
+                <%end%>
+                <% if final_grade!=nil and final_grade>4.5 %>
+                    <tr class="tr-<%= cycle('odd', 'even') %>">
+                <% else %>
+                    <tr class="tr-separate">
+                <% end %>
+                <td class="col-5"><%= subject_index %></td>
+                <td class="col-2">
+                  <%= link_to SanSubject.find(subject_id).title,:controller => "san_subjects", :action => 'show', :id => subject_id %>
+                </td>
+                <td class="col-5" align="center">
+                  <%= grade_set.semester_subjects.san_semester.number%>
+                </td>
+                <td class="col-5"><div class="label-field-pair2">
+                  <div class="text-input-bg2">
                     <% if grade_set.a_grade.blank? %>
                         <%= s_form.text_field 'a_grade['+subject_id.to_s+']', :size => 4, :class => 'grade' %>
                     <% else %>
                         <%= s_form.text_field 'a_grade['+subject_id.to_s+']', :size => 4, :class => 'grade' , :value=>grade_set.a_grade%>
                     <%end%>
-            </div>
-          </div>
-        </td>
-        <td class="col-5">
-          <div class="label-field-pair2">
-              <div class="text-input-bg2">
-                    <% if grade_set.b_grade.blank? %>
-                        <%= s_form.text_field 'b_grade['+subject_id.to_s+']', :size => 4, :class => 'grade' %>
-                    <% else %>
-                        <%= s_form.text_field 'b_grade['+subject_id.to_s+']', :size => 4, :class => 'grade' , :value=>grade_set.b_grade%>
-                    <%end%>
-            </div>
-          </div>
-      </td>
-        <td class="col-5">
-          <div class="label-field-pair2">
-              <div class="text-input-bg2">
-                    <% if grade_set.c_grade.blank? %>
-                        <%= s_form.text_field 'c_grade['+subject_id.to_s+']', :size => 4, :class => 'grade' %>
-                    <% else %>
-                        <%= s_form.text_field 'c_grade['+subject_id.to_s+']', :size => 4, :class => 'grade' , :value=>grade_set.c_grade%>
-                    <%end%>
-            </div>
-          </div>
-        </td>
-      </tr>
-    <% end %>
+                  </div>
+                </div>
+                </td>
+                <td class="col-5">
+                  <div class="label-field-pair2">
+                    <div class="text-input-bg2">
+                      <% if grade_set.b_grade.blank? %>
+                          <%= s_form.text_field 'b_grade['+subject_id.to_s+']', :size => 4, :class => 'grade' %>
+                      <% else %>
+                          <%= s_form.text_field 'b_grade['+subject_id.to_s+']', :size => 4, :class => 'grade' , :value=>grade_set.b_grade%>
+                      <%end%>
+                    </div>
+                  </div>
+                </td>
+                <td class="col-5">
+                  <div class="label-field-pair2">
+                    <div class="text-input-bg2">
+                      <% if grade_set.c_grade.blank? %>
+                          <%= s_form.text_field 'c_grade['+subject_id.to_s+']', :size => 4, :class => 'grade' %>
+                      <% else %>
+                          <%= s_form.text_field 'c_grade['+subject_id.to_s+']', :size => 4, :class => 'grade' , :value=>grade_set.c_grade%>
+                      <%end%>
+                    </div>
+                  </div>
+                </td>
+                </tr>
+            <% end %>
 
-      <tr class="tr-head">
-        <td></td>
-        <td/>
-        <td colspan="3">Μαθήματα με Προβιβάσιμο Βαθμό</td>
-        <% if @grades_info[:n_uni_passed].blank? %>
-          <% university_gpa_string = "" %>
-        <% else %>
-          <% university_gpa_string = sprintf( "%d" , @grades_info[:n_uni_passed] ) %>
+            <tr class="tr-head">
+              <td></td>
+              <td/>
+              <td colspan="3">Μαθήματα με Προβιβάσιμο Βαθμό</td>
+              <% if @grades_info[:n_uni_passed].blank? %>
+                  <% university_gpa_string = "" %>
+              <% else %>
+                  <% university_gpa_string = sprintf( "%d" , @grades_info[:n_uni_passed] ) %>
+              <% end %>
+              <td align="center"><%= university_gpa_string %></td>
+            </tr>
+
+            <tr class="tr-head">
+              <td></td>
+              <td/>
+              <td colspan="3">Μέσος Όρος Πανεπιστημιακών</td>
+              <% if @grades_info[:uni_gpa].blank? %>
+                  <% university_gpa_string = "" %>
+              <% else %>
+                  <% university_gpa_string = sprintf( "%.02f" , @grades_info[:uni_gpa] ) %>
+              <% end %>
+              <td align="center"><%= university_gpa_string %></td>
+            </tr>
+            <tr class="tr-head">
+              <td></td>
+              <td/>
+              <td colspan="3">Μόρια Πανεπιστημιακών</td>
+              <% if @grades_info[:uni_points].blank? %>
+                  <% university_gpa_string = "" %>
+              <% else %>
+                  <% university_gpa_string = sprintf( "%.02f" , @grades_info[:uni_points] ) %>
+              <% end %>
+              <td align="center"><%= university_gpa_string %></td>
+            </tr>
+
+            </table>
+
+            <table width="100%" id="listing">
+              <tr class="tr-head">
+                <td colspan=6>Στρατιωτικά Μαθήματα</td>
+              </tr>
+              <tr class="tr-head">
+                <td>Α/Α</td>
+                <td>Τίτλος</td>
+                <td>Εξάμηνο</td>
+                <td>Εξέταση Α</td>
+                <td>Εξέταση Β</td>
+                <td>Εξέταση Γ</td>
+              </tr>
+              <% subject_index = 0 %>
+
+              <% @standard_military_student_subjects.sort!{|a, b| a.san_semester.number == b.san_semester.number ? (a.san_subject.title <=> b.san_subject.title ) : a.san_semester.number <=> b.san_semester.number }.each do |grade_set| %>
+                  <% subject_index += 1 %>
+                  <% subject_id = grade_set.subject_id %>
+                  <% final_grade = nil %>
+                  <% if grade_set.a_grade %>
+                      <%final_grade = grade_set.a_grade%>
+                  <% elsif grade_set.b_grade %>
+                      <%final_grade = grade_set.b_grade%>
+                  <%end%>
+                  <% if grade_set.c_grade %>
+                      <% final_grade = grade_set.c_grade %>
+                  <%end%>
+                  <% if final_grade!=nil and final_grade>4.5 %>
+                      <tr class="tr-<%= cycle('odd', 'even') %>">
+                  <% else %>
+                      <tr class="tr-separate">
+                  <% end %>
+                  <td class="col-5"><%= subject_index %></td>
+                  <td class="col-2">
+                    <%= link_to SanSubject.find(subject_id).title,:controller => "san_subjects", :action => 'show', :id => subject_id %>
+                  </td>
+                  <td class="col-5" align="center">
+                    <%= grade_set.semester_subjects.san_semester.number %>
+                  </td>
+                  <td class="col-5"><div class="label-field-pair2">
+                    <div class="text-input-bg2">
+                      <% if grade_set.a_grade.blank? %>
+                          <%= s_form.text_field 'a_grade['+subject_id.to_s+']', :size => 4, :class => 'grade' %>
+                      <% else %>
+                          <%= s_form.text_field 'a_grade['+subject_id.to_s+']', :size => 4, :class => 'grade' , :value=>grade_set.a_grade%>
+                      <%end%>
+                    </div>
+                  </div>
+                  </td>
+                  <td class="col-5">
+                    <div class="label-field-pair2">
+                      <div class="text-input-bg2">
+                        <% if grade_set.b_grade.blank? %>
+                            <%= s_form.text_field 'b_grade['+subject_id.to_s+']', :size => 4, :class => 'grade' %>
+                        <% else %>
+                            <%= s_form.text_field 'b_grade['+subject_id.to_s+']', :size => 4, :class => 'grade' , :value=>grade_set.b_grade%>
+                        <%end%>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="col-5">
+                    <div class="label-field-pair2">
+                      <div class="text-input-bg2">
+                        <% if grade_set.c_grade.blank? %>
+                            <%= s_form.text_field 'c_grade['+subject_id.to_s+']', :size => 4, :class => 'grade' %>
+                        <% else %>
+                            <%= s_form.text_field 'c_grade['+subject_id.to_s+']', :size => 4, :class => 'grade' , :value=>grade_set.c_grade%>
+                        <%end%>
+                      </div>
+                    </div>
+                  </td>
+                  </tr>
+              <% end %>
+              <tr class="tr-head">
+                <td/>
+                <td colspan=6 align="center">Μεταφερόμενα</td>
+              </tr>
+              <% @transferred_military_student_subjects.sort!{|a, b| a.san_semester.number == b.san_semester.number ? (a.san_subject.title <=> b.san_subject.title ) : a.san_semester.number <=> b.san_semester.number }.each do |grade_set| %>
+                  <% subject_id = grade_set.subject_id %>
+                  <% subject_index += 1%>
+                  <% final_grade = nil %>
+                  <% if grade_set.a_grade %>
+                      <%final_grade = grade_set.a_grade%>
+                  <% elsif grade_set.b_grade %>
+                      <%final_grade = grade_set.b_grade%>
+                  <%end%>
+                  <% if grade_set.c_grade %>
+                      <% final_grade = grade_set.c_grade %>
+                  <%end%>
+                  <% if final_grade!=nil and final_grade>4.5 %>
+                      <tr class="tr-<%= cycle('odd', 'even') %>">
+                  <% else %>
+                      <tr class="tr-separate">
+                  <% end %>
+                  <td class="col-5"><%= subject_index %></td>
+                  <td class="col-2">
+                    <%= link_to SanSubject.find(subject_id).title,:controller => "san_subjects", :action => 'show', :id => subject_id %>
+                  </td>
+                  <td class="col-5" align="center">
+                    <%= grade_set.semester_subjects.san_semester.number%>
+                  </td>
+                  <td class="col-5"><div class="label-field-pair2">
+                    <div class="text-input-bg2">
+                      <% if grade_set.a_grade.blank? %>
+                          <%= s_form.text_field 'a_grade['+subject_id.to_s+']', :size => 4, :class => 'grade' %>
+                      <% else %>
+                          <%= s_form.text_field 'a_grade['+subject_id.to_s+']', :size => 4, :class => 'grade' , :value=>grade_set.a_grade%>
+                      <%end%>
+                    </div>
+                  </div>
+                  </td>
+                  <td class="col-5">
+                    <div class="label-field-pair2">
+                      <div class="text-input-bg2">
+                        <% if grade_set.b_grade.blank? %>
+                            <%= s_form.text_field 'b_grade['+subject_id.to_s+']', :size => 4, :class => 'grade' %>
+                        <% else %>
+                            <%= s_form.text_field 'b_grade['+subject_id.to_s+']', :size => 4, :class => 'grade' , :value=>grade_set.b_grade%>
+                        <%end%>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="col-5">
+                    <div class="label-field-pair2">
+                      <div class="text-input-bg2">
+                        <% if grade_set.c_grade.blank? %>
+                            <%= s_form.text_field 'c_grade['+subject_id.to_s+']', :size => 4, :class => 'grade' %>
+                        <% else %>
+                            <%= s_form.text_field 'c_grade['+subject_id.to_s+']', :size => 4, :class => 'grade' , :value=>grade_set.c_grade%>
+                        <%end%>
+                      </div>
+                    </div>
+                  </td>
+                  </tr>
+              <% end %>
+
+
+              <tr class="tr-head">
+                <td></td>
+                <td/>
+                <td colspan="3">Μαθήματα με Προβιβάσιμο Βαθμό</td>
+                <% if @grades_info[:n_uni_passed].blank? %>
+                    <% mil__string = "" %>
+                <% else %>
+                    <% mil_string = sprintf( "%d" , @grades_info[:n_mil_passed] ) %>
+                <% end %>
+                <td align="center"><%= mil_string %></td>
+              </tr>
+
+
+              <tr class="tr-head">
+                <td></td>
+                <td/>
+                <td colspan="3">Μέσος Όρος Στρατιωτικών</td>
+                <% if @grades_info[:mil_gpa].blank? %>
+                    <% military_gpa_string = "" %>
+                <% else %>
+                    <% military_gpa_string = sprintf( "%.02f" , @grades_info[:mil_gpa] ) %>
+                <% end %>
+                <td align="center"><%= military_gpa_string %></td>
+              </tr>
+              <tr class="tr-head">
+                <td/>
+                <td></td>
+                <td colspan="3">Μόρια Στρατιωτικών</td>
+                <% if @grades_info[:mil_points].blank? %>
+                    <% military_gpa_string = "" %>
+                <% else %>
+                    <% military_gpa_string = sprintf( "%.02f" , @grades_info[:mil_points] ) %>
+                <% end %>
+                <td align="center"><%= military_gpa_string %></td>
+              </tr>
+
+
+            </table>
         <% end %>
-        <td align="center"><%= university_gpa_string %></td>
-      </tr>
+        <p/>
 
-      <tr class="tr-head">
-        <td></td>
-        <td/>
-        <td colspan="3">Μέσος Όρος Πανεπιστημιακών</td>
-        <% if @grades_info[:uni_gpa].blank? %>
-          <% university_gpa_string = "" %>
-        <% else %>
-          <% university_gpa_string = sprintf( "%.02f" , @grades_info[:uni_gpa] ) %>
-        <% end %>
-        <td align="center"><%= university_gpa_string %></td>
-      </tr>
-      <tr class="tr-head">
-        <td></td>
-        <td/>
-        <td colspan="3">Μόρια Πανεπιστημιακών</td>
-        <% if @grades_info[:uni_points].blank? %>
-          <% university_gpa_string = "" %>
-        <% else %>
-          <% university_gpa_string = sprintf( "%.02f" , @grades_info[:uni_points] ) %>
-        <% end %>
-        <td align="center"><%= university_gpa_string %></td>
-      </tr>
-
-  </table>
-
-  <table width="100%" id="listing">
-    <tr class="tr-head">
-      <td colspan=6>Στρατιωτικά Μαθήματα</td>
-    </tr>
-    <tr class="tr-head">
-      <td>Α/Α</td>
-      <td>Τίτλος</td>
-      <td>Εξάμηνο</td>
-      <td>Εξέταση Α</td>
-      <td>Εξέταση Β</td>
-      <td>Εξέταση Γ</td>
-  </tr>
-  <% subject_index = 0 %>
-
-  <% @standard_military_student_subjects.sort!{|a, b| a.san_semester.number == b.san_semester.number ? (a.san_subject.title <=> b.san_subject.title ) : a.san_semester.number <=> b.san_semester.number }.each do |grade_set| %>
-    <% subject_index += 1 %>
-    <% subject_id = grade_set.subject_id %>
-    <% final_grade = nil %>
-    <% if grade_set.a_grade %>
-      <%final_grade = grade_set.a_grade%>
-    <% elsif grade_set.b_grade %>
-      <%final_grade = grade_set.b_grade%>
-    <%end%>
-    <% if grade_set.c_grade %>
-      <% final_grade = grade_set.c_grade %>
-    <%end%>
-    <% if final_grade!=nil and final_grade>4.5 %>
-      <tr class="tr-<%= cycle('odd', 'even') %>">
-    <% else %>
-        <tr class="tr-separate">
-    <% end %>
-        <td class="col-5"><%= subject_index %></td>
-        <td class="col-2">
-          <%= link_to SanSubject.find(subject_id).title,:controller => "san_subjects", :action => 'show', :id => subject_id %>
-        </td>
-        <td class="col-5" align="center">
-          <%= grade_set.semester_subjects.san_semester.number %>
-        </td>
-        <td class="col-5"><div class="label-field-pair2">
-                <div class="text-input-bg2">
-                    <% if grade_set.a_grade.blank? %>
-                        <%= s_form.text_field 'a_grade['+subject_id.to_s+']', :size => 4, :class => 'grade' %>
-                    <% else %>
-                        <%= s_form.text_field 'a_grade['+subject_id.to_s+']', :size => 4, :class => 'grade' , :value=>grade_set.a_grade%>
-                    <%end%>
-            </div>
-          </div>
-        </td>
-        <td class="col-5">
-          <div class="label-field-pair2">
-              <div class="text-input-bg2">
-                    <% if grade_set.b_grade.blank? %>
-                        <%= s_form.text_field 'b_grade['+subject_id.to_s+']', :size => 4, :class => 'grade' %>
-                    <% else %>
-                        <%= s_form.text_field 'b_grade['+subject_id.to_s+']', :size => 4, :class => 'grade' , :value=>grade_set.b_grade%>
-                    <%end%>
-            </div>
-          </div>
-      </td>
-        <td class="col-5">
-          <div class="label-field-pair2">
-              <div class="text-input-bg2">
-                    <% if grade_set.c_grade.blank? %>
-                        <%= s_form.text_field 'c_grade['+subject_id.to_s+']', :size => 4, :class => 'grade' %>
-                    <% else %>
-                        <%= s_form.text_field 'c_grade['+subject_id.to_s+']', :size => 4, :class => 'grade' , :value=>grade_set.c_grade%>
-                    <%end%>
-            </div>
-          </div>
-        </td>
-    </tr>
-  <% end %>
-  <tr class="tr-head">
-  <td/>
-      <td colspan=6 align="center">Μεταφερόμενα</td>
-    </tr>
-  <% @transferred_military_student_subjects.sort!{|a, b| a.san_semester.number == b.san_semester.number ? (a.san_subject.title <=> b.san_subject.title ) : a.san_semester.number <=> b.san_semester.number }.each do |grade_set| %>
-      <% subject_id = grade_set.subject_id %>
-    <% subject_index += 1%>
-    <% final_grade = nil %>
-    <% if grade_set.a_grade %>
-      <%final_grade = grade_set.a_grade%>
-    <% elsif grade_set.b_grade %>
-      <%final_grade = grade_set.b_grade%>
-    <%end%>
-    <% if grade_set.c_grade %>
-      <% final_grade = grade_set.c_grade %>
-    <%end%>
-    <% if final_grade!=nil and final_grade>4.5 %>
-      <tr class="tr-<%= cycle('odd', 'even') %>">
-    <% else %>
-        <tr class="tr-separate">
-    <% end %>
-        <td class="col-5"><%= subject_index %></td>
-        <td class="col-2">
-          <%= link_to SanSubject.find(subject_id).title,:controller => "san_subjects", :action => 'show', :id => subject_id %>
-        </td>
-        <td class="col-5" align="center">
-          <%= grade_set.semester_subjects.san_semester.number%>
-        </td>
-        <td class="col-5"><div class="label-field-pair2">
-                <div class="text-input-bg2">
-                    <% if grade_set.a_grade.blank? %>
-                        <%= s_form.text_field 'a_grade['+subject_id.to_s+']', :size => 4, :class => 'grade' %>
-                    <% else %>
-                        <%= s_form.text_field 'a_grade['+subject_id.to_s+']', :size => 4, :class => 'grade' , :value=>grade_set.a_grade%>
-                    <%end%>
-            </div>
-          </div>
-        </td>
-        <td class="col-5">
-          <div class="label-field-pair2">
-              <div class="text-input-bg2">
-                    <% if grade_set.b_grade.blank? %>
-                        <%= s_form.text_field 'b_grade['+subject_id.to_s+']', :size => 4, :class => 'grade' %>
-                    <% else %>
-                        <%= s_form.text_field 'b_grade['+subject_id.to_s+']', :size => 4, :class => 'grade' , :value=>grade_set.b_grade%>
-                    <%end%>
-            </div>
-          </div>
-      </td>
-        <td class="col-5">
-          <div class="label-field-pair2">
-              <div class="text-input-bg2">
-                    <% if grade_set.c_grade.blank? %>
-                        <%= s_form.text_field 'c_grade['+subject_id.to_s+']', :size => 4, :class => 'grade' %>
-                    <% else %>
-                        <%= s_form.text_field 'c_grade['+subject_id.to_s+']', :size => 4, :class => 'grade' , :value=>grade_set.c_grade%>
-                    <%end%>
-            </div>
-          </div>
-        </td>
-      </tr>
-    <% end %>
-
-
-      <tr class="tr-head">
-        <td></td>
-        <td/>
-        <td colspan="3">Μαθήματα με Προβιβάσιμο Βαθμό</td>
-        <% if @grades_info[:n_uni_passed].blank? %>
-          <% mil__string = "" %>
-        <% else %>
-          <% mil_string = sprintf( "%d" , @grades_info[:n_mil_passed] ) %>
-        <% end %>
-        <td align="center"><%= mil_string %></td>
-      </tr>
-
-
-      <tr class="tr-head">
-        <td></td>
-        <td/>
-        <td colspan="3">Μέσος Όρος Στρατιωτικών</td>
-        <% if @grades_info[:mil_gpa].blank? %>
-          <% military_gpa_string = "" %>
-        <% else %>
-          <% military_gpa_string = sprintf( "%.02f" , @grades_info[:mil_gpa] ) %>
-        <% end %>
-        <td align="center"><%= military_gpa_string %></td>
-      </tr>
-       <tr class="tr-head">
-        <td/>
-        <td></td>
-        <td colspan="3">Μόρια Στρατιωτικών</td>
-        <% if @grades_info[:mil_points].blank? %>
-          <% military_gpa_string = "" %>
-        <% else %>
-          <% military_gpa_string = sprintf( "%.02f" , @grades_info[:mil_points] ) %>
-        <% end %>
-        <td align="center"><%= military_gpa_string %></td>
-      </tr>
- 
-
-</table>
-<% end %>
-<p/>
-
-<% fields_for :student_military_performances do |s_form| %>
-<table width="35%" id="listing">
-    <tr class="tr-head">
-      <td colspan=2>Στρατιωτικά Προσόντα/Διαγωγή</td>
-    </tr>
-    <tr class="tr-head">
-      <td>Βαθμός</td>
-        <td class="col-5"><div class="label-field-pair2">
-                <div class="text-input-bg2">
+        <% fields_for :student_military_performances do |s_form| %>
+            <table width="35%" id="listing">
+              <tr class="tr-head">
+                <td colspan=2>Στρατιωτικά Προσόντα/Διαγωγή</td>
+              </tr>
+              <tr class="tr-head">
+                <td>Βαθμός</td>
+                <td class="col-5"><div class="label-field-pair2">
+                  <div class="text-input-bg2">
                     <% if @student_mil_perf.blank? or @student_mil_perf.grade.blank? %>
                         <%= s_form.text_field 'grade['+@year.id.to_s+']', :size => 4, :class => 'grade' %>
                     <% else %>
                         <%= s_form.text_field 'grade['+@year.id.to_s+']', :size => 4, :class => 'grade' , :value=>@student_mil_perf.grade%>
                     <% end %>
-            </div>
-          </div>
-        </td>
-       <tr class="tr-head">
-        <td>Μόρια</td>
-        <% if @grades_info[:mil_p_points].blank? %>
-          <% military_gpa_string = "" %>
-        <% else %>
-          <% military_gpa_string = sprintf( "%.02f" , @grades_info[:mil_p_points] ) %>
+                  </div>
+                </div>
+                </td>
+              <tr class="tr-head">
+                <td>Μόρια</td>
+                <% if @grades_info[:mil_p_points].blank? %>
+                    <% military_gpa_string = "" %>
+                <% else %>
+                    <% military_gpa_string = sprintf( "%.02f" , @grades_info[:mil_p_points] ) %>
+                <% end %>
+                <td align="center"><%= military_gpa_string %></td>
+              </tr>
+
+              </tr>
+
+            </table>
         <% end %>
-        <td align="center"><%= military_gpa_string %></td>
-      </tr>
+        <p/>
+        <%= submit_tag "", :value => "► Αποθήκευση Αλλαγών", :class => "submit_button2" %>
 
-  </tr>
-
-    </table>
-  <% end %>
-<p/>
-  <%= submit_tag "", :value => "► Αποθήκευση Αλλαγών", :class => "submit_button2" %>
-
-  <% end %>
+    <% end %>
 <% end %>
 </div>

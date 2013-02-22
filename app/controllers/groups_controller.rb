@@ -3,9 +3,9 @@ class GroupsController < ApplicationController
   before_filter :login_required
 
   def debug
-      @group = Group.find(params[:id])
-      @student_subjects_grades = StudentsSubject.find_all_by_subject_id_and_group_id("4", "2")
-      
+    @group = Group.find(params[:id])
+    @student_subjects_grades = StudentsSubject.find_all_by_subject_id_and_group_id("4", "2")
+
   end
   def show_lists
     group = Group.find(params[:id])
@@ -56,7 +56,7 @@ class GroupsController < ApplicationController
     end
 
     render(:update) do |page|
-        page.replace_html 'list', :partial=>'hierarchy_list'
+      page.replace_html 'list', :partial=>'hierarchy_list'
     end
   end
   def lists
@@ -126,6 +126,7 @@ class GroupsController < ApplicationController
       @layout = 'Portrait'
       @show_notes = true
       @list_title = 'Πίνακας Αποφοιτώντων Σπουδαστών'
+      @students_per_page = 20
       @show_all_grades = false
       @show_final_grade = false
       @successful_students, @undef_students = @group.get_overall_seniority_list
@@ -144,53 +145,53 @@ class GroupsController < ApplicationController
     edu_directors_full_name = Configuration.find_by_config_key('EduDirectorsFullName').config_value
     edu_directors_rank = Configuration.find_by_config_key('EduDirectorsRank').config_value
     edu_directors_arms = Configuration.find_by_config_key('EduDirectorsArms').config_value
-  
+
     directors_full_name_last_char = directors_full_name.split('').last
-   if directors_full_name_last_char=='Σ' or directors_full_name_last_char=='ς' 
-     @directors_gender = 'm'
-   else
-     @directors_gender = 'f'
-   end
-   @directors_full_rank_and_name = "%s (%s) %s" % [directors_rank, directors_arms, directors_full_name]
+    if directors_full_name_last_char=='Σ' or directors_full_name_last_char=='ς'
+      @directors_gender = 'm'
+    else
+      @directors_gender = 'f'
+    end
+    @directors_full_rank_and_name = "%s (%s) %s" % [directors_rank, directors_arms, directors_full_name]
 
     edu_directors_full_name_last_char = edu_directors_full_name.split('').last
-   if edu_directors_full_name_last_char=='Σ' or edu_directors_full_name_last_char=='ς' 
-     @edu_directors_gender = 'm'
-   else
-     @edu_directors_gender = 'f'
-   end
-   @edu_directors_full_rank_and_name = "%s (%s) %s" % [edu_directors_rank, edu_directors_arms, edu_directors_full_name]
-   respond_to do |format|
-     if params[:commit]=='Εκτύπωση (pdf)'
-       format.pdf do
-         render :pdf=>'hierarchy_list', :template=>'groups/hierarchy_list_pdf.erb', :orientation=>@layout
-       end
-     elsif params[:commit]=='Εξαγωγή (xls)'
-       format.xls {
-         require 'spreadsheet'
-         students = Spreadsheet::Workbook.new
-         list = students.create_worksheet :name=>@list_title
-         list.row(0).concat %w{Α/Α ΑΜ Ονοματεπώνυμο Πατρώνυμο Πανεπ. Σχολή Προσόντα Μόρια Βαθμός Μεταφερόμενα}
-         @all_students.each_with_index { |student, i|
-           list.row(i+1).push student[:index],student[:admission_no],student[:full_name],student[:father], student[:uni_gpa], student[:mil_gpa], student[:mil_p_gpa], student[:total_sum], student[:gpa], student[:n_unfinished_subjects]
-         }
-         header_format = Spreadsheet::Format.new :color=>:green, :weight=>:bold
-         list.row(0).default_format = header_format
-         #output to blob object
-         blob = StringIO.new('')
-         students.write blob
-         #respond with blob object as a file
-        send_data blob.string, :type=>:xls, :filename=>'list.xls'
-       }
-     end
-   end
+    if edu_directors_full_name_last_char=='Σ' or edu_directors_full_name_last_char=='ς'
+      @edu_directors_gender = 'm'
+    else
+      @edu_directors_gender = 'f'
+    end
+    @edu_directors_full_rank_and_name = "%s (%s) %s" % [edu_directors_rank, edu_directors_arms, edu_directors_full_name]
+    respond_to do |format|
+      if params[:commit]=='Εκτύπωση (pdf)'
+        format.pdf do
+          render :pdf=>'hierarchy_list', :template=>'groups/hierarchy_list_pdf.erb', :orientation=>@layout
+        end
+      elsif params[:commit]=='Εξαγωγή (xls)'
+        format.xls {
+          require 'spreadsheet'
+          students = Spreadsheet::Workbook.new
+          list = students.create_worksheet :name=>@list_title
+          list.row(0).concat %w{Α/Α ΑΜ Ονοματεπώνυμο Πατρώνυμο Πανεπ. Σχολή Προσόντα Μόρια Βαθμός Μεταφερόμενα}
+          @all_students.each_with_index { |student, i|
+            list.row(i+1).push student[:index],student[:admission_no],student[:full_name],student[:father], student[:uni_gpa], student[:mil_gpa], student[:mil_p_gpa], student[:total_sum], student[:gpa], student[:n_unfinished_subjects]
+          }
+          header_format = Spreadsheet::Format.new :color=>:green, :weight=>:bold
+          list.row(0).default_format = header_format
+          #output to blob object
+          blob = StringIO.new('')
+          students.write blob
+          #respond with blob object as a file
+          send_data blob.string, :type=>:xls, :filename=>'list.xls'
+        }
+      end
+    end
   end
 
   def grades
-      @group_semesters = SanSemester.find_all_by_group_id(params[:id])
+    @group_semesters = SanSemester.find_all_by_group_id(params[:id])
   end
 
-  def update_grades 
+  def update_grades
     @student_subjects_grades = StudentsSubject.find_all_by_subject_id_and_group_id(params[:students_subjects][:subject_id], params[:id])
     @group=Group.find(params[:id])
     @student_subjects_grades.each do |grade_set|
@@ -201,8 +202,8 @@ class GroupsController < ApplicationController
       grade_set.update_attributes({:a_grade=>a_grade, :b_grade=>b_grade, :c_grade=>c_grade})
     end
     render(:update) do |page|
-    	flash[:notice] = 'Η ενημέρωση των βαθμών πραγματοποιήθηκε επιτυχώς.'
-        page.replace_html 'grades', :partial=> 'grades'
+      flash[:notice] = 'Η ενημέρωση των βαθμών πραγματοποιήθηκε επιτυχώς.'
+      page.replace_html 'grades', :partial=> 'grades'
     end
   end
 
@@ -218,14 +219,14 @@ class GroupsController < ApplicationController
       sem_info = {:number=>sem.number, :year=>sem.academic_year.name, :id=>sem.id, :is_active=>is_active }
       @active_semesters.push(sem_info)
     end
-    if request.post? 
+    if request.post?
       semesters.sort!{|a,b| b.number<=>a.number}.each do |sem|
         if params[:group][sem.id.to_s]=='past'
           if @group.active_semester_id==sem.id
             @group.update_attributes({:active_semester_id=>nil})
           end
         else
-            @group.update_attributes({:active_semester_id=>sem.id})
+          @group.update_attributes({:active_semester_id=>sem.id})
         end
       end
       if params[:group][:graduated]=='1'
@@ -239,23 +240,23 @@ class GroupsController < ApplicationController
 
   # GET /groups/1/list_grades
   def list_grades
-      @student_subjects_grades = StudentsSubject.find_all_by_subject_id_and_group_id(params[:subject_id], params[:id])
-      @group=Group.find(params[:id])
-      render(:update) do |page|
-        page.replace_html 'grades', :partial=> 'grades'
-      end
+    @student_subjects_grades = StudentsSubject.find_all_by_subject_id_and_group_id(params[:subject_id], params[:id])
+    @group=Group.find(params[:id])
+    render(:update) do |page|
+      page.replace_html 'grades', :partial=> 'grades'
+    end
   end
 
   # GET /groups/1/select_subject
   def select_subject
-      @semester_subjects_relations = SemesterSubjects.find_all_by_semester_id(params[:semester_id])
-      @group_semester_subjects = SanSubject.find(@semester_subjects_relations.map(&:subject_id).uniq)
-      #@student_subjects_grades = Array.new
-      #@group=Group.find(params[:id])
-      render(:update) do |page|
-        page.replace_html 'subject_selection', :partial=> 'subject_selection'
+    @semester_subjects_relations = SemesterSubjects.find_all_by_semester_id(params[:semester_id])
+    @group_semester_subjects = SanSubject.find(@semester_subjects_relations.map(&:subject_id).uniq)
+    #@student_subjects_grades = Array.new
+    #@group=Group.find(params[:id])
+    render(:update) do |page|
+      page.replace_html 'subject_selection', :partial=> 'subject_selection'
       #  page.replace_html 'grades', :partial=> 'grades'
-      end
+    end
   end
 
   # POST /groups/1/subscribe_to_semester
@@ -263,30 +264,30 @@ class GroupsController < ApplicationController
     group_id = params[:id]
     @group = Group.find(group_id)
     @san_semester = SanSemester.find(:first, :conditions=> {:year=>params[:san_semester][:year], :number=>params[:san_semester][:number]})
-    @san_semester.update_attributes({:group_id=>group_id}) 
+    @san_semester.update_attributes({:group_id=>group_id})
 
     # Subscribe all group students to the semester subjects
     group_students = Student.find_all_by_group_id(group_id)
     semester_subjects = SemesterSubjects.find_all_by_semester_id_and_optional(@san_semester.id,false)
-    
+
 
     group_students.each do |student|
       student_performance = StudentMilitaryPerformance.find_or_create_by_student_id_and_san_semester_id(student.id, @san_semester.id)
-	  semester_subjects.each do |subject|
-	   student_subject = StudentsSubject.find_or_create_by_student_id_and_subject_id(student.id, subject.subject_id)
-       student_subject.update_attributes({:group_id=>group_id, :san_semester_id=>@san_semester.id})
-	  end
+      semester_subjects.each do |subject|
+        student_subject = StudentsSubject.find_or_create_by_student_id_and_subject_id(student.id, subject.subject_id)
+        student_subject.update_attributes({:group_id=>group_id, :san_semester_id=>@san_semester.id})
+      end
     end
 
     respond_to do |format|
-	flash[:notice] = 'Η εγγραφή σε εξάμηνο πραγματοποιήθηκε επιτυχώς.'
-	format.html { redirect_to(@group) }
-	format.xml  { head :ok }
+      flash[:notice] = 'Η εγγραφή σε εξάμηνο πραγματοποιήθηκε επιτυχώς.'
+      format.html { redirect_to(@group) }
+      format.xml  { head :ok }
     end
   end
 
   # GET /show_group_semester
-  def show_group_semester 
+  def show_group_semester
     @san_semester = SanSemester.find(:first, :conditions => {:year => params[:semester_year], :number => params[:semester_number]})
     @semester_year = params[:semester_year]
     @semester_number = params[:semester_number]
@@ -300,7 +301,7 @@ class GroupsController < ApplicationController
     @group = Group.find(params[:id])
     semester = SanSemester.find(params[:san_semester][:id])
     @group.subscribe_to_semester(semester)
-    flash[:notice] = "Η τάξη εγγράφτηκε στο εξάμηνο κανονικά." 
+    flash[:notice] = "Η τάξη εγγράφτηκε στο εξάμηνο κανονικά."
 
     semesters= SanSemester.find_all_by_group_id(@group.id)
     @active_semesters = Array.new
@@ -369,19 +370,19 @@ class GroupsController < ApplicationController
     @group = Group.find(params[:id])
     last_group_year = @group.last_year
     if last_group_year
-      group_smps = StudentMilitaryPerformance.find(:all, :conditions=>{:group_id=>@group.id, :is_active=>true, 
-                                                 :academic_year_id=>last_group_year.id},
-                                                 :order=>"case when seniority is null then -1 else seniority end asc")
+      group_smps = StudentMilitaryPerformance.find(:all, :conditions=>{:group_id=>@group.id, :is_active=>true,
+                                                                       :academic_year_id=>last_group_year.id},
+                                                   :order=>"case when seniority is null then -1 else seniority end asc")
       if group_smps.length < @group.n_students(last_group_year) or  group_smps.select {|a| a.seniority.nil?}.length > 0
         previous_group_year = last_group_year.previous
         if previous_group_year
           group_smps = StudentMilitaryPerformance.find(:all, :conditions=>{:group_id=>@group.id, :is_active=>true,
-                                                       :academic_year_id=>previous_group_year.id},
+                                                                           :academic_year_id=>previous_group_year.id},
                                                        :order=>"case when seniority is null then -1 else seniority end asc")
           if group_smps.length < @group.n_students(last_group_year) or  group_smps.select {|a| a.seniority.nil?}.length > 0
             all_students = Student.find_all_by_group_id_and_is_active(@group.id, true).sort {|a, b| a.last_name<=>b.last_name}
             @students = all_students.paginate :page=>params[:page], :per_page=>15
-        
+
           else
             @students = group_smps.paginate :page=>params[:page], :per_page=>15
           end
@@ -394,8 +395,8 @@ class GroupsController < ApplicationController
       @students = all_students.paginate :page=>params[:page], :per_page=>15
     end
 
-      @semesters = SanSemester.find_all_by_group_id(@group.id)
-  
+    @semesters = SanSemester.find_all_by_group_id(@group.id)
+
     respond_to do |format|
       format.html # show.html.erb
       format.xml  { render :xml => @group }
@@ -441,15 +442,15 @@ class GroupsController < ApplicationController
   def update
     @group = Group.find(params[:id])
 
-      if @group.update_attributes(params[:group])
-        flash[:notice] = t('flash_msg47')
-        @groups = Group.all
-       # format.html { redirect_to(@group) }
-       # format.xml  { head :ok }
-      else
-       # format.html { render :action => "edit" }
-       # format.xml  { render :xml => @group.errors, :status => :unprocessable_entity }
-      end
+    if @group.update_attributes(params[:group])
+      flash[:notice] = t('flash_msg47')
+      @groups = Group.all
+      # format.html { redirect_to(@group) }
+      # format.xml  { head :ok }
+    else
+      # format.html { render :action => "edit" }
+      # format.xml  { render :xml => @group.errors, :status => :unprocessable_entity }
+    end
   end
 
   # DELETE /groups/1
