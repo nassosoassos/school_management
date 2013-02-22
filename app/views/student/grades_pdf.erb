@@ -22,7 +22,11 @@
 <div id="student_profile_heading" class="section">
   <div id ="student_main_info">
     <h2> <%= @student.full_name %>  </h2>
-    <h4>Βαθμολογία Σπουδαστή</h4>
+    <% if @student.gender_as_text=='Male' %>
+        <h4>Αναλυτική Βαθμολογία Σπουδαστή</h4>
+    <% else %>
+        <h4>Αναλυτική Βαθμολογία Σπουδάστριας</h4>
+    <% end %>
   </div>
 </div>
 
@@ -148,6 +152,379 @@
   <% end %>
 </table>
 
+<% @grades_info.each do |g_i| %>
+    <table width="100%" id="pdf-table" class="section">
+    <tr class="table-header">
+      <td colspan=7><%= g_i[:year] %></td>
+    </tr>
+    <tr class="table-header">
+      <td colspan=7>Πανεπιστημιακά Μαθήματα</td>
+    </tr>
+    <tr class="table-header">
+      <td>Α/Α</td>
+      <td>Τίτλος</td>
+      <td>Εξάμηνο</td>
+      <td>Εξέταση Α</td>
+      <td>Εξέταση Β</td>
+      <td>Εξέταση Γ</td>
+    </tr>
+    <tr class="table-header">
+      <td/>
+      <td colspan=6 align="center">Υποχρεωτικά</td>
+    </tr>
+    <% subject_index = 0 %>
 
+    <% g_i[:compulsory_university_student_subjects].sort!{|a, b|
+      a.san_semester.number == b.san_semester.number ?
+              (a.san_subject.title <=> b.san_subject.title ) : a.san_semester.number <=> b.san_semester.number }.each do |grade_set| %>
+        <% subject_index += 1 %>
+        <% subject_id = grade_set.subject_id %>
+        <% final_grade = nil %>
+        <% if grade_set.a_grade %>
+            <%final_grade = grade_set.a_grade%>
+        <% elsif grade_set.b_grade %>
+            <%final_grade = grade_set.b_grade%>
+        <%end%>
+        <% if grade_set.c_grade %>
+            <% final_grade = grade_set.c_grade %>
+        <%end%>
+        <% if final_grade!=nil and final_grade>4.5 %>
+            <tr class="<%= cycle('odd-sub', 'even-sub') %>">
+        <% else %>
+            <tr class="tr-separate">
+        <% end %>
+        <td><%= subject_index %></td>
+
+        <td>
+          <%= SanSubject.find(subject_id).title %>
+        </td>
+        <td align="center">
+          <%= grade_set.semester_subjects.san_semester.number%>
+        </td>
+        <td ><div class="label-field-pair2">
+          <div class="text-input-bg2">
+            <% if grade_set.a_grade.blank? %>
+            <% else %>
+                <%= grade_set.a_grade%>
+            <%end%>
+          </div>
+        </div>
+        </td>
+        <td>
+          <div class="label-field-pair2">
+            <div class="text-input-bg2">
+              <% if grade_set.b_grade.blank? %>
+              <% else %>
+                  <%= grade_set.b_grade %>
+              <%end%>
+            </div>
+          </div>
+        </td>
+        <td>
+          <div class="label-field-pair2">
+            <div class="text-input-bg2">
+              <% if grade_set.c_grade.blank? %>
+              <% else %>
+                  <%= grade_set.c_grade%>
+              <%end%>
+            </div>
+          </div>
+        </td>
+        </tr>
+    <% end %>
+    <tr class="table-header">
+      <td/>
+      <td colspan=6 align="center">Επιλογής</td>
+    </tr>
+    <% g_i[:optional_university_student_subjects].sort!{|a, b|
+      a.san_semester.number == b.san_semester.number ?
+              (a.san_subject.title <=> b.san_subject.title ) : a.san_semester.number <=> b.san_semester.number }.each do |grade_set| %>
+        <% subject_index += 1 %>
+        <% subject_id = grade_set.subject_id %>
+        <% final_grade = nil %>
+        <% if grade_set.a_grade %>
+            <%final_grade = grade_set.a_grade%>
+        <% elsif grade_set.b_grade %>
+            <%final_grade = grade_set.b_grade%>
+        <%end%>
+        <% if grade_set.c_grade %>
+            <% final_grade = grade_set.c_grade %>
+        <%end%>
+        <% if final_grade!=nil and final_grade>4.5 %>
+            <tr class="<%= cycle('odd-sub', 'even-sub') %>">
+        <% else %>
+            <tr class="tr-separate">
+        <% end %>
+        <td><%= subject_index %></td>
+        <td>
+          <%= SanSubject.find(subject_id).title %>
+        </td>
+        <td align="center">
+          <%= grade_set.semester_subjects.san_semester.number%>
+        </td>
+        <td><div class="label-field-pair2">
+          <div class="text-input-bg2">
+            <% if grade_set.a_grade.blank? %>
+            <% else %>
+                <%= grade_set.a_grade%>
+            <%end%>
+          </div>
+        </div>
+        </td>
+        <td>
+          <div class="label-field-pair2">
+            <div class="text-input-bg2">
+              <% if grade_set.b_grade.blank? %>
+              <% else %>
+                  <%= grade_set.b_grade%>
+              <%end%>
+            </div>
+          </div>
+        </td>
+        <td>
+          <div class="label-field-pair2">
+            <div class="text-input-bg2">
+              <% if grade_set.c_grade.blank? %>
+              <% else %>
+                  <%= grade_set.c_grade%>
+              <%end%>
+            </div>
+          </div>
+        </td>
+        </tr>
+    <% end %>
+    <% unless g_i[:transferred_university_student_subjects].empty? %>
+        <tr class="table-header">
+          <td/>
+          <td colspan=6 align="center">Μεταφερόμενα</td>
+        </tr>
+        <% g_i[:transferred_university_student_subjects].sort!{|a, b|
+          a.semester_subjects.san_semester.number == b.semester_subjects.san_semester.number ?
+                  (a.san_subject.title <=> b.san_subject.title ) : a.semester_subjects.san_semester.number <=> b.semester_subjects.san_semester.number }.each do |grade_set| %>
+            <% subject_index += 1 %>
+            <% subject_id = grade_set.subject_id %>
+            <% final_grade = nil %>
+            <% if grade_set.a_grade %>
+                <%final_grade = grade_set.a_grade%>
+            <% elsif grade_set.b_grade %>
+                <%final_grade = grade_set.b_grade%>
+            <%end%>
+            <% if grade_set.c_grade %>
+                <% final_grade = grade_set.c_grade %>
+            <%end%>
+            <% if final_grade!=nil and final_grade>4.5 %>
+                <tr class="<%= cycle('odd-sub', 'even-sub') %>">
+            <% else %>
+                <tr class="tr-separate">
+            <% end %>
+            <td><%= subject_index %></td>
+            <td>
+              <%= SanSubject.find(subject_id).title %>
+            </td>
+            <td align="center">
+              <%= grade_set.semester_subjects.san_semester.number%>
+            </td>
+            <td><div class="label-field-pair2">
+              <div class="text-input-bg2">
+                <% if grade_set.a_grade.blank? %>
+                <% else %>
+                    <%= grade_set.a_grade%>
+                <%end%>
+              </div>
+            </div>
+            </td>
+            <td>
+              <div class="label-field-pair2">
+                <div class="text-input-bg2">
+                  <% if grade_set.b_grade.blank? %>
+                  <% else %>
+                      <%= grade_set.b_grade%>
+                  <%end%>
+                </div>
+              </div>
+            </td>
+            <td>
+              <div class="label-field-pair2">
+                <div class="text-input-bg2">
+                  <% if grade_set.c_grade.blank? %>
+                  <% else %>
+                      <%= grade_set.c_grade%>
+                  <%end%>
+                </div>
+              </div>
+            </td>
+            </tr>
+        <% end %>
+    <% end %>
+
+    <tr class="table-header">
+      <td></td>
+      <td/>
+      <td colspan="3">Μέσος Όρος Πανεπιστημιακών</td>
+      <% if g_i[:uni_gpa].blank? %>
+          <% university_gpa_string = "" %>
+      <% else %>
+          <% university_gpa_string = sprintf( "%.02f" , g_i[:uni_gpa] ) %>
+      <% end %>
+      <td align="center"><%= university_gpa_string %></td>
+    </tr>
+
+    <tr class="table-header">
+      <td colspan=6>Στρατιωτικά Μαθήματα</td>
+    </tr>
+    <tr class="table-header">
+      <td>Α/Α</td>
+      <td>Τίτλος</td>
+      <td>Εξάμηνο</td>
+      <td>Εξέταση Α</td>
+      <td>Εξέταση Β</td>
+      <td>Εξέταση Γ</td>
+    </tr>
+    <% subject_index = 0 %>
+
+    <% g_i[:standard_military_student_subjects].sort!{|a, b| a.san_semester.number == b.san_semester.number ?
+            (a.san_subject.title <=> b.san_subject.title ) : a.san_semester.number <=> b.san_semester.number }.each do |grade_set| %>
+        <% subject_index += 1 %>
+        <% subject_id = grade_set.subject_id %>
+        <% final_grade = nil %>
+        <% if grade_set.a_grade %>
+            <%final_grade = grade_set.a_grade%>
+        <% elsif grade_set.b_grade %>
+            <%final_grade = grade_set.b_grade%>
+        <%end%>
+        <% if grade_set.c_grade %>
+            <% final_grade = grade_set.c_grade %>
+        <%end%>
+        <% if final_grade!=nil and final_grade>4.5 %>
+            <tr class="<%= cycle('odd-sub', 'even-sub') %>">
+        <% else %>
+            <tr class="tr-separate">
+        <% end %>
+        <td><%= subject_index %></td>
+        <td>
+          <%= SanSubject.find(subject_id).title %>
+        </td>
+        <td align="center">
+          <%= grade_set.semester_subjects.san_semester.number %>
+        </td>
+        <td><div class="label-field-pair2">
+          <div class="text-input-bg2">
+            <% if grade_set.a_grade.blank? %>
+            <% else %>
+                <%= grade_set.a_grade%>
+            <%end%>
+          </div>
+        </div>
+        </td>
+        <td>
+          <div class="label-field-pair2">
+            <div class="text-input-bg2">
+              <% if grade_set.b_grade.blank? %>
+              <% else %>
+                  <%= grade_set.b_grade%>
+              <%end%>
+            </div>
+          </div>
+        </td>
+        <td>
+          <div class="label-field-pair2">
+            <div class="text-input-bg2">
+              <% if grade_set.c_grade.blank? %>
+              <% else %>
+                  <%= grade_set.c_grade%>
+              <%end%>
+            </div>
+          </div>
+        </td>
+        </tr>
+    <% end %>
+
+    <% unless g_i[:transferred_military_student_subjects].empty? %>
+        <tr class="table-header">
+          <td/>
+          <td colspan=6 align="center">Μεταφερόμενα</td>
+        </tr>
+        <% g_i[:transferred_military_student_subjects].sort!{|a, b| a.san_semester.number == b.san_semester.number ?
+                (a.san_subject.title <=> b.san_subject.title ) : a.san_semester.number <=> b.san_semester.number }.each do |grade_set| %>
+            <% subject_id = grade_set.subject_id %>
+            <% subject_index += 1%>
+            <% final_grade = nil %>
+            <% if grade_set.a_grade %>
+                <%final_grade = grade_set.a_grade%>
+            <% elsif grade_set.b_grade %>
+                <%final_grade = grade_set.b_grade%>
+            <%end%>
+            <% if grade_set.c_grade %>
+                <% final_grade = grade_set.c_grade %>
+            <%end%>
+            <% if final_grade!=nil and final_grade>4.5 %>
+                <tr class="<%= cycle('odd-sub', 'even-sub') %>">
+            <% else %>
+                <tr class="tr-separate">
+            <% end %>
+            <td><%= subject_index %></td>
+            <td>
+              <%= SanSubject.find(subject_id).title %>
+            </td>
+            <td align="center">
+              <%= grade_set.semester_subjects.san_semester.number%>
+            </td>
+            <td class="col-5"><div class="label-field-pair2">
+              <div class="text-input-bg2">
+                <% if grade_set.a_grade.blank? %>
+                <% else %>
+                    <%= grade_set.a_grade%>
+                <%end%>
+              </div>
+            </div>
+            </td>
+            <td >
+              <div class="label-field-pair2">
+                <div class="text-input-bg2">
+                  <% if grade_set.b_grade.blank? %>
+                  <% else %>
+                      <%= grade_set.b_grade%>
+                  <%end%>
+                </div>
+              </div>
+            </td>
+            <td>
+              <div class="label-field-pair2">
+                <div class="text-input-bg2">
+                  <% if grade_set.c_grade.blank? %>
+                  <% else %>
+                      <%= grade_set.c_grade%>
+                  <%end%>
+                </div>
+              </div>
+            </td>
+            </tr>
+        <% end %>
+    <% end %>
+
+    <tr class="table-header">
+      <td></td>
+      <td/>
+      <td colspan="3">Μέσος Όρος Στρατιωτικών</td>
+      <% if g_i[:mil_gpa].blank? %>
+          <% military_gpa_string = "" %>
+      <% else %>
+          <% military_gpa_string = sprintf( "%.02f" , g_i[:mil_gpa] ) %>
+      <% end %>
+      <td align="center"><%= military_gpa_string %></td>
+    </tr>
+
+    <tr class="table-header">
+      <td colspan=2>  Βαθμός Στρατιωτικών Προσόντων/Διαγωγής</td>
+      <td colspan=4>
+          <% if g_i[:student_mil_perf].blank? or g_i[:student_mil_perf].grade.blank? %>
+          <% else %>
+              <%= g_i[:student_mil_perf].grade%>
+          <% end %>
+      </td>
+    </tr>
+    </table>
+
+<% end %>
 
 </div>

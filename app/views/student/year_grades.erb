@@ -261,7 +261,9 @@
               <td/>
               <td colspan=6 align="center">Μεταφερόμενα</td>
             </tr>
-            <% @transferred_university_student_subjects.sort!{|a, b| a.semester_subjects.san_semester.number == b.semester_subjects.san_semester.number ? (a.san_subject.title <=> b.san_subject.title ) : a.semester_subjects.san_semester.number <=> b.semester_subjects.san_semester.number }.each do |grade_set| %>
+            <% @transferred_university_student_subjects.sort!{|a, b|
+              a.semester_subjects.san_semester.number == b.semester_subjects.san_semester.number ?
+                      (a.san_subject.title <=> b.san_subject.title ) : a.semester_subjects.san_semester.number <=> b.semester_subjects.san_semester.number }.each do |grade_set| %>
                 <% subject_index += 1 %>
                 <% subject_id = grade_set.subject_id %>
                 <% final_grade = nil %>
@@ -371,7 +373,9 @@
               </tr>
               <% subject_index = 0 %>
 
-              <% @standard_military_student_subjects.sort!{|a, b| a.san_semester.number == b.san_semester.number ? (a.san_subject.title <=> b.san_subject.title ) : a.san_semester.number <=> b.san_semester.number }.each do |grade_set| %>
+              <% @standard_military_student_subjects.sort!{|a, b|
+                a.san_semester.number == b.san_semester.number ?
+                        (a.san_subject.title <=> b.san_subject.title ) : a.san_semester.number <=> b.san_semester.number }.each do |grade_set| %>
                   <% subject_index += 1 %>
                   <% subject_id = grade_set.subject_id %>
                   <% final_grade = nil %>
@@ -433,7 +437,9 @@
                 <td/>
                 <td colspan=6 align="center">Μεταφερόμενα</td>
               </tr>
-              <% @transferred_military_student_subjects.sort!{|a, b| a.san_semester.number == b.san_semester.number ? (a.san_subject.title <=> b.san_subject.title ) : a.san_semester.number <=> b.san_semester.number }.each do |grade_set| %>
+              <% @transferred_military_student_subjects.sort!{|a, b|
+                a.semester_subjects.san_semester.number == b.semester_subjects.san_semester.number ?
+                        (a.san_subject.title <=> b.san_subject.title ) : a.semester_subjects.san_semester.number <=> b.semester_subjects.san_semester.number }.each do |grade_set| %>
                   <% subject_id = grade_set.subject_id %>
                   <% subject_index += 1%>
                   <% final_grade = nil %>
@@ -497,7 +503,7 @@
                 <td></td>
                 <td/>
                 <td colspan="3">Μαθήματα με Προβιβάσιμο Βαθμό</td>
-                <% if @grades_info[:n_uni_passed].blank? %>
+                <% if @grades_info[:n_mil_passed].blank? %>
                     <% mil__string = "" %>
                 <% else %>
                     <% mil_string = sprintf( "%d" , @grades_info[:n_mil_passed] ) %>

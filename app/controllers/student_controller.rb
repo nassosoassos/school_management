@@ -452,6 +452,7 @@ class StudentController < ApplicationController
         transferred_military_student_subjects = transferred_student_subjects.select{|a|
           a.san_subject.kind=='Military'}
 
+        student_mil_perf = StudentMilitaryPerformance.find_by_student_id_and_academic_year_id(@student.id, y.id)
 
         info = {:total_gpa=>total_gpa, :total_points=>total_points, :uni_gpa=>uni_gpa, :mil_gpa=>mil_gpa,
                 :mil_p_gpa=>mil_p_gpa, :year=>y.name, :year_id=>y.id, :n_transfer_subjects=>n_to_be_transferred_subjects,
@@ -461,8 +462,8 @@ class StudentController < ApplicationController
                 :optional_university_student_subjects=>optional_university_student_subjects,
                 :transferred_university_student_subjects=>transferred_university_student_subjects,
                 :standard_military_student_subjects=>standard_military_student_subjects,
-                :transferred_military_student_subjects=>transferred_university_student_subjects,
-                :standard_student_subjects=>standard_student_subjects,
+                :transferred_military_student_subjects=>transferred_military_student_subjects,
+                :standard_student_subjects=>standard_student_subjects, :student_mil_perf=>student_mil_perf,
                 :transferred_student_subjects=>transferred_student_subjects
                 }
         @grades_info.push(info)
