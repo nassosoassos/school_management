@@ -363,12 +363,14 @@ class Group < ActiveRecord::Base
       unsorted_successful_september_students = Array.new
       unsorted_unsuccessful_students = Array.new
       undef_students = Array.new
+      require 'unicode'
+      require 'jcode'
       successful_students.each do |stu|
         n_unfinished_subjects = stu.get_to_be_transferred_subjects_for_year(year, exam_period).length
         total_gpa, total_sum, uni_gpa, mil_gpa, mil_p_gpa = stu.get_gpa_and_points_for_year(year, exam_period)      
-        stu_info = {:gpa=>total_gpa, :total_sum=>total_sum, :uni_gpa=>uni_gpa, :full_name=>stu.full_name,
+        stu_info = {:gpa=>total_gpa, :total_sum=>total_sum, :uni_gpa=>uni_gpa, :full_name=>Unicode.upcase(stu.full_name.tr('άέήίόύώ','αεηιουω')),
           :mil_gpa=>mil_gpa,:mil_p_gpa=>mil_p_gpa, :n_unfinished_subjects=>n_unfinished_subjects, 
-          :father=>stu.fathers_first_name, :gender=>stu.gender, :id=>stu.id, :admission_no=>stu.admission_no}
+          :father=>Unicode.upcase(stu.fathers_first_name.tr('άέήίόύώ','αεηιουω')), :gender=>stu.gender, :id=>stu.id, :admission_no=>stu.admission_no}
         if total_gpa!=nil and uni_gpa!=nil
           unsorted_successful_students.push(stu_info)
         else
@@ -379,9 +381,9 @@ class Group < ActiveRecord::Base
       unsuccessful_students.each do |stu|
         n_unfinished_subjects = stu.get_to_be_transferred_subjects_for_year(year, exam_period).length
         total_gpa, total_sum, uni_gpa, mil_gpa, mil_p_gpa = stu.get_gpa_and_points_for_year(year, exam_period)      
-        stu_info = {:gpa=>total_gpa, :total_sum=>total_sum, :uni_gpa=>uni_gpa, :full_name=>stu.full_name,
+        stu_info = {:gpa=>total_gpa, :total_sum=>total_sum, :uni_gpa=>uni_gpa, :full_name=>Unicode.upcase(stu.full_name.tr('άέήίόύώ','αεηιουω')),
           :mil_gpa=>mil_gpa,:mil_p_gpa=>mil_p_gpa, :n_unfinished_subjects=>n_unfinished_subjects, 
-          :father=>stu.fathers_first_name, :gender=>stu.gender, :id=>stu.id, :admission_no=>stu.admission_no}
+          :father=>Unicode.upcase(stu.fathers_first_name.tr('άέήίόύώ','αεηιουω')), :gender=>stu.gender, :id=>stu.id, :admission_no=>stu.admission_no}
         if total_gpa!=nil and uni_gpa!=nil
           if n_unfinished_subjects==0
             unsorted_successful_september_students.push(stu_info)
