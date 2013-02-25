@@ -18,7 +18,13 @@
    #under the License. -%>
 
 <div id="page-yield" class="available_sections">
-  <div id="student_profile_heading" class="section">
+  <% if @layout=='Portrait' %>
+    <% id_add = "_prtrt" %>
+  <% else %>
+      <% id_add = "" %>
+  <% end %>
+    <div id=<%= "student_profile_heading"+id_add %> class='section' >
+
     <div id="list_main_info">
       <h4><%=@group.name %></h4>
       <h4>Ακαδημαϊκό Έτος: <%= @year.name %> (<%=@group_year_number%>ο έτος)</h4>
@@ -33,13 +39,13 @@
             <% end%></h4>
       <% end %>
     </div>
-    <div id ="student_main_info" align="center">
+    <div id =<%= "student_main_info"+id_add %> align="center">
       <h3><%= @list_title %></h3>
     </div>
   </div>
   <table width="100%" id="pdf-table" class="section">
     <% if @show_all_grades %>
-        <tr class="table-header">
+        <tr class=<%= "table-header"+id_add %>>
           <td colspan="4"></td>
           <td colspan="5" align="center">ΒΑΘΜΟΛΟΓΙΑ</td>
           <% if @show_notes %>
@@ -47,7 +53,7 @@
           <%end%>
         </tr>
     <% end %>
-    <tr class="table-header">
+    <tr class=<%= "table-header"+id_add %>>
       <td> Σειρά </td>
       <td>Α.Μ.</td>
       <td>Ονοματεπώνυμο</td>
@@ -83,7 +89,7 @@
                     <%end%>
                   </tr>
               <% end %>
-              <tr class="table-header">
+              <tr class=<%= "table-header"+id_add %> >
                 <td> Σειρά </td>
                 <td>Α.Μ.</td>
                 <td>Ονοματεπώνυμο</td>
@@ -102,7 +108,7 @@
                 <% end %>
               </tr>
         <% end %>
-        <tr>
+        <tr class=<%= "even"+id_add%>>
           <td align="center"> <%= index %> </td>
           <td align="center"> <%= student[:id] %> </td>
           <td> <%= student[:full_name] %></td>
@@ -165,13 +171,14 @@
     <% end %>
     </table>
 
-    <% if @layout=='Portrait' and @all_students.length%20==0 %>
+    <% if @layout=='Portrait' and @all_students.length%@students_per_page==0 %>
         <div id='signatures' class='section' height='5%'>
     <% else %>
         <div id='signatures' class='section'>
     <% end %>
+    ΘΕΩΡΗΘΗΚΕ
     <div id='signatures-header'>
-      ΘΕΩΡΗΘΗΚΕ <br/>
+      ΚΥΡΩΝΕΤΑΙ <br/>
       <span class='signature-date'>Αθήνα, .........................................</span>
     </div>
     <div id='first-signee' class='signee'>
@@ -188,6 +195,14 @@
     </div>
     <div id='second-signee' class='signee'>
       <div class='signee-title'>
+            Ο ΥΠΑΡΧΗΓΟΣ ΕΠΙΤΕΛΕΙΟΥ ΓΕΕΘΑ
+      </div>
+      <div class='signee-name'>
+        <%= @superiors_full_rank_and_name %>
+      </div>
+    </div>
+    <div id='third-signee' class='signee'>
+      <div class='signee-title'>
         <% if @edu_directors_gender=='m' %>
             Ο ΔΙΕΥΘΥΝΤΗΣ ΕΚΠΑΙΔΕΥΣΗΣ
         <% else %>
@@ -200,4 +215,4 @@
     </div>
     </div>
     </div>
-</div>
+    </div>

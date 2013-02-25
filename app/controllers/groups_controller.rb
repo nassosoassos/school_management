@@ -87,7 +87,7 @@ class GroupsController < ApplicationController
       end
       if @type==0
         @layout = 'Portrait'
-        @students_per_page = 55
+        @students_per_page = 35
         @show_all_grades = false
         @show_final_grade = false
         @show_notes = false
@@ -105,7 +105,7 @@ class GroupsController < ApplicationController
         @layout = 'Landscape'
         @show_all_grades = true
         @show_final_grade = false
-        @students_per_page = 20
+        @students_per_page = 14
         if @exam_period=='b'
           @all_students = @successful_students
         elsif @exam_period=='c'
@@ -119,7 +119,7 @@ class GroupsController < ApplicationController
         @show_final_grade = false
         @show_notes = true
         @layout = 'Landscape'
-        @students_per_page = 20
+        @students_per_page = 14
         @all_students = @unsuccessful_students
       end
     else
@@ -142,20 +142,25 @@ class GroupsController < ApplicationController
     directors_rank = Configuration.find_by_config_key('DirectorsRank').config_value
     directors_arms = Configuration.find_by_config_key('DirectorsArms').config_value
 
+    superiors_full_name = Configuration.find_by_config_key('SuperiorsFullName').config_value
+    superiors_rank = Configuration.find_by_config_key('SuperiorsRank').config_value
+    superiors_arms = Configuration.find_by_config_key('SuperiorsArms').config_value
+
     edu_directors_full_name = Configuration.find_by_config_key('EduDirectorsFullName').config_value
     edu_directors_rank = Configuration.find_by_config_key('EduDirectorsRank').config_value
     edu_directors_arms = Configuration.find_by_config_key('EduDirectorsArms').config_value
 
-    directors_full_name_last_char = directors_full_name.split('').last
-    if directors_full_name_last_char=='Σ' or directors_full_name_last_char=='ς'
+    @superiors_full_rank_and_name = "%s (%s) %s" % [superiors_rank, superiors_arms, superiors_full_name]
+    directors_first_name_last_char = directors_full_name.split(' ').first.split('').last
+    if directors_first_name_last_char=='Σ' or directors_first_name_last_char=='ς'
       @directors_gender = 'm'
     else
       @directors_gender = 'f'
     end
     @directors_full_rank_and_name = "%s (%s) %s" % [directors_rank, directors_arms, directors_full_name]
 
-    edu_directors_full_name_last_char = edu_directors_full_name.split('').last
-    if edu_directors_full_name_last_char=='Σ' or edu_directors_full_name_last_char=='ς'
+    edu_directors_first_name_last_char = edu_directors_full_name.split(' ').first.split('').last
+    if edu_directors_first_name_last_char=='Σ' or edu_directors_first_name_last_char=='ς'
       @edu_directors_gender = 'm'
     else
       @edu_directors_gender = 'f'

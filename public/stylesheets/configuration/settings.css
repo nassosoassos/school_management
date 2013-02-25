@@ -77,6 +77,14 @@ form{
   width: 150px;
 }
 
+#configuration_superiors_arms {
+    width: 30px;
+}
+#configuration_superiors_full_name {
+    width: 150px;
+}
+
+
 .fee_category_scroll {
 -moz-background-inline-policy:continuous;
 -moz-border-radius:10px 10px 10px 10px;

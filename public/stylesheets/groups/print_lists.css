@@ -28,10 +28,25 @@
   margin-top: 10px !important;
 }
 
+.student_profile_heading_prtrt {
+    width: 20%;
+    margin-top: 10px !important;
+}
+
+#student_profile_heading_prtrt h4 {
+    font-size: 22px;
+}
+
 #student_main_info h2{
     margin-bottom: 2px;
     font-weight: normal;
 
+}
+
+#student_main_info_prtrt h3{
+    margin-bottom: 2px;
+    font-weight: normal;
+    font-size: 24px;
 }
 
 
@@ -50,12 +65,18 @@
 }
 
 .even td{
-   
-   padding: 12px 12px 12px 15px;
+  padding: 6px 6px 6px 6px;
   border-left:  1px solid #ADACAB;
   border-bottom: 1px solid #ADACAB;
-  width: 150px;
 }
+
+.even_prtrt td{
+    padding: 6px 6px 6px 6px;
+    border-left:  1px solid #ADACAB;
+    border-bottom: 1px solid #ADACAB;
+    font-size: 20px;
+}
+
 
 .odd td{
   padding: 12px 12px 12px 15px;
@@ -83,6 +104,18 @@ table#pdf-table td{
     color: #97080e;
     background: #EEEEEE;
 }
+
+.table-header_prtrt td{
+    padding: 12px 12px 12px 15px;
+    border-top: 1px solid #ADACAB;
+    border-left: 1px solid #ADACAB;
+    border-right: 1px solid #ADACAB;
+    border-bottom: 1px solid #ADACAB;
+    color: #97080e;
+    font-size: 22px;
+    background: #EEEEEE;
+}
+
 
 table#listing td.col-1{
     width:10%;
@@ -132,14 +165,14 @@ tr.tr-blank{
     padding-top: 2%;
     width:90%;
     height:20%;
-    font-size: 120%;
+    font-size: 130%;
 }
+
 
 #signatures-header {
     padding-top: 1%;
     padding-bottom: 1%;
     text-align: center;
-    float:center;
 }
 
 .signature-date {
@@ -150,7 +183,7 @@ tr.tr-blank{
 
 #first-signee {
   float: left;
-  width: 400px;
+  width: 33%;
 }
 
 .signee-title {
@@ -163,8 +196,14 @@ tr.tr-blank{
 }
 
 #second-signee {
+    float:left;
+    width: 33%;
+}
+
+
+#third-signee {
   float: right;
-  width: 400px;
+  width: 33%;
 }
 
 

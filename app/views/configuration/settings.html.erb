@@ -68,6 +68,7 @@
         <label for="configuration_currency_type"><%= t('school_superior') %></label>
         <div class="short-text-input-bg">
           <%= text_field :configuration, :superiors_rank, :value => @config[:superiors_rank], :width=>'100px' %>
+          <%= text_field :configuration, :superiors_arms, :value => @config[:superiors_arms], :width=>'50px' %>
           <%= text_field :configuration, :superiors_full_name, :value => @config[:superiors_full_name] %>
         </div>
       </div>
