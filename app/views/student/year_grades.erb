@@ -572,7 +572,9 @@
             </table>
         <% end %>
         <p/>
-        <%= submit_tag "", :value => "► Αποθήκευση Αλλαγών", :class => "submit_button2" %>
+        <% if permitted_to? :update_grades, :student %>
+            <%= submit_tag "", :value => "► Αποθήκευση Αλλαγών", :class => "submit_button2" %>
+        <% end %>
 
     <% end %>
 <% end %>

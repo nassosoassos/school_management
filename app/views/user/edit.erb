@@ -73,10 +73,10 @@
                 [["#{t('admin')}","Admin"]], :selected => @user.role_name %>
             <% elsif @user.username == "admin" %>
               <%= select :user, :role,
-                [["#{t('admin')}","Admin"]], :selected => @user.role_name %>
+                [["#{t('admin')}","Admin"],["#{t('employee_text')}","Employee"]], :selected => @user.role_name %>
             <%  else %>
               <%= select :user, :role,
-                [["#{t('admin')}","Admin"]], :selected => @user.role_name %>
+                [["#{t('employee_text')}","Employee"]], :selected => @user.role_name %>
             <% end  %>
 
           </div>

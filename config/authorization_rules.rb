@@ -2474,6 +2474,28 @@ authorization do
       :leave_history,
       :update_leave_history
     ]
+    has_permission_on [:san_subjects], :to => [:all, :index, :show, :view_all]
+    has_permission_on [:san_semesters], :to => [
+        :index,
+        :show,
+    ]
+    has_permission_on [:groups], :to => [
+        :show,
+        :index,
+        :show_lists,
+        :lists,
+        :print_lists,
+        :grades,
+        :list_grades,
+        :select_subject,
+        :show_group_semester,
+        :subscribe_semester,
+        :semester_subscription,
+    ]
+    has_permission_on [:academic_years], :to => [
+        :show,
+        :index,
+    ]
     has_permission_on [:reminder],
       :to => [
       :reminder,
@@ -2496,6 +2518,76 @@ authorization do
       :observation_groups,
       :observation_scores
     ]
+    has_permission_on [:student],
+                      :to => [
+                          :academic_pdf,
+                          :profile,
+                          :guardians,
+                          :list_students_by_course,
+                          :show,
+                          :view_all,
+                          :index,
+                          :academic_report,
+                          :academic_report_all,
+                          :email,
+                          :grades,
+                          :exam_report,
+                          :previous_years_marks_overview,
+                          :previous_years_marks_overview_pdf,
+                          :reports,
+                          :search_ajax,
+                          :student_annual_overview,
+                          :subject_wise_report,
+                          :graph_for_previous_years_marks_overview,
+                          :graph_for_academic_report,
+                          :graph_for_annual_academic_report,
+                          :graph_for_student_annual_overview,
+                          :graph_for_subject_wise_report_for_one_subject,
+                          :graph_for_exam_report,
+                          :categories,
+                          :advanced_search,
+                          :list_batches,
+                          :electives,
+                          :unassign_students,
+                          :list_doa_year,
+                          :list_dob_year,:dob_equal_to_update,:dob_less_than_update,:dob_greater_than_update,
+                          :advanced_search_pdf,
+                          :previous_data,
+                          :previous_subject,
+                          :previous_language,
+                          :profile_pdf,
+                          :grades_pdf,
+                          :year_grades,
+                          :generate_tc_pdf,
+                          :generate_all_tc_pdf,
+                          :subscribe_subjects,
+                          :update_subjects,
+                          :show_subjects,
+                          :fees,
+                          :fee_details
+                      ]
+    has_permission_on [:archived_student],
+                      :to => [
+                          :profile,
+                          :reports,
+                          :guardians,
+                          :generate_tc_pdf,
+                          :consolidated_exam_report,
+                          :consolidated_exam_report_pdf,
+                          :academic_report,
+                          :student_report,
+                          :generated_report,
+                          :generated_report_pdf,
+                          :generated_report3,
+                          :previous_years_marks_overview,
+                          :previous_years_marks_overview_pdf,
+                          :generated_report4,
+                          :generated_report4_pdf,
+                          :graph_for_generated_report,
+                          :graph_for_generated_report3,
+                          :graph_for_previous_years_marks_overview
+                      ]
+
     has_permission_on [:attendances], :to => [:index, :list_subject, :show, :subject_wise_register, :daily_register, :new, :create, :edit,:update, :destroy]
     has_permission_on [:attendance_reports], :to => [:new,:index, :subject, :mode, :show, :year, :report, :filter, :student_details,:report_pdf,:filter_report_pdf,:student]
     has_permission_on [:cce_reports],:to=>[:index,:student_wise_report,:student_wise_report_pdf,:student_report,:student_report_pdf,:student_transcript]

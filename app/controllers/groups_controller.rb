@@ -115,7 +115,7 @@ class GroupsController < ApplicationController
         end
       elsif @type==2
         @list_title = 'Πίνακας Μη Περατωσάντων Σπουδαστών'
-        @show_all_grades = false
+        @show_all_grades = true
         @show_final_grade = false
         @show_notes = true
         @layout = 'Landscape'
@@ -126,9 +126,9 @@ class GroupsController < ApplicationController
       @layout = 'Portrait'
       @show_notes = true
       @list_title = 'Πίνακας Αποφοιτώντων Σπουδαστών'
-      @students_per_page = 20
+      @students_per_page = 35
       @show_all_grades = false
-      @show_final_grade = false
+      @show_final_grade = true
       @successful_students, @undef_students = @group.get_overall_seniority_list
       @all_students = @successful_students
     end
