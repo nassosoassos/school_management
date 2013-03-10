@@ -68,6 +68,7 @@
   padding: 6px 6px 6px 6px;
   border-left:  1px solid #ADACAB;
   border-bottom: 1px solid #ADACAB;
+  font-size: 20px;
 }
 
 .even_prtrt td{
@@ -103,6 +104,7 @@ table#pdf-table td{
     border-bottom: 1px solid #ADACAB;
     color: #97080e;
     background: #EEEEEE;
+    font-size: 22px;
 }
 
 .table-header_prtrt td{

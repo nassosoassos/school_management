@@ -138,6 +138,9 @@ class GroupsController < ApplicationController
       stu[:index] = index
     end
 
+    unless params[:n_students_per_page].empty?
+      @students_per_page = params[:n_students_per_page].to_i
+    end
     directors_full_name = Configuration.find_by_config_key('DirectorsFullName').config_value
     directors_rank = Configuration.find_by_config_key('DirectorsRank').config_value
     directors_arms = Configuration.find_by_config_key('DirectorsArms').config_value
