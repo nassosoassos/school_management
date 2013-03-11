@@ -74,6 +74,8 @@ class SanSubjectsController < ApplicationController
       sub_sems.each do |ssem|
         ssem.san_semester.group.reset_seniority(ssem.san_semester.academic_year)
         ssem.san_semester.group.estimate_seniority_batch(ssem.san_semester.academic_year)
+        ssem.san_semester.group.reset_cum_seniority
+        ssem.san_semester.group.estimate_cum_seniority_batch
       end
     end
 
@@ -99,6 +101,8 @@ class SanSubjectsController < ApplicationController
     sub_sems.each do |ssem|
       ssem.san_semester.group.reset_seniority(ssem.san_semester.academic_year)
       ssem.san_semester.group.estimate_seniority_batch(ssem.san_semester.academic_year)
+      ssem.san_semester.group.reset_cum_seniority
+      ssem.san_semester.group.estimate_cum_seniority_batch
     end
 
     respond_to do |format|

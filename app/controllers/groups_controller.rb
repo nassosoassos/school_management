@@ -30,7 +30,7 @@ class GroupsController < ApplicationController
         if @exam_period=='c'
           @all_students = @successful_september_students + @unsuccessful_students
         elsif @exam_period=='b'
-          @all_students = @successful_students + @unsuccessful_students
+          @all_students = @successful_students +  @unsuccessful_students
         else
           @all_students = @successful_students + @successful_september_students + @unsuccessful_students
         end
@@ -43,7 +43,7 @@ class GroupsController < ApplicationController
           @all_students = @successful_students + @successful_september_students
         end
       elsif @type==2
-        @all_students = @unsuccessful_students
+          @all_students = @unsuccessful_students
       end
     else
       @successful_students, @undef_students = group.get_overall_seniority_list
@@ -94,8 +94,6 @@ class GroupsController < ApplicationController
         @list_title = 'Λίστα Αρχαιότητας Σπουδαστών'
         if @exam_period=='c'
           @all_students = @successful_september_students + @unsuccessful_students
-        elsif @exam_period=='b'
-          @all_students = @successful_students + @unsuccessful_students
         else
           @all_students = @successful_students + @successful_september_students + @unsuccessful_students
         end

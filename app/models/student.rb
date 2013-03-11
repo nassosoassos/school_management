@@ -273,8 +273,11 @@ class Student < ActiveRecord::Base
       end
       old_group_years = SanSemester.find_all_by_group_id(old_group_id).map(&:academic_year).uniq
       old_group_years.each do |yr|
+        self.group.reset_seniority(yr)
         self.group.estimate_seniority_batch(yr)
       end
+      self.group.reset_cum_seniority
+      self.group.estimate_cum_seniority_batch
     end
   end
 
@@ -885,6 +888,8 @@ class Student < ActiveRecord::Base
         end
         self.group.reset_seniority(y)
         self.group.estimate_seniority_batch(y)
+        self.group.reset_cum_seniority
+        self.group.estimate_cum_seniority_batch
       end
     end
   end
