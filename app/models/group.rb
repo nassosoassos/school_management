@@ -356,56 +356,93 @@ class Group < ActiveRecord::Base
 
     end
 
-    def get_seniority_list_for_year(year, exam_period='c')
-      successful_students, unsuccessful_students = get_successful_students_for_year(year,'b')
+  def get_seniority_list_for_year(year, exam_period='c')
+    group_smps = StudentMilitaryPerformance.find(:all, :conditions=>{:group_id=>self.id, :is_active=>true,
+                                                                     :academic_year_id=>year.id},
+                                                 :order=>"case when seniority is null then 100 else seniority end asc")
 
-      unsorted_successful_students = Array.new
-      unsorted_successful_september_students = Array.new
-      unsorted_unsuccessful_students = Array.new
-      undef_students = Array.new
-      require 'unicode'
-      require 'jcode'
-      successful_students.each do |stu|
-        n_unfinished_subjects = stu.get_to_be_transferred_subjects_for_year(year, exam_period).length
-        total_gpa, total_sum, uni_gpa, mil_gpa, mil_p_gpa = stu.get_gpa_and_points_for_year(year, exam_period)
-        stu_smp = StudentMilitaryPerformance.find_by_student_id_and_academic_year_id(stu.id, year.id)
-        stu_info = {:gpa=>total_gpa, :total_sum=>total_sum, :uni_gpa=>uni_gpa, :full_name=>Unicode.upcase(stu.full_name.tr('άέήίόύώ','αεηιουω')),
-          :mil_gpa=>mil_gpa,:mil_p_gpa=>mil_p_gpa, :n_unfinished_subjects=>n_unfinished_subjects, 
-          :father=>Unicode.upcase(stu.fathers_first_name.tr('άέήίόύώ','αεηιουω')), :gender=>stu.gender, :id=>stu.id, :admission_no=>stu.admission_no, :seniority=>stu_smp.seniority}
-        if total_gpa!=nil and uni_gpa!=nil
-          unsorted_successful_students.push(stu_info)
-        else
-          undef_students.push(stu_info)
-        end
+    successful_students, unsuccessful_students = get_successful_students_for_year(year,'b')
+
+    sorted_successful_students = Array.new
+    sorted_successful_september_students = Array.new
+    sorted_unsuccessful_students = Array.new
+    undef_students = Array.new
+    require 'unicode'
+    require 'jcode'
+    group_smps.each do |smp|
+      stu_info = {:gpa=>smp.gpa, :total_sum=>smp.points, :uni_gpa=>smp.univ_gpa, :full_name=>Unicode.upcase(smp.student.full_name.tr('άέήίόύώ','αεηιουω')),
+                  :mil_gpa=>smp.mil_gpa, :mil_p_gpa=>smp.grade, :n_unfinished_subjects=>smp.n_unfinished_subjects,
+                  :father=>Unicode.upcase(smp.student.fathers_first_name.tr('άέήίόύώ','αεηιουω')),
+                  :gender=>smp.student.gender, :id=>smp.student.id, :admission_no=>smp.student.admission_no,
+                  :seniority=>smp.seniority}
+      if smp.success_type==2
+        sorted_successful_students.push(stu_info)
+      elsif smp.success_type==1
+        sorted_successful_september_students.push(stu_info)
+      elsif smp.success_type==0
+        sorted_unsuccessful_students.push(stu_info)
+      else
+        undef_students.push(stu_info)
       end
-
-      unsuccessful_students.each do |stu|
-        n_unfinished_subjects = stu.get_to_be_transferred_subjects_for_year(year, exam_period).length
-        total_gpa, total_sum, uni_gpa, mil_gpa, mil_p_gpa = stu.get_gpa_and_points_for_year(year, exam_period)
-        stu_smp = StudentMilitaryPerformance.find_by_student_id_and_academic_year_id(stu.id, year.id)
-        stu_info = {:gpa=>total_gpa, :total_sum=>total_sum, :uni_gpa=>uni_gpa, :full_name=>Unicode.upcase(stu.full_name.tr('άέήίόύώ','αεηιουω')),
-          :mil_gpa=>mil_gpa,:mil_p_gpa=>mil_p_gpa, :n_unfinished_subjects=>n_unfinished_subjects, 
-          :father=>Unicode.upcase(stu.fathers_first_name.tr('άέήίόύώ','αεηιουω')), :gender=>stu.gender, :id=>stu.id, :admission_no=>stu.admission_no, :seniority=>stu_smp.seniority}
-        if total_gpa!=nil and uni_gpa!=nil
-          if n_unfinished_subjects==0
-            unsorted_successful_september_students.push(stu_info)
-          else
-            unsorted_unsuccessful_students.push(stu_info)
-          end
-        else
-          undef_students.push(stu_info)
-        end
-      end
-
-      # Sort by unfinished subjects and then total number of points and then uni_gpa
-      sorted_successful_students = unsorted_successful_students.sort {|a,b| a[:n_unfinished_subjects]==b[:n_unfinished_subjects]? ((b[:total_sum] - a[:total_sum]).abs < 0.001 ? b[:uni_gpa] <=> a[:uni_gpa] : b[:total_sum] <=> a[:total_sum]) : a[:n_unfinished_subjects] <=> b[:n_unfinished_subjects]}
-      sorted_successful_september_students = unsorted_successful_september_students.sort {|a,b| a[:n_unfinished_subjects]==b[:n_unfinished_subjects]? ((b[:total_sum] - a[:total_sum]).abs < 0.001 ? b[:uni_gpa] <=> a[:uni_gpa] : b[:total_sum] <=> a[:total_sum]) : a[:n_unfinished_subjects] <=> b[:n_unfinished_subjects]}
-      sorted_unsuccessful_students = unsorted_unsuccessful_students.sort {|a,b| a[:n_unfinished_subjects]==b[:n_unfinished_subjects]? ((b[:total_sum] - a[:total_sum]).abs < 0.001 ? b[:uni_gpa] <=> a[:uni_gpa] : b[:total_sum] <=> a[:total_sum]) : a[:n_unfinished_subjects] <=> b[:n_unfinished_subjects]}
-
-      if undef_students.length>0
-        undef_students.sort! {|a,b| a[:full_name] <=> b[:full_name]}
-      end
-
-      return sorted_successful_students, sorted_successful_september_students, sorted_unsuccessful_students, undef_students
     end
+
+    if undef_students.length>0
+      undef_students.sort! {|a,b| a[:full_name] <=> b[:full_name]}
+    end
+
+    return sorted_successful_students, sorted_successful_september_students, sorted_unsuccessful_students, undef_students
+  end
+
+  #def estimate_seniority_batch(year, exam_period='c')
+  #    successful_students, unsuccessful_students = get_successful_students_for_year(year,'b')
+  #
+  #    unsorted_successful_students = Array.new
+  #    unsorted_successful_september_students = Array.new
+  #    unsorted_unsuccessful_students = Array.new
+  #    undef_students = Array.new
+  #    require 'unicode'
+  #    require 'jcode'
+  #    successful_students.each do |stu|
+  #      n_unfinished_subjects = stu.get_to_be_transferred_subjects_for_year(year, exam_period).length
+  #      total_gpa, total_sum, uni_gpa, mil_gpa, mil_p_gpa = stu.get_gpa_and_points_for_year(year, exam_period)
+  #      stu_smp = StudentMilitaryPerformance.find_by_student_id_and_academic_year_id(stu.id, year.id)
+  #      stu_info = {:gpa=>total_gpa, :total_sum=>total_sum, :uni_gpa=>uni_gpa, :full_name=>Unicode.upcase(stu.full_name.tr('άέήίόύώ','αεηιουω')),
+  #        :mil_gpa=>mil_gpa,:mil_p_gpa=>mil_p_gpa, :n_unfinished_subjects=>n_unfinished_subjects,
+  #        :father=>Unicode.upcase(stu.fathers_first_name.tr('άέήίόύώ','αεηιουω')), :gender=>stu.gender, :id=>stu.id, :admission_no=>stu.admission_no, :seniority=>stu_smp.seniority}
+  #      if total_gpa!=nil and uni_gpa!=nil
+  #        unsorted_successful_students.push(stu_info)
+  #      else
+  #        undef_students.push(stu_info)
+  #      end
+  #    end
+  #
+  #    unsuccessful_students.each do |stu|
+  #      n_unfinished_subjects = stu.get_to_be_transferred_subjects_for_year(year, exam_period).length
+  #      total_gpa, total_sum, uni_gpa, mil_gpa, mil_p_gpa = stu.get_gpa_and_points_for_year(year, exam_period)
+  #      stu_smp = StudentMilitaryPerformance.find_by_student_id_and_academic_year_id(stu.id, year.id)
+  #      stu_info = {:gpa=>total_gpa, :total_sum=>total_sum, :uni_gpa=>uni_gpa, :full_name=>Unicode.upcase(stu.full_name.tr('άέήίόύώ','αεηιουω')),
+  #        :mil_gpa=>mil_gpa,:mil_p_gpa=>mil_p_gpa, :n_unfinished_subjects=>n_unfinished_subjects,
+  #        :father=>Unicode.upcase(stu.fathers_first_name.tr('άέήίόύώ','αεηιουω')), :gender=>stu.gender, :id=>stu.id, :admission_no=>stu.admission_no, :seniority=>stu_smp.seniority}
+  #      if total_gpa!=nil and uni_gpa!=nil
+  #        if n_unfinished_subjects==0
+  #          unsorted_successful_september_students.push(stu_info)
+  #        else
+  #          unsorted_unsuccessful_students.push(stu_info)
+  #        end
+  #      else
+  #        undef_students.push(stu_info)
+  #      end
+  #    end
+  #
+  #    # Sort by unfinished subjects and then total number of points and then uni_gpa
+  #    sorted_successful_students = unsorted_successful_students.sort {|a,b| a[:n_unfinished_subjects]==b[:n_unfinished_subjects]? ((b[:total_sum] - a[:total_sum]).abs < 0.001 ? b[:uni_gpa] <=> a[:uni_gpa] : b[:total_sum] <=> a[:total_sum]) : a[:n_unfinished_subjects] <=> b[:n_unfinished_subjects]}
+  #    sorted_successful_september_students = unsorted_successful_september_students.sort {|a,b| a[:n_unfinished_subjects]==b[:n_unfinished_subjects]? ((b[:total_sum] - a[:total_sum]).abs < 0.001 ? b[:uni_gpa] <=> a[:uni_gpa] : b[:total_sum] <=> a[:total_sum]) : a[:n_unfinished_subjects] <=> b[:n_unfinished_subjects]}
+  #    sorted_unsuccessful_students = unsorted_unsuccessful_students.sort {|a,b| a[:n_unfinished_subjects]==b[:n_unfinished_subjects]? ((b[:total_sum] - a[:total_sum]).abs < 0.001 ? b[:uni_gpa] <=> a[:uni_gpa] : b[:total_sum] <=> a[:total_sum]) : a[:n_unfinished_subjects] <=> b[:n_unfinished_subjects]}
+  #
+  #    if undef_students.length>0
+  #      undef_students.sort! {|a,b| a[:full_name] <=> b[:full_name]}
+  #    end
+  #
+  #    return sorted_successful_students, sorted_successful_september_students, sorted_unsuccessful_students, undef_students
+  #  end
 end
