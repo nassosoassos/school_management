@@ -5,7 +5,11 @@ ActionController::Routing::Routes.draw do |map|
   map.resources :san_subjects
   map.resources :semester_subjects
 
-  map.resources :groups, :member => { :subscribe_to_semester=>:post, :semester_subscription=>:get, :show_group_semester=>:post, :grades=>:get, :update_grades=>:post, :select_subject=>:post, :list_grades=>:post, :debug=>:get, :lists=>:get, :print_lists=>:get, :edit_semesters=>[:get, :post], :subscribe_semester=>:post, :add_semester=>:post, :delete_semester=>:post } 
+  map.resources :groups, :member => { :subscribe_to_semester=>:post, :semester_subscription=>:get,
+                                      :show_group_semester=>:post, :grades=>:get, :update_grades=>:post,
+                                      :select_subject=>:post, :list_grades=>:post, :debug=>:get, :lists=>:get,
+                                      :print_lists=>:get, :edit_semesters=>[:get, :post], :subscribe_semester=>:post,
+                                      :add_semester=>:post, :delete_semester=>:post, :grades_xls=>:get }
   map.resources :grading_levels
   map.resources :ranking_levels, :collection => {:create_ranking_level=>[:get,:post], :edit_ranking_level=>[:get,:post], :update_ranking_level=>[:get,:post], :delete_ranking_level=>[:get,:post], :ranking_level_cancel=>[:get,:post], :change_priority=>[:get,:post]}
   map.resources :class_designations

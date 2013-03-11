@@ -30,6 +30,7 @@
 <table width="100%" id="listing">
     <tr class="tr-head">
       <td>Όνοματεπώνυμο Σπουδαστή</td>
+      <td>Ακαδημαϊκό Έτος</td>
       <td>Εξέταση Α</td>
       <td>Εξέταση Β</td>
       <td>Εξέταση Γ</td>
@@ -37,19 +38,18 @@
 
 <% fields_for :students_subjects do |s_form| %>
     <% @student_subjects_grades.each do |grade_set| %>
-      <% student_id = grade_set.student_id %>
-      <%= s_form.hidden_field :subject_id, :value=>grade_set.subject_id %> 
+      <%= s_form.hidden_field :subject_id, :value=>grade_set.subject_id %>
       <tr class="tr-<%= cycle('odd', 'even') %>">
         <td class="col-2">
-          <%= link_to Student.find(student_id).full_name,:controller => "student", :action => "profile", :id => student_id %>
-
+          <%= link_to grade_set.student.full_name,:controller => "student", :action => "profile", :id => grade_set.student.id %>
         </td>
+        <td class="col-1"><%= grade_set.academic_year.name %> </td>
         <td class="col-1"><div class="label-field-pair2">
                 <div class="text-input-bg2">
                     <% if grade_set.a_grade.blank? %>
-                        <%= s_form.text_field 'a_grade['+student_id.to_s+']', :size => 4, :class => 'grade' %>
+                        <%= s_form.text_field 'a_grade['+grade_set.student.id.to_s+']', :size => 4, :class => 'grade' %>
                     <% else %>
-                        <%= s_form.text_field 'a_grade['+student_id.to_s+']', :size => 4, :class => 'grade' , :value=>grade_set.a_grade%>
+                        <%= s_form.text_field 'a_grade['+grade_set.student.id.to_s+']', :size => 4, :class => 'grade' , :value=>grade_set.a_grade%>
                     <%end%>
             </div>
           </div>
@@ -58,9 +58,9 @@
           <div class="label-field-pair2">
               <div class="text-input-bg2">
                     <% if grade_set.b_grade.blank? %>
-                        <%= s_form.text_field 'b_grade['+student_id.to_s+']', :size => 4, :class => 'grade' %>
+                        <%= s_form.text_field 'b_grade['+grade_set.student.id.to_s+']', :size => 4, :class => 'grade' %>
                     <% else %>
-                        <%= s_form.text_field 'b_grade['+student_id.to_s+']', :size => 4, :class => 'grade' , :value=>grade_set.b_grade%>
+                        <%= s_form.text_field 'b_grade['+grade_set.student.id.to_s+']', :size => 4, :class => 'grade' , :value=>grade_set.b_grade%>
                     <%end%>
             </div>
           </div>
@@ -69,9 +69,9 @@
           <div class="label-field-pair2">
               <div class="text-input-bg2">
                     <% if grade_set.c_grade.blank? %>
-                        <%= s_form.text_field 'c_grade['+student_id.to_s+']', :size => 4, :class => 'grade' %>
+                        <%= s_form.text_field 'c_grade['+grade_set.student.id.to_s+']', :size => 4, :class => 'grade' %>
                     <% else %>
-                        <%= s_form.text_field 'c_grade['+student_id.to_s+']', :size => 4, :class => 'grade' , :value=>grade_set.c_grade%>
+                        <%= s_form.text_field 'c_grade['+grade_set.student.id.to_s+']', :size => 4, :class => 'grade' , :value=>grade_set.c_grade%>
                     <%end%>
             </div>
           </div>
@@ -81,7 +81,10 @@
 <% end %>
 
 </table>
-  <%= submit_tag "", :value => "► Αποθήκευση Αλλαγών", :class => "submit_button2" %>
+
+    <% if false %>
+   <%= submit_tag "", :value => "► Αποθήκευση Αλλαγών", :class => "submit_button2" %>
+    <% end %>
 
 <% end %>
 

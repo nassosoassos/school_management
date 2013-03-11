@@ -179,9 +179,9 @@ class GroupsController < ApplicationController
           require 'spreadsheet'
           students = Spreadsheet::Workbook.new
           list = students.create_worksheet :name=>@list_title
-          list.row(0).concat %w{Α/Α ΑΜ Ονοματεπώνυμο Πατρώνυμο Πανεπ. Σχολή Προσόντα Μόρια Βαθμός Μεταφερόμενα}
+          list.row(0).concat %w{Σειρά ΑΜ Ονοματεπώνυμο Πατρώνυμο Πανεπ. Σχολή Προσόντα Μόρια Βαθμός Μεταφερόμενα}
           @all_students.each_with_index { |student, i|
-            list.row(i+1).push student[:index],student[:admission_no],student[:full_name],student[:father], student[:uni_gpa], student[:mil_gpa], student[:mil_p_gpa], student[:total_sum], student[:gpa], student[:n_unfinished_subjects]
+            list.row(i+1).push student[:seniority],student[:admission_no],student[:full_name],student[:father], student[:uni_gpa], student[:mil_gpa], student[:mil_p_gpa], student[:total_sum], student[:gpa], student[:n_unfinished_subjects]
           }
           header_format = Spreadsheet::Format.new :color=>:green, :weight=>:bold
           list.row(0).default_format = header_format
@@ -196,6 +196,7 @@ class GroupsController < ApplicationController
   end
 
   def grades
+    @group = Group.find(params[:id])
     @group_semesters = SanSemester.find_all_by_group_id(params[:id])
   end
 
@@ -246,19 +247,48 @@ class GroupsController < ApplicationController
     end
   end
 
+  def grades_xls
+    respond_to do |format|
+        format.xls {
+          require 'spreadsheet'
+          @student_subjects_grades_all = StudentsSubject.find_all_by_semester_subjects_id_and_group_id(params[:sem_sub_id], params[:id])
+          @student_subjects_grades = @student_subjects_grades_all.select{|a| !a.student.nil?}
+          @student_subjects_grades.sort! {|a,b| a.student.full_name<=>b.student.full_name}
+
+          grades = Spreadsheet::Workbook.new
+          list = grades.create_worksheet :name=>SemesterSubjects.find(params[:sem_sub_id]).san_subject.title
+          list.row(0).concat %w{Ονοματεπώνυμο ΑκαδημαϊκόΈτος ΒαθμόςΑ ΒαθμόςΒ ΒαθμόςΓ}
+          @student_subjects_grades.each_with_index { |grade_set, i|
+            list.row(i+1).push grade_set.student.full_name,grade_set.academic_year.name,grade_set.a_grade,
+                               grade_set.b_grade, grade_set.c_grade }
+          header_format = Spreadsheet::Format.new :color=>:green, :weight=>:bold
+          list.row(0).default_format = header_format
+          #output to blob object
+          blob = StringIO.new('')
+          grades.write blob
+          #respond with blob object as a file
+          send_data blob.string, :type=>:xls, :filename=>Group.find(params[:id]).name+'.xls'
+        }
+    end
+  end
+
   # GET /groups/1/list_grades
   def list_grades
-    @student_subjects_grades = StudentsSubject.find_all_by_subject_id_and_group_id(params[:subject_id], params[:id])
+    @semester_subjects_id = params[:subject_id]
+    @student_subjects_grades_all = StudentsSubject.find_all_by_semester_subjects_id_and_group_id(params[:subject_id], params[:id])
+    @student_subjects_grades = @student_subjects_grades_all.select{|a| !a.student.nil?}
+    @student_subjects_grades.sort! {|a,b| a.student.full_name<=>b.student.full_name}
     @group=Group.find(params[:id])
     render(:update) do |page|
       page.replace_html 'grades', :partial=> 'grades'
+      page.replace_html 'navigation', :partial=>'export_xls'
     end
   end
 
   # GET /groups/1/select_subject
   def select_subject
     @semester_subjects_relations = SemesterSubjects.find_all_by_semester_id(params[:semester_id])
-    @group_semester_subjects = SanSubject.find(@semester_subjects_relations.map(&:subject_id).uniq)
+    #@group_semester_subjects = SanSubject.find(@semester_subjects_relations.map(&:subject_id).uniq)
     #@student_subjects_grades = Array.new
     #@group=Group.find(params[:id])
     render(:update) do |page|

@@ -1396,7 +1396,8 @@ authorization do
       :edit,
       :create,
       :update,
-      :destroy
+      :destroy,
+      :grades_xls
     ]
     has_permission_on [:academic_years], :to => [
       :new,
@@ -2491,6 +2492,7 @@ authorization do
         :show_group_semester,
         :subscribe_semester,
         :semester_subscription,
+        :grades_xls
     ]
     has_permission_on [:academic_years], :to => [
         :show,
