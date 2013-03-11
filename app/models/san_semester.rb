@@ -44,7 +44,7 @@ class SanSemester < ActiveRecord::Base
       subjects_to_remove.each do |c|
           SemesterSubjects.find_by_semester_id_and_subject_id_and_optional( self.id, c, optional).destroy
       end
-      unless subjects_to_add.empty?
+      unless (subjects_to_add.empty? or self.group.nil?)
         self.group.subscribe_to_semester_subjects(subjects_to_add)
       end
       if (subjects_to_add.length>0 or subjects_to_remove.length>0) and self.group

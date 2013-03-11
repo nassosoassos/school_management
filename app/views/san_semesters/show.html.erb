@@ -74,14 +74,14 @@
       <tr class="tr-<%= cycle('odd', 'even') %>">
         <td class="col-2"><%=h semester_subject.san_subject.title %></td>
         <% if semester_subject.san_subject.kind=="University" %>
-          <% subject_kind = "Πανεπιστημιακό" %>
+          <% subject_kind = t('university_subject_text') %>
         <% else %>
-          <% subject_kind = "Στρατιωτικό" %>
+          <% subject_kind = t('military_subject_text') %>
         <% end %>
         <td class="col-2">
           <%=h subject_kind %></td>
         <% if semester_subject.optional %>
-          <td class="col-2"><%= t('optional') %></td>
+          <td class="col-2"><%= t('of_choice') %></td>
         <% else %>
           <td class="col-2"><%= t('compulsory') %></td>
         <% end %>

@@ -109,7 +109,7 @@
               </tr>
         <% end %>
         <tr class=<%= "even"+id_add%>>
-          <td align="center"> <%= index %> </td>
+          <td align="center"> <%= student[:seniority] %> </td>
           <td align="center"> <%= student[:id] %> </td>
           <td> <%= student[:full_name] %></td>
           <td> <%= student[:father] %></td>
@@ -149,10 +149,14 @@
           <% end %>
           <% if @show_notes %>
               <% if student[:n_unfinished_subjects]>0 %>
-                  <% if student[:n_unfinished_subjects]==1 %>
-                      <%  notes = student[:n_unfinished_subjects].to_s + " Μεταφερόμενο" %>
+                  <% if @type==3 %>
+                      <%  notes = student[:n_unfinished_subjects].to_s + " Οφειλ. Ιουνίου" %>
                   <% else %>
-                      <%  notes = student[:n_unfinished_subjects].to_s + " Μεταφερόμενα" %>
+                    <% if student[:n_unfinished_subjects]==1 %>
+                        <%  notes = student[:n_unfinished_subjects].to_s + " Μεταφερόμενο" %>
+                    <% else %>
+                        <%  notes = student[:n_unfinished_subjects].to_s + " Μεταφερόμενα" %>
+                    <% end %>
                   <% end %>
               <% else %>
                   <% if (@exam_period=='b' or @exam_period=='all' and index==1)%>

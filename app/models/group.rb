@@ -61,7 +61,7 @@ class Group < ActiveRecord::Base
       return all_students.length
     end
 
-    def graduate(graduation_date)
+  def graduate(graduation_date)
       students = Student.find_all_by_group_id_and_is_active(self.id, true)
       graduation_year = self.last_year
       students.each do |stu|
@@ -122,11 +122,12 @@ class Group < ActiveRecord::Base
         pos = 0
         unless stu_smp_higher.nil?
          while stu_smp_higher and stu_smp.cum_points and 
-         (stu_smp_higher.cum_points.nil? or stu_smp_higher.cum_n_unfinished_subjects>stu_smp.cum_n_unfinished_subjects or
+         (stu_smp_higher.cum_points.nil? or stu_smp_higher.n_unfinished_subjects>stu_smp.n_unfinished_subjects or
+         (stu_smp_higher.n_unfinished_subjects==stu_smp.n_unfinished_subjects and (stu_smp_higher.cum_n_unfinished_subjects>stu_smp.cum_n_unfinished_subjects or
          (stu_smp_higher.cum_n_unfinished_subjects==stu_smp.cum_n_unfinished_subjects and 
           ((stu_smp.cum_points-stu_smp_higher.cum_points > 0.001) or 
          ((stu_smp.cum_points-stu_smp_higher.cum_points).abs<0.001 and (stu_smp.cum_univ_gpa-stu_smp_higher.cum_univ_gpa>0.001 or 
-         ((stu_smp.cum_univ_gpa-stu_smp_higher.cum_univ_gpa).abs<0.001 and stu_smp_higher.cum_mil_gpa<stu_smp.cum_mil_gpa))))))  
+         ((stu_smp.cum_univ_gpa-stu_smp_higher.cum_univ_gpa).abs<0.001 and stu_smp_higher.cum_mil_gpa<stu_smp.cum_mil_gpa))))))))
             stu_smp.update_attributes({:cum_seniority=>stu_smp_higher.cum_seniority})
             stu_smp_higher.update_attributes({:cum_seniority=>stu_smp.cum_seniority+1})
             stu_smp_higher = StudentMilitaryPerformance.find_by_academic_year_id_and_group_id_and_cum_seniority(
@@ -141,11 +142,12 @@ class Group < ActiveRecord::Base
           pos = 0
           unless stu_smp_lower.nil?
            while stu_smp_lower and stu_smp_lower.cum_points and 
-           (stu_smp.cum_points.nil? or stu_smp_lower.cum_n_unfinished_subjects<stu_smp.cum_n_unfinished_subjects or
+           (stu_smp.cum_points.nil? or stu_smp_lower.n_unfinished_subjects<stu_smp.n_unfinished_subjects or
+           (stu_smp_lower.n_unfinished_subjects==stu_smp.n_unfinished_subjects and (stu_smp_lower.cum_n_unfinished_subjects<stu_smp.cum_n_unfinished_subjects or
            (stu_smp_lower.cum_n_unfinished_subjects==stu_smp.cum_n_unfinished_subjects and 
             ((stu_smp_lower.cum_points-stu_smp.cum_points > 0.001) or 
            ((stu_smp.cum_points-stu_smp_lower.cum_points).abs<0.001 and (stu_smp_lower.cum_univ_gpa-stu_smp_lower.cum_univ_gpa>0.001 or 
-           ((stu_smp.cum_univ_gpa-stu_smp_lower.cum_univ_gpa).abs<0.001 and stu_smp_lower.cum_mil_gpa>stu_smp.cum_mil_gpa))))))  
+           ((stu_smp.cum_univ_gpa-stu_smp_lower.cum_univ_gpa).abs<0.001 and stu_smp_lower.cum_mil_gpa>stu_smp.cum_mil_gpa))))))))
               stu_smp.update_attributes({:cum_seniority=>stu_smp_lower.cum_seniority})
               stu_smp_lower.update_attributes({:cum_seniority=>stu_smp.cum_seniority-1})
               stu_smp_lower = StudentMilitaryPerformance.find_by_academic_year_id_and_group_id_and_cum_seniority(
@@ -325,28 +327,26 @@ class Group < ActiveRecord::Base
     end
 
     def get_overall_seniority_list
-      successful_students, unsuccessful_students = get_students_to_graduate
-      unsorted_successful_students = Array.new
-      unsorted_unsuccessful_students = Array.new
+      group_smps = StudentMilitaryPerformance.find(:all, :conditions=>{:group_id=>self.id, :is_active=>true,
+                                                                       :academic_year_id=>self.last_year.id},
+                                                   :order=>"case when cum_seniority is null then 100 else cum_seniority end asc")
       undef_students = Array.new
-      successful_students.each do |stu|
-        n_unfinished_subjects = stu.get_total_number_of_transferred_subjects('b')
-        total_gpa, total_sum, uni_gpa, mil_gpa, mil_p_gpa = stu.get_total_gpa_and_points('c')      
-        stu_info = {:gpa=>total_gpa, :total_sum=>total_sum, :uni_gpa=>uni_gpa, :full_name=>stu.full_name,
-          :mil_gpa=>mil_gpa,:mil_p_gpa=>mil_p_gpa, :n_unfinished_subjects=>n_unfinished_subjects, 
-          :father=>stu.fathers_first_name, :gender=>stu.gender, :id=>stu.id, :admission_no=>stu.admission_no}
-        if total_gpa!=nil and uni_gpa!=nil
-          unsorted_successful_students.push(stu_info)
-        else
-          undef_students.push(stu_info)
-        end
-      end
-      # Sort by unfinished subjects and then gpa and then uni_gpa
-      sorted_students = unsorted_successful_students.sort {|a,b| a[:n_unfinished_subjects]==b[:n_unfinished_subjects]? ((b[:total_sum] - a[:total_sum]).abs < 0.001? b[:uni_gpa] <=> a[:uni_gpa] : b[:total_sum] <=> a[:total_sum]) : a[:n_unfinished_subjects] <=> b[:n_unfinished_subjects]}
-      if undef_students.length>0
-        undef_students.sort! {|a,b| a[:full_name] <=> b[:full_name]}
-      end
+      sorted_students = Array.new
+      require 'unicode'
+      require 'jcode'
 
+      group_smps.each do |smp|
+        if smp.success_type==0
+          break
+        end
+        stu_info = {:gpa=>smp.cum_gpa, :total_sum=>smp.cum_points, :uni_gpa=>smp.cum_univ_gpa,
+                    :full_name=>Unicode.upcase(smp.student.full_name.tr('άέήίόύώ','αεηιουω')), :mil_gpa=>smp.cum_mil_gpa,:mil_p_gpa=>smp.cum_mil_p_gpa,
+                    :n_unfinished_subjects=>smp.cum_n_unfinished_subjects, :father=>Unicode.upcase(smp.student.fathers_first_name.tr('άέήίόύώ','αεηιουω')),
+                    :gender=>smp.student.gender, :id=>smp.student.id, :admission_no=>smp.student.admission_no,
+                    :seniority=>smp.cum_seniority
+        }
+        sorted_students.push(stu_info)
+      end
       return sorted_students, undef_students
     end
 
@@ -367,10 +367,11 @@ class Group < ActiveRecord::Base
       require 'jcode'
       successful_students.each do |stu|
         n_unfinished_subjects = stu.get_to_be_transferred_subjects_for_year(year, exam_period).length
-        total_gpa, total_sum, uni_gpa, mil_gpa, mil_p_gpa = stu.get_gpa_and_points_for_year(year, exam_period)      
+        total_gpa, total_sum, uni_gpa, mil_gpa, mil_p_gpa = stu.get_gpa_and_points_for_year(year, exam_period)
+        stu_smp = StudentMilitaryPerformance.find_by_student_id_and_academic_year_id(stu.id, year.id)
         stu_info = {:gpa=>total_gpa, :total_sum=>total_sum, :uni_gpa=>uni_gpa, :full_name=>Unicode.upcase(stu.full_name.tr('άέήίόύώ','αεηιουω')),
           :mil_gpa=>mil_gpa,:mil_p_gpa=>mil_p_gpa, :n_unfinished_subjects=>n_unfinished_subjects, 
-          :father=>Unicode.upcase(stu.fathers_first_name.tr('άέήίόύώ','αεηιουω')), :gender=>stu.gender, :id=>stu.id, :admission_no=>stu.admission_no}
+          :father=>Unicode.upcase(stu.fathers_first_name.tr('άέήίόύώ','αεηιουω')), :gender=>stu.gender, :id=>stu.id, :admission_no=>stu.admission_no, :seniority=>stu_smp.seniority}
         if total_gpa!=nil and uni_gpa!=nil
           unsorted_successful_students.push(stu_info)
         else
@@ -380,10 +381,11 @@ class Group < ActiveRecord::Base
 
       unsuccessful_students.each do |stu|
         n_unfinished_subjects = stu.get_to_be_transferred_subjects_for_year(year, exam_period).length
-        total_gpa, total_sum, uni_gpa, mil_gpa, mil_p_gpa = stu.get_gpa_and_points_for_year(year, exam_period)      
+        total_gpa, total_sum, uni_gpa, mil_gpa, mil_p_gpa = stu.get_gpa_and_points_for_year(year, exam_period)
+        stu_smp = StudentMilitaryPerformance.find_by_student_id_and_academic_year_id(stu.id, year.id)
         stu_info = {:gpa=>total_gpa, :total_sum=>total_sum, :uni_gpa=>uni_gpa, :full_name=>Unicode.upcase(stu.full_name.tr('άέήίόύώ','αεηιουω')),
           :mil_gpa=>mil_gpa,:mil_p_gpa=>mil_p_gpa, :n_unfinished_subjects=>n_unfinished_subjects, 
-          :father=>Unicode.upcase(stu.fathers_first_name.tr('άέήίόύώ','αεηιουω')), :gender=>stu.gender, :id=>stu.id, :admission_no=>stu.admission_no}
+          :father=>Unicode.upcase(stu.fathers_first_name.tr('άέήίόύώ','αεηιουω')), :gender=>stu.gender, :id=>stu.id, :admission_no=>stu.admission_no, :seniority=>stu_smp.seniority}
         if total_gpa!=nil and uni_gpa!=nil
           if n_unfinished_subjects==0
             unsorted_successful_september_students.push(stu_info)
