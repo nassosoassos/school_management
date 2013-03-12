@@ -2,7 +2,7 @@ ActionController::Routing::Routes.draw do |map|
 
   map.resources :academic_years
   map.resources :san_semesters
-  map.resources :san_subjects
+  map.resources :san_subjects, :member => {:index_all=>:get}
   map.resources :semester_subjects
 
   map.resources :groups, :member => { :subscribe_to_semester=>:post, :semester_subscription=>:get,

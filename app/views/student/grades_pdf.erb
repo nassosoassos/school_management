@@ -152,6 +152,39 @@
   <% end %>
 </table>
 
+<div id='signatures' class='section' height='5%'>
+
+<div id='signatures-header'>
+  ΘΕΩΡΗΘΗΚΕ <br/>
+  <span class='signature-date'>Αθήνα, .........................................</span>
+</div>
+<div id='first-signee' class='signee'>
+  <div class='signee-title'>
+    <% if @directors_gender=='m' %>
+        Ο ΔΙΟΙΚΗΤΗΣ
+    <% else %>
+        Η ΔΙΟΙΚΗΤΗΣ
+    <% end %>
+  </div>
+  <div class='signee-name'>
+    <%= @directors_full_rank_and_name %>
+  </div>
+</div>
+<div id='third-signee' class='signee'>
+  <div class='signee-title'>
+    <% if @edu_directors_gender=='m' %>
+        Ο ΔΙΕΥΘΥΝΤΗΣ ΕΚΠΑΙΔΕΥΣΗΣ
+    <% else %>
+        Η ΔΙΕΥΘΥΝΤΡΙΑ ΕΚΠΑΙΔΕΥΣΗΣ
+    <% end %>
+  </div>
+  <div class='signee-name'>
+    <%= @edu_directors_full_rank_and_name %>
+  </div>
+</div>
+</div>
+
+
 <% @grades_info.each do |g_i| %>
     <table width="100%" id="pdf-table" class="section">
     <tr class="table-header">

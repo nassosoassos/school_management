@@ -104,6 +104,45 @@ table#pdf-table{
     text-align: center;
 }
 
+#signatures {
+    padding-left: 1%;
+    padding-top: 2%;
+    width:90%;
+    height:20%;
+    font-size: 100%;
+}
+
+
+#signatures-header {
+    padding-top: 1%;
+    padding-bottom: 1%;
+    text-align: center;
+}
+
+.signature-date {
+    padding-top: 1%;
+    font-size: 90%;
+    text-align: center;
+}
+
+#first-signee {
+    float: left;
+    width: 33%;
+}
+
+.signee-title {
+    text-align: center;
+}
+
+.signee-name {
+    padding-top: 10%;
+    text-align: center;
+}
+
+#third-signee {
+    float:right;
+    width: 33%;
+}
 
 
 

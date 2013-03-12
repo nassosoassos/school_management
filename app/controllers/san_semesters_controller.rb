@@ -11,8 +11,23 @@ class SanSemestersController < ApplicationController
   # GET /san_semesters
   # GET /san_semesters.xml
   def index
-    @san_semesters = SanSemester.all
+    c_year, p_year = AcademicYear.last_with_semesters
+    if p_year.nil?
+      @san_semesters = SanSemester.find_all_by_academic_year_id(c_year.id)
+    elsif c_year.nil?
+      @san_semesters = nil
+    else
+      @san_semesters = SanSemester.find_all_by_academic_year_id([c_year.id, p_year.id])
+    end
 
+    respond_to do |format|
+      format.html # index.html.erb
+      format.xml  { render :xml => @san_semesters }
+    end
+  end
+
+  def index_all
+    @san_semesters = SanSemester.all
     respond_to do |format|
       format.html # index.html.erb
       format.xml  { render :xml => @san_semesters }
@@ -79,11 +94,11 @@ class SanSemestersController < ApplicationController
 
     respond_to do |format|
       if created
-          flash[:notice] = 'Το εξάμηνο δημιουργήθηκε επιτυχώς.'
+          flash[:notice] = 'Το εξάμηνο δημιουργ�?θηκε επιτυχώς.'
           format.html { redirect_to(@san_semester) }
           format.xml  { render :xml => @san_semester, :status => :created, :location => @san_semester }
       else
-          flash[:notice] = 'Πρόβλημα στη δημιουργία του εξαμήνου.'
+          flash[:notice] = 'Πρόβλημα στη δημιουργία του εξαμ�?νου.'
           format.html { redirect_to :action => "new" }
           format.xml  { render :xml => @san_semester.errors, :status => :unprocessable_entity }
       end

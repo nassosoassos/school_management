@@ -46,6 +46,17 @@ class AcademicYear < ActiveRecord::Base
     return sorted.last
   end
 
+  def self.last_with_semesters
+    sorted = AcademicYear.find(:all, :order=>"start_date")
+    last_active = sorted.pop
+    while SanSemester.find_by_academic_year_id(last_active.id).nil?
+      last_active = sorted.pop
+    end
+
+    # Return the two last academic years with registered semesters
+    return last_active, sorted.pop
+  end
+
   def get_graduating_group
     end_year = self.end_date.year
     graduating_groups = Array.new
@@ -91,7 +102,7 @@ class AcademicYear < ActiveRecord::Base
 
     prev_groups.each do |g|
       g_ac_year = g.get_graduation_academic_year
-      if (previous_year and g_ac_year.id==previous_year.id) or (pprevious_year and g_ac_year.id==pprevious_year.id)
+      if g_ac_year and ((previous_year and g_ac_year.id==previous_year.id) or (pprevious_year and g_ac_year.id==pprevious_year.id))
         grad_students.push(g.get_not_graduated_students)
       end
     end
