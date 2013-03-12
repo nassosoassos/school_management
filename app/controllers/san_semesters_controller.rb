@@ -28,6 +28,8 @@ class SanSemestersController < ApplicationController
 
   def index_all
     @san_semesters = SanSemester.all
+    @san_semesters = SanSemester.paginate :page=>params[:page], :per_page=>15, :order=>"academic_year_id DESC"
+
     respond_to do |format|
       format.html # index.html.erb
       format.xml  { render :xml => @san_semesters }

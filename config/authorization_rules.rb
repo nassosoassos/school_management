@@ -1368,6 +1368,7 @@ authorization do
     has_permission_on [:san_semesters], :to => [
       :add_subjects,
       :index,
+      :index_all,
       :show,
       :new,
       :edit,
