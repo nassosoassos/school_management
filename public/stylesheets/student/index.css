@@ -43,7 +43,7 @@
 body #content_wrapper{
     width:980px;
     height:auto;
-    overflow: hidden;
+    overflow: visible;
 }
 #side_bar{
     float: left;
