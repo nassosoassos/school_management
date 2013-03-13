@@ -234,6 +234,8 @@
     <% if @current_user.admin? %>
         <li><%= link_to "#{t('users')}" , :controller => "user", :action=>"index" %></li>
     <% end %>
+    <li class="a"><a href="/manual.pdf"><%=  t('documentation') %></a></li>
+
   </ul>
 </li>
 </ul>

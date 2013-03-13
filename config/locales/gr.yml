@@ -375,6 +375,7 @@ gr: # locale
 
   sl_no: "Α/Α"
   name: "Όνομα"
+  documentation: "Βοήθεια"
   adm_no: "Α.Μ."
   group: "Τάξη"
   control: "Διαχείριση"
