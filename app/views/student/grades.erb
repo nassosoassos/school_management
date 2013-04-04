@@ -113,6 +113,7 @@
             <td class="col-5"> <%= link_to_remote image_tag("/images/buttons/edit_small.png"), :url=>{:action=>'year_grades', :id=>@student.id, :year_id=>g_i[:year_id]}, :method=>:get %></td>
           </tr>
       <% end %>
+      <%= @cum_grades[:cum_univ_gpa] %>
       <% if @cum_grades[:cum_univ_gpa] %>
           <tr/>
           <tr class="tr-<%= cycle('odd','even') %>">

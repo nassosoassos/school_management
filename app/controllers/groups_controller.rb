@@ -46,8 +46,15 @@ class GroupsController < ApplicationController
           @all_students = @unsuccessful_students
       end
     else
-      @successful_students, @undef_students = group.get_overall_seniority_list
-      @all_students = @successful_students
+      @all_group_students = Array.new
+      @undef_students = Array.new
+      if SanSemester.find_all_by_group_id_and_academic_year_id(group.id, group.get_graduation_academic_year.id).length==2
+        @successful_students, @undef_students = group.get_overall_seniority_list
+        @all_group_students = @successful_students
+      end
+      @all_students = @all_group_students
+
+
     end
     index = 0
     @all_students.each do |stu|

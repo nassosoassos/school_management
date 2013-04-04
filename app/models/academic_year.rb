@@ -80,6 +80,31 @@ class AcademicYear < ActiveRecord::Base
     return graduates.length
   end
 
+  def prev_groups_graduating_students
+    grad_students = Array.new
+    # Find students from previous classes that have not graduated while they should have
+    groups = Group.find(:all, :order=>"graduation_year DESC")
+    prev_groups = groups.select {|a| a.graduation_year.year<self.end_date.year }
+    previous_year = self.previous
+    pprevious_year = nil
+    if previous_year
+      pprevious_year = previous_year.previous
+    end
+
+    prev_groups.each do |g|
+      g_ac_year = g.get_graduation_academic_year
+      if g_ac_year and ((previous_year and g_ac_year.id==previous_year.id) or (pprevious_year and g_ac_year.id==pprevious_year.id))
+        not_grad_students = g.get_not_graduated_students
+        not_grad_students.each do |ngs|
+          if ngs.get_to_be_transferred_subjects_for_year(self).length==0
+            grad_students.push(ngs)
+          end
+        end
+      end
+    end
+    return grad_students
+  end
+
   def graduating_students
     # Find the students that are eligible to graduate this year.
     n_graduating_students = 0

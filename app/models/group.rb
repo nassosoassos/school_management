@@ -28,7 +28,7 @@ class Group < ActiveRecord::Base
   end
 
   def get_not_graduated_students
-    return Student.find_all_by_group_id_and_graduated(self.id, false)
+    return Student.find_all_by_group_id_and_graduated_and_is_active(self.id, false, true)
   end
 
   def n_students(year=nil)

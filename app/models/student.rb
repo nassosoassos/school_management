@@ -123,7 +123,6 @@ class Student < ActiveRecord::Base
         while next_ac_year and self.is_active_for_year(next_ac_year)
           next_year_semesters = SanSemester.find_all_by_group_id_and_academic_year_id(self.group.id, next_ac_year.id)
           if !next_year_semesters.empty? or (next_ac_year==self.group.get_graduation_academic_year.next and self.group.graduated)
-            puts "I am here"
             ssub = StudentsSubject.find_by_student_id_and_academic_year_id_and_semester_subjects_id(
                 self.id, next_ac_year.id, stu_sub.semester_subjects_id)
             if ssub.nil?
@@ -178,8 +177,8 @@ class Student < ActiveRecord::Base
       if f_gs[0] and f_gs[0]>=5 and stud_subs.length>1
         # Make sure that this student_subject is not transferred to following years
         stud_subs.each do |ssub|
-          if (ssub.san_semester and ssub.san_semester.number>stu_sub.san_semester.number) or
-              (ssub.academic_year and ssub.academic_year.start_date>stu_sub.academic_year.start_date)
+          if (!ssub.san_semester.nil? and !stu_sub.san_semester.nil? and ssub.san_semester.number>stu_sub.san_semester.number) or
+              (!ssub.academic_year.nil? and !stu_sub.academic_year.nil? and ssub.academic_year.start_date>stu_sub.academic_year.start_date)
             ac_year = ssub.academic_year
             if ac_year.nil?
               ac_year = ssub.semester_subjects.san_semester.academic_year
