@@ -80,7 +80,7 @@ class AcademicYear < ActiveRecord::Base
     return graduates.length
   end
 
-  def prev_groups_graduating_students
+  def prev_groups_graduating_students(exam_period='c')
     grad_students = Array.new
     # Find students from previous classes that have not graduated while they should have
     groups = Group.find(:all, :order=>"graduation_year DESC")
@@ -92,17 +92,38 @@ class AcademicYear < ActiveRecord::Base
     end
 
     prev_groups.each do |g|
+      prev_group_students = Array.new
+      sorted_prev_group_students = Array.new
       g_ac_year = g.get_graduation_academic_year
       if g_ac_year and ((previous_year and g_ac_year.id==previous_year.id) or (pprevious_year and g_ac_year.id==pprevious_year.id))
-        not_grad_students = g.get_not_graduated_students
+        suc, not_grad_students = g.get_students_to_graduate
         not_grad_students.each do |ngs|
-          if ngs.get_to_be_transferred_subjects_for_year(self).length==0
-            grad_students.push(ngs)
+          if (exam_period=="a" and ngs.get_to_be_transferred_subjects_for_year(self, exam_period).length==0) or (exam_period!="a" and ngs.get_to_be_transferred_subjects_for_year(self, "a").length>0 and ngs.get_to_be_transferred_subjects_for_year(self, @exam_period).length==0) or (!ngs.graduation_leave_date.nil? and ngs.graduation_leave_date > self.start_date and ngs.graduation_leave_date < self.end_date)
+	    # The students have fulfilled the requirements to graduate
+	    smp = StudentMilitaryPerformance.find_by_student_id_and_academic_year_id(ngs.id, self.id)
+	    stu_info = {:gpa=>smp.cum_gpa, :total_sum=>smp.cum_points, :uni_gpa=>smp.cum_univ_gpa,
+                  :full_name=>Unicode.upcase(smp.student.full_name.tr('άέήίόύώ','αεηιουω')), :mil_gpa=>smp.cum_mil_gpa,:mil_p_gpa=>smp.cum_mil_p_gpa,
+                  :n_unfinished_subjects=>smp.cum_n_unfinished_subjects, :father=>Unicode.upcase(smp.student.fathers_first_name.tr('ΎΌΈΆΊΉάέήίόύώ','ΥΟΕΑΙΗαεηιουω')),
+                  :gender=>smp.student.gender, :id=>smp.student.id, :admission_no=>smp.student.admission_no,
+                  :seniority=>smp.cum_seniority, :success_type=>1
+	    }
+            prev_group_students.push(stu_info)
           end
         end
       end
+      unless prev_group_students.empty?
+	      sorted_prev_group_students = prev_group_students.sort {|a,b|
+    	  a[:success_type]==b[:success_type] ?
+          (a[:n_unfinished_subjects]==b[:n_unfinished_subjects] ?
+            (a[:cum_n_unfinished_subjects]==b[:cum_n_unfinished_subjects] ?
+              ((b[:total_sum] - a[:total_sum]).abs < 0.001 ?
+                  ((b[:uni_gpa]-a[:uni_gpa]).abs < 0.001 ?
+                      ((b[:mil_gpa] - a[:mil_gpa]).abs < 0.001 ?
+                          b[:full_name]<=>a[:full_name] : b[:mil_gpa]<=>a[:mil_gpa]) : b[:uni_gpa] <=> a[:uni_gpa]) : b[:total_sum] <=> a[:total_sum]) : a[:cum_n_unfinished_subjects]<=>b[:cum_n_unfinished_subjects]) :a[:n_unfinished_subjects] <=> b[:n_unfinished_subjects]) : b[:success_type]<=>a[:success_type]}
+      end
+      grad_students.push(sorted_prev_group_students)
     end
-    return grad_students
+    return grad_students.flatten
   end
 
   def graduating_students

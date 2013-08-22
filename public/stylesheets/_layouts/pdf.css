@@ -50,17 +50,13 @@
       page-break-after: auto;
       page-break-inside: avoid;
       overflow: hidden;
-      
       }
       .section{
       margin-top:20px;
       }
-      .row-break{
-/*       display: table-row; */
-/*       clear:both; */
-       page-break-before:always;
-      }
+
       .top-padding-20{
       padding-top:20px;
       background-color:#ccf;
       }
+.page-break { display:block; clear:both; page-break-after:always;}

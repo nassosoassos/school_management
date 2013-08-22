@@ -27,6 +27,7 @@ class Group < ActiveRecord::Base
     return groups[previous_ind]
   end
 
+
   def get_not_graduated_students
     return Student.find_all_by_group_id_and_graduated_and_is_active(self.id, false, true)
   end
@@ -250,7 +251,7 @@ class Group < ActiveRecord::Base
     group_students.each do |student|
       sem_subs.each do |sem_sub|
         stu_sub = StudentsSubject.find_or_create_by_student_id_and_san_semester_id_and_semester_subjects_id(student.id, sem_sub.san_semester.id, sem_sub.id)
-        stu_sub.update_attributes({:group_id=>self.id, :academic_year_id=>sem_sub.san_semester.ac_year.id, :subject_id=>sem_sub.san_subject.id})
+        stu_sub.update_attributes({:group_id=>self.id, :academic_year_id=>sem_sub.san_semester.academic_year.id, :subject_id=>sem_sub.san_subject.id})
       end
     end
   end

@@ -350,7 +350,7 @@ class StudentController < ApplicationController
     @years = StudentsSubject.find_all_by_student_id(@student.id).map(&:academic_year).uniq
 
     @grades_info = Array.new
-    @years.sort!{|a, b| a.start_date<=>b.start_date}.each do |y|
+    @years.compact.sort!{|a, b| a.start_date<=>b.start_date}.each do |y|
       if @student.is_active_for_year(y)
         smp = StudentMilitaryPerformance.find_by_student_id_and_academic_year_id(@student.id, y.id)
         if smp.nil? or smp.gpa.nil?
@@ -514,7 +514,11 @@ class StudentController < ApplicationController
     else
       @directors_gender = 'f'
     end
-    @directors_full_rank_and_name = "%s (%s) %s" % [directors_rank, directors_arms, directors_full_name]
+    if directors_arms==''
+	@directors_full_rank_and_name = "%s %s" % [directors_rank, directors_full_name]
+    else
+	@directors_full_rank_and_name = "%s (%s) %s" % [directors_rank, directors_arms, directors_full_name]
+    end
 
     edu_directors_first_name_last_char = edu_directors_full_name.split(' ').first.split('').last
     if edu_directors_first_name_last_char=='Σ' or edu_directors_first_name_last_char=='ς'

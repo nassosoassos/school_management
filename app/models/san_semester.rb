@@ -38,18 +38,19 @@ class SanSemester < ActiveRecord::Base
         # Set difference to find the subjects to remove.
         subjects_to_remove = current_subjects - subject_ids
       end
+      new_sem_subs = Array.new
       subjects_to_add.each do |c|
-          SemesterSubjects.create({ :semester_id => self.id, :subject_id => c, :optional => optional})
+          new_sem_subs.push(SemesterSubjects.create({ :semester_id => self.id, :subject_id => c, :optional => optional}))
       end
       subjects_to_remove.each do |c|
           SemesterSubjects.find_by_semester_id_and_subject_id_and_optional( self.id, c, optional).destroy
       end
       unless (subjects_to_add.empty? or self.group.nil?)
-        self.group.subscribe_to_semester_subjects(subjects_to_add)
+        self.group.subscribe_to_semester_subjects(new_sem_subs)
       end
       if (subjects_to_add.length>0 or subjects_to_remove.length>0) and self.group
-        self.group.reset_seniority(san_semester.academic_year)
-        self.group.estimate_seniority_batch(san_semester.academic_year)
+        self.group.reset_seniority(self.academic_year)
+        self.group.estimate_seniority_batch(self.academic_year)
         self.group.reset_cum_seniority
         self.group.estimate_cum_seniority_batch
       end

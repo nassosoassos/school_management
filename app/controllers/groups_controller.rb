@@ -46,15 +46,22 @@ class GroupsController < ApplicationController
           @all_students = @unsuccessful_students
       end
     else
-      @all_group_students = Array.new
-      @undef_students = Array.new
-      if SanSemester.find_all_by_group_id_and_academic_year_id(group.id, group.get_graduation_academic_year.id).length==2
-        @successful_students, @undef_students = group.get_overall_seniority_list
-        @all_group_students = @successful_students
+      @successful_students, @undef_students = group.get_overall_seniority_list
+      @all_group_students = @successful_students
+
+      # Students from older groups
+      @prev_group_students = year.prev_groups_graduating_students(@exam_period)
+
+      if @exam_period != "a" and SanSemester.find_all_by_group_id_and_academic_year_id(group.id, group.get_graduation_academic_year.id).length==2
+      	   @all_students = @all_group_students + @prev_group_students
+      else
+	   @all_students = @prev_group_students
       end
-      @all_students = @all_group_students
-
-
+      index = 0
+      @all_students.each do |stu|
+        index += 1
+        stu[:seniority] = index
+      end
     end
     index = 0
     @all_students.each do |stu|
@@ -128,14 +135,30 @@ class GroupsController < ApplicationController
         @all_students = @unsuccessful_students
       end
     else
-      @layout = 'Portrait'
+      @layout = 'Landscape'
       @show_notes = true
-      @list_title = 'Πίνακας Αποφοιτώντων Σπουδαστών'
+      @list_title = 'Πίνακας Αποφοίτων'
       @students_per_page = 35
-      @show_all_grades = false
+      @show_all_grades = true
       @show_final_grade = true
+
       @successful_students, @undef_students = @group.get_overall_seniority_list
-      @all_students = @successful_students
+      @all_group_students = @successful_students
+
+      # Students from older groups
+      @prev_group_students = @year.prev_groups_graduating_students(@exam_period)
+
+      if @exam_period != "a" and SanSemester.find_all_by_group_id_and_academic_year_id(@group.id, @group.get_graduation_academic_year.id).length==2
+      	   @all_students = @all_group_students + @prev_group_students
+      else
+	   @all_students = @prev_group_students
+      end
+      index = 0
+      @all_students.each do |stu|
+        index += 1
+        stu[:seniority] = index
+      end
+
     end
     index = 0
     @all_students.each do |stu|
@@ -152,6 +175,8 @@ class GroupsController < ApplicationController
     directors_rank = Configuration.find_by_config_key('DirectorsRank').config_value
     directors_arms = Configuration.find_by_config_key('DirectorsArms').config_value
 
+
+    @superiors_title = Configuration.find_by_config_key('SuperiorsTitle').config_value
     superiors_full_name = Configuration.find_by_config_key('SuperiorsFullName').config_value
     superiors_rank = Configuration.find_by_config_key('SuperiorsRank').config_value
     superiors_arms = Configuration.find_by_config_key('SuperiorsArms').config_value
@@ -160,14 +185,22 @@ class GroupsController < ApplicationController
     edu_directors_rank = Configuration.find_by_config_key('EduDirectorsRank').config_value
     edu_directors_arms = Configuration.find_by_config_key('EduDirectorsArms').config_value
 
-    @superiors_full_rank_and_name = "%s (%s) %s" % [superiors_rank, superiors_arms, superiors_full_name]
+    if superiors_arms==''
+	@superiors_full_rank_and_name = "%s %s" % [superiors_rank, superiors_full_name]
+    else
+	@superiors_full_rank_and_name = "%s (%s) %s" % [superiors_rank, superiors_arms, superiors_full_name]
+    end
     directors_first_name_last_char = directors_full_name.split(' ').first.split('').last
     if directors_first_name_last_char=='Σ' or directors_first_name_last_char=='ς'
       @directors_gender = 'm'
     else
       @directors_gender = 'f'
     end
-    @directors_full_rank_and_name = "%s (%s) %s" % [directors_rank, directors_arms, directors_full_name]
+    if directors_arms==''
+	@directors_full_rank_and_name = "%s %s" % [directors_rank, directors_full_name]
+    else
+	@directors_full_rank_and_name = "%s (%s) %s" % [directors_rank, directors_arms, directors_full_name]
+    end
 
     edu_directors_first_name_last_char = edu_directors_full_name.split(' ').first.split('').last
     if edu_directors_first_name_last_char=='Σ' or edu_directors_first_name_last_char=='ς'
@@ -179,7 +212,7 @@ class GroupsController < ApplicationController
     respond_to do |format|
       if params[:commit]=='Εκτύπωση (pdf)'
         format.pdf do
-          render :pdf=>'hierarchy_list', :template=>'groups/hierarchy_list_pdf.erb', :orientation=>@layout
+          render :pdf=>'hierarchy_list', :template=>'groups/hierarchy_list_pdf.erb', :orientation=>@layout, :show_as_html=>false
         end
       elsif params[:commit]=='Εξαγωγή (xls)'
         format.xls {

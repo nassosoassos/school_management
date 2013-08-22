@@ -199,7 +199,9 @@ class Student < ActiveRecord::Base
         next_ac_year = stu_sub.academic_year.next
         while next_ac_year and self.is_active_for_year(next_ac_year)
           next_year_semesters = SanSemester.find_all_by_group_id_and_academic_year_id(self.group.id, next_ac_year.id)
-          if !next_year_semesters.empty? or (next_ac_year==self.group.get_graduation_academic_year.next and self.group.graduated)
+	  # If the group has already subscribed to next year, i.e., there are semesters to which the group has subscribed for that year, or 
+	  # if the group has graduated and we are beyond that group's graduation year, then transfer this subject to the next year
+          if !next_year_semesters.empty? or (self.group.graduated and next_ac_year.start_date.year>=self.group.get_graduation_academic_year.next.start_date.year)
             ssub = StudentsSubject.find_by_student_id_and_academic_year_id_and_semester_subjects_id(
                 self.id, next_ac_year.id, stu_sub.semester_subjects_id)
             if ssub.nil?
@@ -211,11 +213,16 @@ class Student < ActiveRecord::Base
                 ssub.update_attributes({:san_semester_id=>next_corresponding_semester[0].id})
               end
               self.estimate_performance_scores(next_ac_year)
-            end
-          end
-          next_ac_year = next_ac_year.next
+	    else
+	      break
+	    end
+	  else
+	    break
+	  end
+
+          next_ac_year = next_ac_year.create_next_year
           if self.group.graduated
-            if next_ac_year.start_date.year==self.group.last_year.start_date.year+2
+            if next_ac_year.start_date.year==self.group.last_year.start_date.year+3
               break
             end
           end
@@ -382,7 +389,10 @@ class Student < ActiveRecord::Base
   end
 
   def get_all_passed_subjects(exam_period='c')
-    all_years = SanSemester.find_all_by_group_id(self.group.id).map(&:academic_year).uniq
+    all_years_sem = SanSemester.find_all_by_group_id(self.group.id).map(&:academic_year).uniq.compact
+    all_years_grad = StudentsSubject.find_all_by_student_id(self.id).map(&:academic_year).uniq.compact
+    all_years_ = all_years_sem + all_years_grad
+    all_years = all_years_.uniq
 
     all_passed_subject_grades = Array.new
     all_years.each do |year|
@@ -399,6 +409,8 @@ class Student < ActiveRecord::Base
       ungraded_subjects = StudentsSubject.find(:all, :conditions=>['student_id=? and academic_year_id=? and a_grade IS NULL and b_grade IS NULL and c_grade IS NULL', self.id, year.id])
     elsif exam_period=='b'
       ungraded_subjects = StudentsSubject.find(:all, :conditions=>['student_id=? and academic_year_id=? and a_grade IS NULL and b_grade IS NULL', self.id, year.id])
+    else
+      ungraded_subjects = StudentsSubject.find(:all, :conditions=>['student_id=? and academic_year_id=? and a_grade IS NULL', self.id, year.id])
     end
     return ungraded_subjects
   end
@@ -408,6 +420,8 @@ class Student < ActiveRecord::Base
       graded_subjects = StudentsSubject.find(:all, :conditions=>['student_id=? and academic_year_id=? and (a_grade IS NOT NULL or b_grade IS NOT NULL or c_grade IS NOT NULL)', self.id, year.id])
     elsif exam_period=='b'
       graded_subjects = StudentsSubject.find(:all, :conditions=>['student_id=? and academic_year_id=? and (a_grade IS NOT NULL or b_grade IS NOT NULL)', self.id, year.id])
+    else
+      graded_subjects = StudentsSubject.find(:all, :conditions=>['student_id=? and academic_year_id=? and (a_grade IS NOT NULL)', self.id, year.id])
     end
     return graded_subjects
   end
@@ -529,6 +543,9 @@ class Student < ActiveRecord::Base
   end
 
   def find_next_student(year)
+    if year.nil?
+	return self
+    end
     smp = StudentMilitaryPerformance.find_by_student_id_and_academic_year_id(self.id, year.id)
     unless self.is_active_for_year(year)
       return self
@@ -555,6 +572,9 @@ class Student < ActiveRecord::Base
   end
 
   def find_previous_student(year)
+    if year.nil?
+	return self
+    end
     smp = StudentMilitaryPerformance.find_by_student_id_and_academic_year_id(self.id, year.id)
     if smp.nil? or smp.seniority.nil?
       self.estimate_performance_scores(year)
@@ -842,7 +862,7 @@ class Student < ActiveRecord::Base
     if self.is_active
       return true
     else
-      if (self.graduated or (not self.is_active)) and self.graduation_leave_date < year.end_date
+      if (self.graduated or (not self.is_active)) and self.graduation_leave_date and self.graduation_leave_date < year.end_date
         return false
       else
         return true

@@ -63,6 +63,12 @@
           <%= text_field :configuration, :edu_directors_arms, :value => @config[:edu_directors_arms], :width=>'50px' %>
           <%= text_field :configuration, :edu_directors_full_name, :value => @config[:edu_directors_full_name] %>
         </div>
+	</div>
+      <div class="label-field-pair">
+        <label for="configuration_currency_type"><%= t('school_superior_title') %></label>
+        <div class="text-input-bg">
+          <%= text_field :configuration, :superiors_title, :value => @config[:superiors_title] %>
+        </div>
       </div>
       <div class="label-three-fields-pair">
         <label for="configuration_currency_type"><%= t('school_superior') %></label>

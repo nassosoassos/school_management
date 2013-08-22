@@ -19,30 +19,40 @@
 
 <div id="page-yield" class="available_sections">
   <% if @layout=='Portrait' %>
-    <% id_add = "_prtrt" %>
+      <% id_add = "_prtrt" %>
   <% else %>
       <% id_add = "" %>
   <% end %>
-    <div id=<%= "student_profile_heading"+id_add %> class='section' >
+  <div id=<%= "student_profile_heading"+id_add %> class='section' >
 
-    <div id="list_main_info">
-      <h4><%=@group.name %></h4>
-      <h4>Ακαδημαϊκό Έτος: <%= @year.name %> (<%=@group_year_number%>ο έτος)</h4>
+  <div id="list_main_info">
+    <% if @type==3 %>
+        <h4><br><h4>
+    <% else %>
+        <h4><%=@group.name %></h4>
+    <% end %>
+    <h4>Ακαδημαϊκό Έτος: <%= @year.name %>
       <% if @type!=3 %>
-          <h4>Εξεταστικές Περίοδοι:
-            <% if @exam_period=='all' %>
-                Ιανουαρίου/Ιουλίου/Σεπτεμβρίου
-            <% elsif @exam_period=='b' %>
-                Ιανουαρίου/Ιουλίου
-            <% elsif @exam_period=='c' %>
-                Σεπτεμβρίου
-            <% end%></h4>
+          (<%=@group_year_number%>ο έτος)</h4>
       <% end %>
-    </div>
-    <div id =<%= "student_main_info"+id_add %> align="center">
-      <h3><%= @list_title %></h3>
-    </div>
-  </div>
+      <% if !(@type==3 and @exam_period=='all') %>
+          <% if @exam_period=='all' %>
+              <h4>Εξεταστικές Περίοδοι:
+                Φεβρουαρίου/Ιουλίου/Σεπτεμβρίου
+          <% elsif @exam_period=='b' %>
+              <h4>Εξεταστικές Περίοδοι:
+                Φεβρουαρίου/Ιουλίου
+          <% elsif @exam_period=='c' %>
+              <h4>Εξεταστική Περίοδος:
+                Σεπτεμβρίου
+          <% else %>
+              <h4>Εξεταστική Περίοδος:
+                Φεβρουαρίου
+          <% end%></h4>
+      <% end %>
+      </div>
+  <div id =<%= "student_main_info"+id_add %> align="center">
+  <h3><%= @list_title %></h3>
   <table width="100%" id="pdf-table" class="section">
     <% if @show_all_grades %>
         <tr class=<%= "table-header"+id_add %>>
@@ -54,14 +64,14 @@
         </tr>
     <% end %>
     <tr class=<%= "table-header"+id_add %>>
-      <td> Σειρά </td>
-      <td>Α.Μ.</td>
+      <td align="center"> Σειρά </td>
+      <td align="center"> Α.Μ.</td>
       <td>Ονοματεπώνυμο</td>
       <td>Όν. Πατρός</td>
       <% if @show_all_grades %>
           <td align="center">Παν/μίου</td>
           <td align="center">Σχ. Μαθημ.</td>
-          <td align="center">Προσ. Διαγωγής</td>
+          <td align="center">Προσ. Διαγ.</td>
           <td align="center">Μόρια</td>
           <td align="center">Τελική</td>
       <% elsif @show_final_grade %>
@@ -77,6 +87,7 @@
         <% index += 1 %>
         <% if index%(@students_per_page+1)==0 %>
             </table>
+            </div>
             <div id="student_profile_heading" class="section">
             </div>
             <table width="100%" id="pdf-table" class="section">
@@ -110,7 +121,7 @@
         <% end %>
         <tr class=<%= "even"+id_add%>>
           <td align="center"> <%= student[:seniority] %> </td>
-          <td align="center"> <%= student[:id] %> </td>
+          <td align="center"> <%= student[:admission_no] %> </td>
           <td> <%= student[:full_name] %></td>
           <td> <%= student[:father] %></td>
           <% if @show_all_grades %>
@@ -148,15 +159,15 @@
               <td align="center"> <%= total_gpa_string %></td>
           <% end %>
           <% if @show_notes %>
-              <% if student[:n_unfinished_subjects]>0 %>
+              <% if student[:n_unfinished_subjects]>0 and @type != 3%>
                   <% if @type==3 %>
                       <%  notes = student[:n_unfinished_subjects].to_s + " Οφειλ. Ιουνίου" %>
                   <% else %>
-                    <% if student[:n_unfinished_subjects]==1 %>
-                        <%  notes = student[:n_unfinished_subjects].to_s + " Μεταφερόμενο" %>
-                    <% else %>
-                        <%  notes = student[:n_unfinished_subjects].to_s + " Μεταφερόμενα" %>
-                    <% end %>
+                      <% if student[:n_unfinished_subjects]==1 %>
+                          <%  notes = student[:n_unfinished_subjects].to_s + " Μεταφερόμενο" %>
+                      <% else %>
+                          <%  notes = student[:n_unfinished_subjects].to_s + " Μεταφερόμενα" %>
+                      <% end %>
                   <% end %>
               <% else %>
                   <% if (@exam_period=='b' or @exam_period=='all' and index==1)%>
@@ -199,7 +210,9 @@
     </div>
     <div id='second-signee' class='signee'>
       <div class='signee-title'>
-            Ο ΥΠΑΡΧΗΓΟΣ ΕΠΙΤΕΛΕΙΟΥ ΓΕΕΘΑ
+        <br/><br/><br/>
+
+        <%= @superiors_title %>
       </div>
       <div class='signee-name'>
         <%= @superiors_full_rank_and_name %>
@@ -216,7 +229,6 @@
       <div class='signee-name'>
         <%= @edu_directors_full_rank_and_name %>
       </div>
-    </div>
     </div>
     </div>
     </div>
